@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2018/07/23 17:35:42.000.505,=C:\Users\ezeko\Documents\Embarcadero\Studio\Projects\AppletModule1.pas</Transaction>
+    <Transaction>2018/07/24 15:56:19.000.775,=C:\Users\ezeko\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2018/07/30 16:52:47.000.058,=C:\Users\ezeko\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2018/07/30 16:53:24.000.940,C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Unit1.pas=C:\Users\ezeko\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2018/07/30 16:53:24.000.940,C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Unit1.dfm=C:\Users\ezeko\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
+    <Transaction>2018/07/30 16:53:29.000.258,C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Project1.dproj=C:\Users\ezeko\Documents\Embarcadero\Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>2018/07/30 16:55:28.000.643,=C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Unit2.pas</Transaction>
+    <Transaction>2018/07/30 16:55:47.000.475,C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\UnitRegistrarJugador.pas=C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Unit2.pas</Transaction>
+    <Transaction>2018/07/30 16:55:47.000.475,C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\UnitRegistrarJugador.dfm=C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Unit2.dfm</Transaction>
+    <Transaction>2018/07/30 16:59:07.000.653,=C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Librerias\Pilas.pas</Transaction>
+    <Transaction>2018/07/30 16:59:07.000.613,=C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Librerias\la_jugadores.pas</Transaction>
+    <Transaction>2018/07/30 16:59:07.000.638,=C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Librerias\lo_arbolbinario.pas</Transaction>
+    <Transaction>2018/07/30 16:59:40.000.309,=C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Unit2.pas</Transaction>
+    <Transaction>2018/08/03 16:51:50.474,C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Librerias\la_arbolbinario.pas=C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Librerias\la_jugadores.pas</Transaction>
+    <Transaction>2018/08/03 17:02:07.033,C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Librerias\lo_pila.pas=C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Librerias\Pilas.pas</Transaction>
+  </Transactions>
+</BorlandProject>

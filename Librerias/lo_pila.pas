@@ -56,8 +56,8 @@ var
    berrrorcontrol,berrordatos: boolean;
    rc: tipoControl;
 begin
-     assign(pila.D, __ADATOS);
-     assign(pila.C, __ACONTROL);
+     assign(pila.D, _ARCHIVO_DATOS);
+     assign(pila.C, _ARCHIVO_CONTROL);
      {$I-}
      reset(pila.c);
      berrrorcontrol:=ioresult<>0;
