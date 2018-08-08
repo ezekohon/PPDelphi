@@ -112,6 +112,13 @@
         <DCCReference Include="Librerias\la_arbolbinario.pas"/>
         <DCCReference Include="Librerias\lo_arbolbinario.pas"/>
         <DCCReference Include="Librerias\lo_pila.pas"/>
+        <DCCReference Include="Librerias\la_pila.pas"/>
+        <DCCReference Include="Librerias\lo_colasparciales.pas"/>
+        <DCCReference Include="Login.pas">
+            <Form>Form2</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Librerias\lo_hashabierto.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -564,6 +571,7 @@
                 <Platform value="Win32">True</Platform>
                 <Platform value="Win64">False</Platform>
             </Platforms>
+            <ModelSupport>False</ModelSupport>
         </BorlandProject>
         <ProjectFileVersion>12</ProjectFileVersion>
     </ProjectExtensions>

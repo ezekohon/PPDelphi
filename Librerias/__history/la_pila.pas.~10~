@@ -1,0 +1,29 @@
+unit la_pila;
+
+interface
+
+uses
+  classes, sysutils, LO_PILA;
+
+  const
+    bolillas = 75;
+
+implementation
+
+procedure generarBolillero();
+begin
+    AbrirMe(MeBolillero);
+    while True do
+
+
+
+
+    CerrarMe(MeBolillero);
+end;
+
+procedure mezclarBolillero(me:tipoPila);
+begin
+
+end;
+
+end.

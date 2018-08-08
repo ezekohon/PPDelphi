@@ -7,8 +7,9 @@ uses
   classes, sysutils;
 
 const
-  _ARCHIVO_DATOS = 'Pila.DATOS';
-  _ARCHIVO_CONTROL = 'Pila.Control';
+  _RUTA = 'C:\Users\Ezequiel\Google Drive\Juan23\PROG2\MIO\TRABAJOFINALDELPHI\Archivos\';
+  _ARCHIVO_DATOS = 'BolilleroPila.DAT';
+  _ARCHIVO_CONTROL = 'BolilleroPila.CON';
   __POSNULA=-1;
   __CLAVENULA='';
   __LONGCLAVE = 4;
@@ -20,8 +21,7 @@ TipoPos = longint;
 TipoClave = string[__LONGCLAVE];
 
 TipoDato =  Record
-            Clave: TipoClave;
-            //agregar lo que sirve
+            Numero: integer;
             Enlace: tipoPos;
             End;
 
@@ -39,14 +39,16 @@ TipoPila = record
          D: TipoArchivoDato;
          C: TipoArchivoControl;
          end;
+var
+  MeBOLILLERO: tipopila;
 
 procedure crearME(var pila:tipoPila; archivo:string);
 Procedure AbrirMe (Var pila:tipoPila);
 Procedure CerrarMe (Var pila:tipoPila);
 function pilaVacia(var pila:tipopila):boolean;
 procedure tope (var pila:tipopila; var reg:tipoDato);
-procedure apilar (var pila:tipoPila; reg:tipoDato);
-procedure desapilar(var cola:tipoPila);
+procedure apilar (var pila:tipoPila; reg:tipoDato);  //push
+procedure desapilar(var cola:tipoPila);              //pop
 procedure ordenarPila(var pila:tipoPila);
 
 implementation
@@ -56,8 +58,8 @@ var
    berrrorcontrol,berrordatos: boolean;
    rc: tipoControl;
 begin
-     assign(pila.D, _ARCHIVO_DATOS);
-     assign(pila.C, _ARCHIVO_CONTROL);
+     assign(pila.D, _RUTA + _ARCHIVO_DATOS);
+     assign(pila.C, _RUTA + _ARCHIVO_CONTROL);
      {$I-}
      reset(pila.c);
      berrrorcontrol:=ioresult<>0;
@@ -198,7 +200,7 @@ begin
       tope(pila, r2);
       desapilar(pila);
       tope(ord, Rord);
-      if (Rord.Clave < r2.Clave) then
+      if (Rord.Numero < r2.Numero) then
          apilar(aux,r2)
       else
       begin

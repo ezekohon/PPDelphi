@@ -1,0 +1,21 @@
+unit la_pila;
+
+interface
+
+uses
+  classes, sysutils, LO_PILA;
+
+
+implementation
+
+procedure generarBolillero(me:tipoPila);
+begin
+    AbrirMe();
+end;
+
+procedure mezclarBolillero(me:tipoPila);
+begin
+
+end;
+
+end.
