@@ -10,7 +10,10 @@ uses
   la_pila in 'Librerias\la_pila.pas',
   lo_colasparciales in 'Librerias\lo_colasparciales.pas',
   Login in 'Login.pas' {Form2},
-  lo_hashabierto in 'Librerias\lo_hashabierto.pas';
+  lo_hashabierto in 'Librerias\lo_hashabierto.pas',
+  abmJuegos in 'abmJuegos.pas' {FormAbmJuegos},
+  la_hashabierto in 'Librerias\la_hashabierto.pas',
+  abmJugadores in 'abmJugadores.pas' {FormABMJugadores};
 
 {$R *.res}
 
@@ -20,5 +23,7 @@ begin
   Application.CreateForm(TForm1, Form1);
   Application.CreateForm(TFormRegistrarJugador, FormRegistrarJugador);
   Application.CreateForm(TForm2, Form2);
+  Application.CreateForm(TFormAbmJuegos, FormAbmJuegos);
+  Application.CreateForm(TFormABMJugadores, FormABMJugadores);
   Application.Run;
 end.

@@ -119,6 +119,15 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Librerias\lo_hashabierto.pas"/>
+        <DCCReference Include="abmJuegos.pas">
+            <Form>FormAbmJuegos</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Librerias\la_hashabierto.pas"/>
+        <DCCReference Include="abmJugadores.pas">
+            <Form>FormABMJugadores</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

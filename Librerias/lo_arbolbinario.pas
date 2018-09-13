@@ -1,5 +1,8 @@
 unit LO_ArbolBinario; //JUGADORES
 
+
+// //C:\Users\ezeko\Google Drive\Juan 23\PROG 2\FinalesViejos\Programación II - TP Final año 2010-Adan Gatica\Programación II - TP Final año 2010-Adan Gatica\Librerias\Clientes
+
 interface
 
 uses SysUtils, Math, Windows, Messages, Variants, Classes, Graphics, Controls, Forms,
@@ -10,7 +13,7 @@ const
   _posnula_archivo = -1;
   _clave_nula_archivo='00000000';
   _nombre_carpeta = 'Archivos\';
-  _RUTA = 'C:\Users\Ezequiel\Google Drive\Juan23\PROG2\MIO\TrabajoFINAL\Archivos\';
+  _RUTA = 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\';
   _ARCHIVO_DATOS = 'ArbolBinario.DATOS';
   _ARCHIVO_CONTROL = 'ArbolBinario.Control';
 
@@ -153,8 +156,8 @@ var
     RC:tControlArbol;
     ioD,ioC:integer;
 begin
-  assign(Arbol.D, 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\' + Nombre_Archivo_Datos);
-  assign(Arbol.C,'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\' + Nombre_Archivo_Control);
+  assign(Arbol.D, _RUTA + Nombre_Archivo_Datos);
+  assign(Arbol.C, _RUTA + Nombre_Archivo_Control);
   {$I-}
   reset(Arbol.D); ioD:=IoResult;
   reset(Arbol.C); ioC:=IoResult;

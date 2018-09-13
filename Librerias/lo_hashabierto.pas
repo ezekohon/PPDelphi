@@ -2,38 +2,40 @@ unit lo_hashabierto;
 
 interface
 
-uses
-  MATH;
+uses SysUtils, Math, Windows, Messages, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, Menus, StdCtrls;
 
 const
   _CategMin='A';
   _maxHash = 40;
   _fila = 60;
-  _posnula_hash = -1;
-  _RUTA= 'C:\Users\Ezequiel\Google Drive\Juan23\PROG2\MIO\TrabajoFINAL\Archivos\';
+  _POSNULA = -1;
+  _RUTA= 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\';
   _cobertura_de_venta= 15;
-  tEstadoJuego = ['N' ,'J','F'];
+  _ARCHIVO_DATOS = 'JUEGOS.DAT';
+  _ARCHIVO_CONTROL = 'JUEGOS.CON';
+  _PremioLinea = 3;
 
 type
- //tCodHash = String [3]  ;
- nombreEventoHash = String[20];
- tID = integer;
- tPosHash= _posnula_hash.._maxHash;
-
+ nombreEventoHash = String[20];  //clave de busqueda y hashing
+ tID = String[10];
+ tPosHash= _POSNULA.._maxHash;
+ tEstadoJuego = (N = 0,J = 1,F = 2);
 
  tRegDatosHash = record
-    ID: tID;
-    nombreEvento: nombreEventoHash;
+    ID: tID;   //ultimo id interno del control
+    nombreEvento: nombreEventoHash; //clave de busqueda y hashing
     posBolillero: integer;
-    fechaEvento: tDate;
+    fechaEvento: tDate;  //mandarle sysdate
     estado: tEstadoJuego; //N(no activado), J(jugando), F(finalizado)
     ValorVenta: real;
     TotalCartonesVendidos: 0..100;
     PorcentajePremioLinea: integer;
-    PorcentajePremioDiagonal: integer;
+    PorcentajePremioDiagonal : integer;
     PorcentajePremioCruz: integer;
     PorcentajePremioCuadradoChico: integer;
     PorcentajePremioCuadradoGrande: integer;
+    PozoAcumulado: integer;
     ocupado:Boolean;
     Ant,Prox:tPosHash;
 
@@ -51,15 +53,13 @@ end;
 
 
  tMeHash= record
-              H:Hash_Datos;
+              D:Hash_Datos;
               C:Hash_Control;
             end;
 
-Procedure AbrirMe_Hash(var MeHash:tMeHash);
+  Procedure AbrirMe_Hash(var MeHash:tMeHash);
   Procedure CerrarMe_Hash(var MeHash:tMeHash);
-  Procedure CrearMe_HashAbierto(var MeHash:tMeHash;
-                              Nombre_Archivo_Control, Nombre_Archivo_Datos:string;
-                              Directory:string);
+  Procedure CrearMe_Hash(var MeHash:tMeHash);
 
   Procedure InsertarHash(var MeHash:tMeHash; RDEntrante: tRegDatosHash;pos:tPosHash);
 
@@ -80,6 +80,10 @@ Procedure AbrirMe_Hash(var MeHash:tMeHash);
   Function HashLleno(MeHash:tMeHash):boolean;
   Procedure CambiarCabeceraInsercion (var MeHash:tMeHash;pos:tPosHash);
 
+
+  Function ObtenerUltimoID(var me:tMeHash):tid;
+  Function ObtenerProximoID(var me:tMeHash):tid;
+
   var
   MeJuego:tMeHash;
 
@@ -91,22 +95,22 @@ Var
   RC:tRegControlHash;
 Begin
   {LEO REGISTRO A BORRAR Y EL DE CONTROL}
-  Seek (MeHash.H,Pos); Read (MeHash.H,RH);
+  Seek (MeHash.D,Pos); Read (MeHash.D,RH);
   Seek (MeHash.C,0); Read (MeHash.C,RC);
 
   {************************************}
   {MODIFICO LOS REG ANTERIOR Y PROXIMO ENLAZANDOLOS}
-  If RH.Ant <> _posnula_hash then
+  If RH.Ant <> _POSNULA then
   begin
-    Seek (MeHash.H,RH.Ant); Read (MeHash.H,RH_Anterior);
+    Seek (MeHash.D,RH.Ant); Read (MeHash.D,RH_Anterior);
     RH_Anterior.Prox := RH.Prox;
-    Seek (MeHash.H,RH.Ant); Write (MeHash.H,RH_Anterior);
+    Seek (MeHash.D,RH.Ant); Write (MeHash.D,RH_Anterior);
   end;
-  If RH.Prox <>_posnula_hash then
+  If RH.Prox <>_POSNULA then
   begin
-    Seek (MeHash.H,RH.Prox); Read (MeHash.H,RH_Proximo);
+    Seek (MeHash.D,RH.Prox); Read (MeHash.D,RH_Proximo);
     RH_Proximo.Ant:=RH.Ant;
-    Seek (MeHash.H,RH.Prox); Write (MeHash.H,RH_Proximo);
+    Seek (MeHash.D,RH.Prox); Write (MeHash.D,RH_Proximo);
   end;
 
   {************************************}
@@ -126,12 +130,10 @@ Begin
 
   {GRABO AMBOS REGISTROS}
   Seek (MeHash.C,0); Write (MeHash.C,RC);
-  Seek (MeHash.H,Pos); Write (MeHash.H,RH);
+  Seek (MeHash.D,Pos); Write (MeHash.D,RH);
 End;
 {******************************************************************************}
-Procedure CrearMe_HashAbierto(var MeHash:tMeHash;
-                            Nombre_Archivo_Control, Nombre_Archivo_Datos: string;
-                              Directory:string);
+Procedure CrearMe_Hash(var MeHash:tMeHash);
 var
     RC:tRegControlHash;
     RD:tRegDatosHash;
@@ -139,32 +141,33 @@ var
     ioD,ioC:integer;
 begin
 
-  assign(MeHash.H,_RUTA + Nombre_Archivo_Datos);
-  assign(MeHash.C,_RUTA + Nombre_Archivo_Control);
+  assign(MeHash.D,_RUTA + _ARCHIVO_DATOS);
+  assign(MeHash.C,_RUTA + _ARCHIVO_CONTROL);
    {$I-}
-  reset(MeHash.H); ioD:=IoResult;
+  reset(MeHash.D); ioD:=IoResult;
   reset(MeHash.C); ioC:=IoResult;
   if (IoD<>0) or (IoC<>0) then
     begin
-      Rewrite(MeHash.H);
+      Rewrite(MeHash.D);
       rd.nombreEvento:='';
 
       rd.ocupado:=false;
       For x:=1 to _maxHash do
       Begin
-       seek(MeHash.H,x-1);
-       write(MeHash.H,rd);
+       seek(MeHash.D,x-1);
+       write(MeHash.D,rd);
       end;
       ReWrite(MeHash.C);
-      RC.primero:=_posnula_hash;
+      RC.primero:=_POSNULA;
       RC.total:=0;
-      RC.borrados:=_posnula_hash;
-      RC.ultimo :=_posnula_hash;
+      RC.borrados:=_POSNULA;
+      RC.ultimo :=_POSNULA;
+      RC.ultimoIDinterno := '0';
 
       write(MeHash.C,rc);
 
     end;
-  Close(MeHash.H);
+  Close(MeHash.D);
   Close(MeHash.C);
   {$I+}
 end;
@@ -209,8 +212,17 @@ begin
 end;
 {******************************************************************************}
 Procedure InsertarHash(var MeHash:tMeHash; RDEntrante: tRegDatosHash; pos:tPosHash);
+var
+  RC:tRegControlHash;
 begin
-  seek(MeHash.h,pos);write(MeHash.h,RDEntrante);
+  seek(MeHash.D,pos);
+  write(MeHash.D,RDEntrante);
+
+  seek(MeHash.c,0);
+  read(MeHash.c,rc);
+  rc.ultimoIDinterno := RDEntrante.ID;
+  seek(MeHash.c,0);
+  write(MeHash.c,rc);
 end;
 {******************************************************************************}
 Function BuscarHash(var MeHash:tMeHash; CodBuscado:nombreEventoHash; var PosFisica:tPosHash):boolean;
@@ -235,7 +247,7 @@ begin
   {Obtengo la posicion de hash de dicho valor}
   pos:=FuncionHash (VHash);
   {Arranco suponiendo que es PosNula}
-  PosFisica:=_posnula_hash;
+  PosFisica:=_POSNULA;
   {Contador de saltos que dare}
   i:=0;
   {Mayor diferencia de la Posicion Hash con los extremos}
@@ -255,7 +267,7 @@ begin
       {Busco hacia adelante siempre que haya lugares}
       If (pos+i)<=(_maxHash-1) then
       begin
-        seek(MeHash.h,pos+i);read(MeHash.h,rd);
+        seek(MeHash.D,pos+i);read(MeHash.D,rd);
         if (rd.ocupado) and (rd.nombreEvento=CodBuscado) then
         begin
           Esta:=True;
@@ -271,7 +283,7 @@ begin
       {Busco hacia atras siempre que haya lugares y no lo haya encontrado aun}
       If ((pos-i)>=0) and (not Esta) then
       begin
-        seek(MeHash.h,pos-i);read(MeHash.h,rd);
+        seek(MeHash.D,pos-i);read(MeHash.D,rd);
         if (rd.ocupado) and (rd.nombreEvento=CodBuscado) then
         begin
           Esta:=True;
@@ -292,7 +304,7 @@ begin
       If HayLugar then
         PosFisica:=Pos_HayLugar
       Else
-        PosFisica:= _posnula_hash;
+        PosFisica:= _POSNULA;
   end;
   BuscarHash:=Esta;
 end;
@@ -324,13 +336,13 @@ End;
 {******************************************************************************}
 Procedure AbrirMe_Hash(var MeHash:tMeHash);
 begin
-   reset(MeHash.H);
+   reset(MeHash.D);
    reset(MeHash.C);
 end;
 {******************************************************************************}
 Procedure CerrarMe_Hash(var MeHash:tMeHash);
 Begin
-  close(MeHash.H);
+  close(MeHash.D);
   close(MeHash.C);
 end;
 {******************************************************************************}
@@ -344,7 +356,7 @@ End;
 {******************************************************************************}
 Procedure CapturarInfoHash(MeHash:tMeHash; Pos: tPosHash; var RH: tRegDatosHash);
 begin
-  Seek(MeHash.H,Pos);Read(MeHash.H,RH);
+  Seek(MeHash.D,Pos);Read(MeHash.D,RH);
 end;
 {******************************************************************************}
 Function Ultimo (MeHash:tMeHash):tPosHash;
@@ -365,26 +377,47 @@ End;
 {******************************************************************************}
 Procedure CambiarSiguiente (MeHash: tMeHash; Sig:tPoshash);
 Var
-  RH: tRegDatosHash;
+  RD: tRegDatosHash;
   RC: tRegControlHash;
 Begin
-  Seek (MeHash.C,0); Read(MeHash.C,RC);
-  If RC.ultimo <> _posnula_hash then
+  Seek (MeHash.C,0);
+  Read(MeHash.C,RC);
+  If RC.ultimo <> _POSNULA then
   Begin
-    Seek (Mehash.H, RC.ultimo); Read (MeHash.H,RH);
-    RH.Prox:=Sig;
-    Seek (Mehash.H, RC.ultimo); Write (MeHash.H,RH);
+    Seek (Mehash.D, RC.ultimo);
+    Read (MeHash.D,RD);
+    RD.Prox:=Sig;
+    Seek (Mehash.D, RC.ultimo);
+    Write (MeHash.D,RD);
   End;
 End;
 {******************************************************************************}
 Function Proximo (MeHash:tMeHash; Pos: tPosHash):tposHash;
 Var
-  RH: tRegDatosHash;
+  RD: tRegDatosHash;
 Begin
-  Seek (MeHash.H,Pos); Read (MeHash.H,RH);
-  Proximo:= RH.Prox;
+  Seek (MeHash.D,Pos);
+  Read (MeHash.D,RD);
+  Proximo:= RD.Prox;
 End;
 {******************************************************************************}
 
+Function ObtenerUltimoID(var me:tMeHash):tid;
+var
+  rc:tRegControlHash;
+begin
+   seek(me.C,0);
+   read(me.c,rc);
+   result:= rc.ultimoIDinterno;
+end;
+
+Function ObtenerProximoID(var me:tMeHash):tid;
+var
+  rc:tRegControlHash;
+begin
+   seek(me.C,0);
+   read(me.c,rc);
+   result:= inttostr(strtoint(rc.ultimoIDinterno)+1);
+end;
 
 end.

@@ -1,6 +1,6 @@
 unit la_arbolbinario;
 
-
+ //C:\Users\ezeko\Google Drive\Juan 23\PROG 2\FinalesViejos\Programación II - TP Final año 2010-Adan Gatica\Programación II - TP Final año 2010-Adan Gatica\Librerias\Clientes
 
 interface
 
@@ -9,7 +9,7 @@ uses
 
 Function AltaJugador (Nick, Nombre, Mail, password: string; imagen: TBitmap):Boolean;
 function BuscarMail(mail:string):boolean;
-function GenerarProximoIDusuario():tidusuario;
+//function GenerarProximoIDusuario():tidusuario;
 Procedure InsertarAdminCuandoMEVacio();
 
 implementation
@@ -108,18 +108,18 @@ begin
   result:= encontrado;
 end;
 
-function GenerarProximoIDusuario():tidusuario;
-var
-  id:string;
-begin
-  //AbrirMe_Archivos(MeJugadores);
-  if (MeVacio_Archivos(MeJugadores)) then
-     id := '0'
-  else
-       id:= inttostr(strtoint(ObtenerUltimoID_Archivos(MeJugadores))+1);
-  //CerrarMe_Archivos(MeJugadores);
-  result:= id;
-end;
+//function GenerarProximoIDusuario():tidusuario;
+//var
+//  id:string;
+//begin
+//  //AbrirMe_Archivos(MeJugadores);
+//  if (MeVacio_Archivos(MeJugadores)) then
+//     id := '0'
+//  else
+//       id:= inttostr(strtoint(ObtenerUltimoID_Archivos(MeJugadores))+1);
+//  //CerrarMe_Archivos(MeJugadores);
+//  result:= id;
+//end;
 
 Procedure InsertarAdminCuandoMEVacio();
 begin
