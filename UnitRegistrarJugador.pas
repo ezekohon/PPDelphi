@@ -14,7 +14,7 @@ type
     Label2: TLabel;
     EditMail: TEdit;
     Label3: TLabel;
-    EditClave: TEdit;
+    EditContra: TEdit;
     Label4: TLabel;
     EditNombre: TEdit;
     Label5: TLabel;
@@ -25,6 +25,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure ButtonBuscarImagenClick(Sender: TObject);
     procedure ButtonInsertarClick(Sender: TObject);
+
   private
     { Private declarations }
   public
@@ -37,6 +38,8 @@ var
 implementation
 
 {$R *.dfm}
+
+uses Login;
 
 procedure TFormRegistrarJugador.ButtonBuscarImagenClick(Sender: TObject);
 var
@@ -51,21 +54,64 @@ end;
 procedure TFormRegistrarJugador.ButtonInsertarClick(Sender: TObject);
 var
   jpg: TJpegImage;
-  bmp: TBitmap;
-  nick, nombre, pass, mail: string;
+  bmp, bmpDef: TBitmap;
+  nick, nombre, pass, mail, dir, dirfull: string;
+  ingresado: boolean;
+
+  thumbnail : TBitmap;
+  thumbRect : TRect;
+const
+  maxWidth = 200;
+  maxHeight = 150;
 begin
+    nick:= UpperCase(editNick.Text);
+
     jpg:= Tjpegimage.Create;
     jpg.LoadFromFile(EditImagen.Text);
+
     bmp:= TBitmap.Create;
+    bmpDef  := TBitmap.Create;
     bmp.Assign(jpg);
 
-    nick:= UpperCase(editNick.Text);
+    try
+    thumbRect.Left := 0;
+    thumbRect.Top := 0;
+    thumbnail  := TBitmap.Create;
+    thumbnail.Assign(jpg);
+    //bmpDef.SetSize(105,105);
+    // bmpDef.Canvas. StretchDraw(Rect(0, 0, 105, 105), bmp);
+    if thumbnail.Width > thumbnail.Height then
+    begin
+      thumbRect.Right := maxWidth;
+      thumbRect.Bottom := (maxWidth * thumbnail.Height) div thumbnail.Width;
+    end
+    else
+    begin
+      thumbRect.Bottom := maxHeight;
+      thumbRect.Right := (maxHeight * thumbnail.Width) div thumbnail.Height;
+    end;
+    thumbnail.Canvas.StretchDraw(thumbRect, thumbnail) ;
+    //resize image
+    thumbnail.Width := thumbRect.Right;
+    thumbnail.Height := thumbRect.Bottom;
+
+
+    dir := ExpandFileName(GetCurrentDir + '\..\..\');
+    dirfull :=  dir + 'imgs\'+ nick+'.bmp';
+    thumbnail.SaveToFile(dirfull);
+      except
+        on E : Exception do
+      ShowMessage(E.ClassName+' error raised, with message : '+E.Message);
+      end;
+
     nombre:=  editNombre.Text;
     mail:=   EditMail.Text;
-    pass:= editClave.Text;
+    pass:=  editContra.Text;//editContra.Text;
 
-    LA_arbolbinario.AltaJugador(nick,nombre,mail,pass, bmp);
-
+    ingresado:= LA_arbolbinario.AltaJugador(nick,nombre,mail,pass, jpg);
+    if ingresado then ShowMessage('Jugador registrado con exito');
+    FormRegistrarJugador.Hide();
+    //FormLogin.Show();
 end;
 
 procedure TFormRegistrarJugador.FormCreate(Sender: TObject);
@@ -75,5 +121,6 @@ begin
   LO_ArbolBinario.CrearMe_Archivos(MeJugadores, 'CONTROLJUGADORES.CON', 'DATOSJUGADORES.DAT');
   InsertarAdminCuandoMEVacio();
 end;
+
 
 end.

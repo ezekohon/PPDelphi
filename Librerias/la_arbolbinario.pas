@@ -5,16 +5,19 @@ unit la_arbolbinario;
 interface
 
 uses
-  Classes, SysUtils,Graphics, LO_ArbolBinario, Dialogs;
+  Classes, SysUtils,Graphics, LO_ArbolBinario, Dialogs, cryptoUtils, cypher, jpeg;
 
-Function AltaJugador (Nick, Nombre, Mail, password: string; imagen: TBitmap):Boolean;
+  const
+    encryptionKey = 'MAKV2SPBNI99212';
+
+Function AltaJugador (Nick, Nombre, Mail, password: string; imagen: tjpegimage):Boolean;
 function BuscarMail(mail:string):boolean;
 //function GenerarProximoIDusuario():tidusuario;
 Procedure InsertarAdminCuandoMEVacio();
 
 implementation
 
-Function AltaJugador (Nick, Nombre, Mail, password: string; imagen: TBitmap):Boolean;
+Function AltaJugador (Nick, Nombre, Mail, password: string; imagen: tjpegimage):Boolean;
 Var
   PosID, PosNICK:tPosArbol;
   PosJugador: tPosArchi;
@@ -48,13 +51,16 @@ Begin
 
   If not ExisteNICK and not existeMail then //and existe mail = false
   Begin
-    //Inserto en la ultima posicion de Clientes.
+    //Inserto en la ultima posicion de archivo.
     AbrirMe_Archivos(MeJugadores);
     Reg.clave:= ObtenerProximoID_Archivos(MeJugadores); //id autogenerado (hacer metodo aca)
-    reg.password:= password;
+    reg.password:= EncryptStr(password, 3);
     Reg.nick := Nick;
     Reg.nombre:= Nombre;
     Reg.mail:= mail;
+    Reg.estado := Desconectado;
+    reg.fechaAlta := Now;
+    reg.foto := imagen;
 
     BuscarInfoMe_Archivos (MeJugadores,idUsuario,PosJugador); //si no esta me da el ultimo+1. Solo para q me de ultimo+1
     InsertarInfoMe_Archivos (MeJugadores,PosJugador,Reg);
@@ -75,11 +81,15 @@ Begin
     CerrarMe_Indice (MeID);
 
 
-    AltaJugador:=True;
+    result:=True;
     ShowMessage('Insertado' + '  -  posendatos' + inttostr(posJugador) + '  - clave' + reg.clave);
   End
   else
-    ShowMessage('Nick o eMail ya ingresado!');
+  begin
+     ShowMessage('Nick o eMail ya ingresado!');
+     result := false;
+  end;
+
 End;
 
 function BuscarMail(mail:string):boolean;

@@ -1,0 +1,85 @@
+unit Login;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Menus, LO_ArbolBinario, la_arbolbinario,
+    cypher, PantallaAdministrador, UnitRegistrarJugador, PantallaJugador;
+
+type
+  TFormLogin = class(TForm)
+    MainMenu1: TMainMenu;
+    re1: TMenuItem;
+    Label1: TLabel;
+    Label2: TLabel;
+    EditNick: TEdit;
+    EditPassword: TEdit;
+    Button1: TButton;
+    procedure Button1Click(Sender: TObject);
+    procedure re1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FormLogin: TFormLogin;
+const
+    encryptionKey = 'MAKV2SPBNI99212';
+
+implementation
+
+{$R *.dfm}
+
+procedure TFormLogin.Button1Click(Sender: TObject);
+var
+  nick: string;
+  posEnDatos: tposarchi;
+  posIndiceNICK: tposarbol;
+  reg: tRegDatos;
+  pass: string;
+begin
+  //si es usuario comun mandarlo a pantalla principal, si es admin al panel de control
+    AbrirMe_Archivos(MeJugadores);
+    AbrirMe_Indice(MeNick);
+    if BuscarNodo_Indice(MeNick,string.UpperCase(EditNick.Text),posIndiceNick) then //si true es que existe jugador
+    begin
+        posEnDatos := ObtenerInfo_Indice(MeNick,posIndiceNick).PosEnDatos;
+        ObtenerInfoMe_Archivos(MeJUGADORES,posEnDatos,reg);
+        pass := DecryptStr(reg.password, 3) ;
+        if  pass = EditPassword.Text then
+        begin
+              if reg.nick = 'ADMINISTRADOR' then
+              begin
+                  FormLogin.Hide();
+                  FormAdministrador.Show();
+              end
+              else
+              begin
+                  //poner estado en conectado y actualizar fecha de ultimo acceso
+                  ObtenerInfoMe_Archivos(MeJUGADORES,posEnDatos,reg);
+                  reg.estado := Conectado;
+                  reg.fechaUltimaConexion := Now;
+                  ModificarInfoMe_Archivos(MeJUGADORES,posEnDatos,reg);
+                  FormLogin.Hide();
+                  FormJugador.Show();
+              end;
+        end;
+
+    end
+    else
+      ShowMessage ('Jugador no existe o contraseña inválida.');
+
+    CerrarMe_Archivos(MeJUGADORES);
+    Cerrarme_indice(MeNick);
+end;
+
+procedure TFormLogin.re1Click(Sender: TObject);
+begin
+      //FormLogin.Hide();
+      FormRegistrarJugador.Show();
+end;
+
+end.

@@ -6,7 +6,7 @@ unit LO_ArbolBinario; //JUGADORES
 interface
 
 uses SysUtils, Math, Windows, Messages, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Menus, StdCtrls;
+  Dialogs, Menus, StdCtrls,jpeg;
 
 const
   _posnula_arbol = -1;
@@ -28,20 +28,21 @@ type
   tcadena = string[40];
   tposarbol = _posnula_arbol..maxint;
   tposarchi = _posnula_archivo..maxint;
+  tEstadoJuegador = (Conectado = 0,Desconectado = 1,Baja = 2, Bloqueado = 3);
 
 
   //ARCHIVOS  ///////////////////////////////////////
 
   tRegDatos = record
-    nick: string[10];   //10 caracteres en mayus
+    nick: string[20];   //10 caracteres en mayus
     password: string[20];
     clave: tIDusuario;   //es el ID USUARIO
     nombre: string[10];
     fechaAlta: TDateTime ; //sysdate de la fecha alta
-    foto: TBitmap;
+    foto: tjpegimage;
     mail: string[20];
-    estado: char;        //C(conectado)- D(desco)- B(baja) - X(bloqueado por admin)
-    ultimaConexion: TDateTime;
+    estado: tEstadoJuegador;        //C(conectado)- D(desco)- B(baja) - X(bloqueado por admin)
+    fechaUltimaConexion: TDateTime;
   end;
 
   tRegControl = record

@@ -2,7 +2,7 @@ object FormABMJugadores: TFormABMJugadores
   Left = 0
   Top = 0
   Caption = 'ABM Juegadores'
-  ClientHeight = 381
+  ClientHeight = 388
   ClientWidth = 664
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,6 +21,7 @@ object FormABMJugadores: TFormABMJugadores
     Width = 648
     Height = 160
     FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing, goRowSelect]
     TabOrder = 0
   end
   object RadioGroup1: TRadioGroup
@@ -28,7 +29,7 @@ object FormABMJugadores: TFormABMJugadores
     Top = 161
     Width = 648
     Height = 57
-    Caption = 'RadioGroup1'
+    Caption = 'Listados'
     TabOrder = 1
   end
   object RadioListadoGeneral: TRadioButton
@@ -62,5 +63,23 @@ object FormABMJugadores: TFormABMJugadores
     Height = 17
     Caption = 'RadioButton4'
     TabOrder = 5
+  end
+  object ButtonBloquearJugador: TButton
+    Left = 24
+    Top = 24
+    Width = 129
+    Height = 25
+    Caption = 'Bloquear Jugador'
+    TabOrder = 6
+    OnClick = ButtonBloquearJugadorClick
+  end
+  object ButtonDesbloquearJugador: TButton
+    Left = 24
+    Top = 80
+    Width = 129
+    Height = 25
+    Caption = 'Desbloquear Jugador'
+    TabOrder = 7
+    OnClick = ButtonDesbloquearJugadorClick
   end
 end

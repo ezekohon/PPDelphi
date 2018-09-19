@@ -1,0 +1,95 @@
+unit UnitRegistrarJugador;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, LA_arbolbinario, LO_arbolbinario, JPEG,
+  Vcl.StdCtrls, Vcl.ExtDlgs;
+
+type
+  TFormRegistrarJugador = class(TForm)
+    Label1: TLabel;
+    EditNick: TEdit;
+    Label2: TLabel;
+    EditMail: TEdit;
+    Label3: TLabel;
+    EditContra: TEdit;
+    Label4: TLabel;
+    EditNombre: TEdit;
+    Label5: TLabel;
+    EditImagen: TEdit;
+    OpenPictureDialog1: TOpenPictureDialog;
+    ButtonBuscarImagen: TButton;
+    ButtonInsertar: TButton;
+    procedure FormCreate(Sender: TObject);
+    procedure ButtonBuscarImagenClick(Sender: TObject);
+    procedure ButtonInsertarClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FormRegistrarJugador: TFormRegistrarJugador;
+
+implementation
+
+{$R *.dfm}
+
+uses Login;
+
+procedure TFormRegistrarJugador.ButtonBuscarImagenClick(Sender: TObject);
+var
+  dir: string;
+  pic: TBitmap;
+begin
+   OpenPictureDialog1.Execute;
+   dir:= OpenPictureDialog1.FileName;
+   EditImagen.Text := dir;
+end;
+
+procedure TFormRegistrarJugador.ButtonInsertarClick(Sender: TObject);
+var
+  jpg: TJpegImage;
+  bmp: TBitmap;
+  nick, nombre, pass, mail, dir, dirfull: string;
+  ingresado: boolean;
+begin
+    nick:= UpperCase(editNick.Text);
+
+    //bmp:= TBitmap.Create;
+    //bmp.LoadFromFile(EditImagen.Text);
+    bmp.Height := 105;
+    bmp.Width := 105;
+    jpg:= Tjpegimage.Create;
+    jpg.LoadFromFile(EditImagen.Text);
+    jpg.CompressionQuality := 50;
+    jpg.Assign(bmp);
+
+
+    dir := ExpandFileName(GetCurrentDir + '\..\..\');
+    dirfull :=  dir + 'imgs\'+ nick+'.jpg';
+    jpg.SaveToFile(dirfull);
+
+
+    nombre:=  editNombre.Text;
+    mail:=   EditMail.Text;
+    pass:=  editContra.Text;//editContra.Text;
+
+    ingresado:= LA_arbolbinario.AltaJugador(nick,nombre,mail,pass, jpg);
+    if ingresado then ShowMessage('Jugador registrado con exito');
+    FormRegistrarJugador.Hide();
+    //FormLogin.Show();
+end;
+
+procedure TFormRegistrarJugador.FormCreate(Sender: TObject);
+begin
+  LO_ArbolBinario.CrearMe_Indice(MeID, 'CONTROLID.CON', 'DATOSID.DAT');
+  LO_ArbolBinario.CrearMe_Indice(MeNICK, 'CONTROLNICK.CON', 'DATOSNICK.DAT');
+  LO_ArbolBinario.CrearMe_Archivos(MeJugadores, 'CONTROLJUGADORES.CON', 'DATOSJUGADORES.DAT');
+  InsertarAdminCuandoMEVacio();
+end;
+
+end.
