@@ -1,0 +1,35 @@
+program Project1;
+
+uses
+  Vcl.Forms,
+  PantallaAdministrador in 'PantallaAdministrador.pas' {FormAdministrador},
+  UnitRegistrarJugador in 'UnitRegistrarJugador.pas' {FormRegistrarJugador},
+  la_arbolbinario in 'Librerias\la_arbolbinario.pas',
+  lo_arbolbinario in 'Librerias\lo_arbolbinario.pas',
+  lo_pila in 'Librerias\lo_pila.pas',
+  la_pila in 'Librerias\la_pila.pas',
+  lo_colasparciales in 'Librerias\lo_colasparciales.pas',
+  Login in 'Login.pas' {FormLogin},
+  lo_hashabierto in 'Librerias\lo_hashabierto.pas',
+  abmJuegos in 'abmJuegos.pas' {FormAbmJuegos},
+  la_hashabierto in 'Librerias\la_hashabierto.pas',
+  abmJugadores in 'abmJugadores.pas' {FormABMJugadores},
+  CryptoUtils in 'Helpers\CryptoUtils.pas',
+  Cypher in 'Helpers\Cypher.pas',
+  PantallaJugador in 'PantallaJugador.pas' {FormJugador},
+  EditarPerfilJugador in 'HerramientasJugadores\EditarPerfilJugador.pas' {FormEditarPerfilJugador};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TFormLogin, FormLogin);
+  Application.CreateForm(TFormAdministrador, FormAdministrador);
+  Application.CreateForm(TFormRegistrarJugador, FormRegistrarJugador);
+  Application.CreateForm(TFormAbmJuegos, FormAbmJuegos);
+  Application.CreateForm(TFormABMJugadores, FormABMJugadores);
+  Application.CreateForm(TFormJugador, FormJugador);
+  Application.CreateForm(TFormEditarPerfilJugador, FormEditarPerfilJugador);
+  Application.Run;
+end.

@@ -25,6 +25,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure ButtonBuscarImagenClick(Sender: TObject);
     procedure ButtonInsertarClick(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
 
   private
     { Private declarations }
@@ -114,13 +116,30 @@ begin
     //FormLogin.Show();
 end;
 
+procedure TFormRegistrarJugador.FormActivate(Sender: TObject);
+begin
+  AbrirMe_Archivos(MeJugadores);
+  AbrirMe_Indice (MeNick);
+  AbrirMe_Indice (MeID);
+end;
+
 procedure TFormRegistrarJugador.FormCreate(Sender: TObject);
 begin
   LO_ArbolBinario.CrearMe_Indice(MeID, 'CONTROLID.CON', 'DATOSID.DAT');
   LO_ArbolBinario.CrearMe_Indice(MeNICK, 'CONTROLNICK.CON', 'DATOSNICK.DAT');
   LO_ArbolBinario.CrearMe_Archivos(MeJugadores, 'CONTROLJUGADORES.CON', 'DATOSJUGADORES.DAT');
+  AbrirMe_Archivos(MeJugadores);
+  AbrirMe_Indice (MeNick);
+  AbrirMe_Indice (MeID);
   InsertarAdminCuandoMEVacio();
 end;
 
+
+procedure TFormRegistrarJugador.FormDeactivate(Sender: TObject);
+begin
+  CerrarMe_Archivos(MeJugadores);
+  CerrarMe_Indice(MeNick);
+  CerrarMe_Indice(MeID);
+end;
 
 end.

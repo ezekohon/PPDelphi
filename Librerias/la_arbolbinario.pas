@@ -5,7 +5,7 @@ unit la_arbolbinario;
 interface
 
 uses
-  Classes, SysUtils,Graphics, LO_ArbolBinario, Dialogs, cryptoUtils, cypher, jpeg;
+  Classes, SysUtils,Graphics, LO_ArbolBinario, Dialogs, cryptoUtils, cypher, jpeg, lo_hashabierto, lo_dobleenlace;
 
   const
     encryptionKey = 'MAKV2SPBNI99212';
@@ -29,31 +29,31 @@ Var
 Begin
 
   //obtengo ultimo IDusuario
-  AbrirMe_Archivos(MeJugadores);
+  //-AbrirMe_Archivos(MeJugadores);
   ultimoid:= ObtenerUltimoID_Archivos(MeJugadores);
-  CerrarMe_Archivos(MeJugadores);
+  //-CerrarMe_Archivos(MeJugadores);
 
   //Busco en IndiceNick si existe el NICK a cargar...
   AltaJugador:=False;
-  AbrirMe_Indice (MeNick);
+  //-AbrirMe_Indice (MeNick);
   ExisteNICK:= BuscarNodo_Indice (MeNick,Nick,PosNICK);
-  CerrarMe_Indice(MeNick);
+  //-CerrarMe_Indice(MeNick);
 
   //por las dudas busco que no esté, y sino traigo ultima posicion
-  AbrirMe_Indice (MeID);
+  //-AbrirMe_Indice (MeID);
   BuscarNodo_Indice (MeID,ultimoid,PosID);
-  CerrarMe_Indice(MeID);
+  //-CerrarMe_Indice(MeID);
 
   //chequear si email se repite(una funcion aca en LA)
-  AbrirMe_Archivos(MeJugadores);
+  //-AbrirMe_Archivos(MeJugadores);
   ExisteMail := BuscarMail(mail);
   //CerrarMe_Archivos(MeJugadores);
 
   If not ExisteNICK and not existeMail then //and existe mail = false
   Begin
     //Inserto en la ultima posicion de archivo.
-    AbrirMe_Archivos(MeJugadores);
-    Reg.clave:= ObtenerProximoID_Archivos(MeJugadores); //id autogenerado (hacer metodo aca)
+    //-AbrirMe_Archivos(MeJugadores);
+    Reg.clave:= ObtenerProximoID_Archivos(MeJugadores); //id autogenerado.
     reg.password:= EncryptStr(password, 3);
     Reg.nick := Nick;
     Reg.nombre:= Nombre;
@@ -61,24 +61,25 @@ Begin
     Reg.estado := Desconectado;
     reg.fechaAlta := Now;
     reg.foto := imagen;
+    reg.fechaUltimaConexion := Now;
 
     BuscarInfoMe_Archivos (MeJugadores,idUsuario,PosJugador); //si no esta me da el ultimo+1. Solo para q me de ultimo+1
     InsertarInfoMe_Archivos (MeJugadores,PosJugador,Reg);
-    CerrarMe_Archivos(MeJugadores);
+    //-CerrarMe_Archivos(MeJugadores);
 
     //Inserto en Indice NICK en la Posicion devuelta por BuscarNodo_Indice
-    AbrirMe_Indice (MeNICK);
+    //-AbrirMe_Indice (MeNICK);
     N.PosEnDatos:= PosJugador;
     N.clave:= NICK;
     InsertarNodo_Indice (MeNICK,N,PosNICK);
-    CerrarMe_Indice (MeNICK);
+    //-CerrarMe_Indice (MeNICK);
 
     //Inserto en Indice ID
-    AbrirMe_Indice (MeID);
+    //-AbrirMe_Indice (MeID);
     N.PosEnDatos:=PosJugador;
     N.clave:= reg.clave; //el IDUSUARIO
     InsertarNodo_Indice (MeID,N,PosID);
-    CerrarMe_Indice (MeID);
+    //-CerrarMe_Indice (MeID);
 
 
     result:=True;
@@ -99,7 +100,7 @@ var
   i: integer;
 begin
   encontrado:= false;
-  AbrirMe_Archivos(MeJugadores);
+  //-AbrirMe_Archivos(MeJugadores);
   if MeVacio_Archivos(MeJugadores) then
     encontrado:= false
   else
@@ -114,7 +115,7 @@ begin
       end;
   end;
 
-  CerrarMe_Archivos(MeJugadores);
+  //-CerrarMe_Archivos(MeJugadores);
   result:= encontrado;
 end;
 
@@ -133,10 +134,18 @@ end;
 
 Procedure InsertarAdminCuandoMEVacio();
 begin
-  AbrirMe_Archivos(MeJugadores);
+  //-AbrirMe_Archivos(MeJugadores);
   if MeVacio_Archivos(MeJugadores) then
       AltaJugador('ADMINISTRADOR', 'admin', 'admin@admin.com', 'mandrake', nil);
-  CerrarMe_Archivos(MeJugadores);
+  //-CerrarMe_Archivos(MeJugadores);
+end;
+
+
+function tieneCartonesComprados(idJugador:tidUsuario; idJuego:tId; var meCartones:MeDobleEnlace):boolean;
+//dado id de jugador e id de juego, devolver si el jugador tiene cartones comprados del juego
+
+begin
+
 end;
 
 end.

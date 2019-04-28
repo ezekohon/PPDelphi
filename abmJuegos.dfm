@@ -11,7 +11,9 @@ object FormAbmJuegos: TFormAbmJuegos
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnActivate = FormActivate
   OnCreate = FormCreate
+  OnDeactivate = FormDeactivate
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -23,6 +25,7 @@ object FormAbmJuegos: TFormAbmJuegos
     FixedCols = 0
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing, goRowSelect]
     TabOrder = 0
+    OnDblClick = GrillaDblClick
   end
   object PanelABM: TPanel
     Left = 8
@@ -80,6 +83,13 @@ object FormAbmJuegos: TFormAbmJuegos
       Height = 13
       Caption = 'Nombre Evento'
     end
+    object Label3: TLabel
+      Left = 41
+      Top = 104
+      Width = 76
+      Height = 13
+      Caption = 'Fecha de Juego'
+    end
     object EditValor: TEdit
       Left = 144
       Top = 56
@@ -93,6 +103,15 @@ object FormAbmJuegos: TFormAbmJuegos
       Width = 121
       Height = 21
       TabOrder = 0
+    end
+    object DateTimePicker1: TDateTimePicker
+      Left = 144
+      Top = 104
+      Width = 121
+      Height = 21
+      Date = 43569.735605625000000000
+      Time = 43569.735605625000000000
+      TabOrder = 2
     end
   end
   object PanelGuardar: TPanel

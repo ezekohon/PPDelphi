@@ -1,4 +1,4 @@
-unit lo_colasparciales;
+unit lo_colasparciales;    //TIRADAS
 
 interface
 

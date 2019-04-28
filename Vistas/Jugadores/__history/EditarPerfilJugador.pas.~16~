@@ -1,0 +1,80 @@
+unit EditarPerfilJugador;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, LO_ArbolBinario, Vcl.ExtDlgs,
+  Vcl.StdCtrls;
+
+type
+  TFormEditarPerfilJugador = class(TForm)
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    EditNick: TEdit;
+    EditMail: TEdit;
+    EditContra: TEdit;
+    EditNombre: TEdit;
+    EditImagen: TEdit;
+    ButtonBuscarImagen: TButton;
+    ButtonInsertar: TButton;
+    OpenPictureDialog1: TOpenPictureDialog;
+    procedure FormShow(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
+    procedure ButtonInsertarClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    JugadorActual: tRegDatos;
+  end;
+
+var
+  FormEditarPerfilJugador: TFormEditarPerfilJugador;
+
+implementation
+
+{$R *.dfm}
+
+procedure TFormEditarPerfilJugador.ButtonInsertarClick(Sender: TObject);
+var
+  PosID, PosNICK:tPosArbol;
+  posEnDatos: tposarchi;
+   reg: tRegDatos;
+begin
+  //BuscarNodo_Indice (MeNick,JugadorActual.nick,PosNICK);
+  BuscarNodo_Indice(MeID,JugadorActual.clave,posID);
+  posEnDatos := ObtenerInfo_Indice(MeID,posID).PosEnDatos;
+  ObtenerInfoMe_Archivos(MeJUGADORES,posEnDatos,reg);
+end;
+
+procedure TFormEditarPerfilJugador.FormActivate(Sender: TObject);
+begin
+  AbrirMe_Archivos(MeJugadores);
+  AbrirMe_Indice (MeNick);
+  AbrirMe_Indice (MeID);
+end;
+
+procedure TFormEditarPerfilJugador.FormDeactivate(Sender: TObject);
+begin
+    CerrarMe_Archivos(MeJugadores);
+    CerrarMe_Indice(MeNick);
+    CerrarMe_Indice(MeID);
+end;
+
+procedure TFormEditarPerfilJugador.FormShow(Sender: TObject);
+begin
+
+
+  EditNick.Text := JugadorActual.nick;
+  EditMail.Text := JugadorActual.mail;
+  EditNombre.Text := JugadorActual.nombre;
+  //EditContra.Text := JugadorActual.password;
+  //EditImagen.Text := JugadorActual.foto.ToString;
+end;
+
+end.

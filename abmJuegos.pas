@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, Vcl.StdCtrls, Vcl.ExtCtrls,
-  Vcl.Menus, lo_hashabierto, RTTI;
+  Vcl.Menus, lo_hashabierto, RTTI, DetalleJuego, Vcl.ComCtrls;
 
 type
   TFormAbmJuegos = class(TForm)
@@ -22,10 +22,12 @@ type
     Label2: TLabel;
     Label1: TLabel;
     EditNombreEvento: TEdit;
+    Label3: TLabel;
+    DateTimePicker1: TDateTimePicker;
 
     //propios
-    procedure AltaJuego(nombreEvento:string; valor:real);
-    procedure ModificarJuego(nombreEvento:string; valor:real);
+    procedure AltaJuego(nombreEvento:string; valor:real; fecha:tdatetime);
+    procedure ModificarJuego(nombreEvento:string; valor:real; fecha:tdatetime);
     procedure LimpiarCampos();
     procedure PonerEnEstadoInicial();
     procedure CargarGrilla();
@@ -40,6 +42,9 @@ type
     procedure ButtonCancelarClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ButtonEliminarClick(Sender: TObject);
+    procedure GrillaDblClick(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -92,10 +97,10 @@ begin
                                 ClaveAux +'?'), 'Eliminando juego',
                                   MB_ICONQUESTION OR MB_YESNO ) = ID_YES then
       begin
-      AbrirMe_Hash(MeJuego);
+      //-AbrirMe_Hash(MeJuego);
       if BuscarHash (MeJuego,ClaveAux,Pos) then  //deberia ser siempre true
          EliminarHash(MeJuego,Pos);
-      CerrarMe_Hash(MeJuego);
+      //-CerrarMe_Hash(MeJuego);
       end;
 
     end;
@@ -123,13 +128,15 @@ procedure TFormAbmJuegos.ButtonGuardarClick(Sender: TObject);
 var
   nEvento: nombreEventoHash;
   valor: real;
+  fecha: tdatetime;
 begin
   nEvento:= UpperCase(EditnombreEvento.text);
   valor:= StrToFloat (editValor.text);
+  fecha:= datetimepicker1.DateTime;
   if (AccionActual = 'A') then
-     AltaJuego(nEvento, valor)
+     AltaJuego(nEvento, valor, fecha)
   else
-    ModificarJuego(nEvento, valor);
+    ModificarJuego(nEvento, valor,fecha);
 
   CargarGrilla;
 end;
@@ -149,7 +156,7 @@ begin
   ClaveAux:=Grilla.Cells[0,Grilla.Row];
   If (ClaveAux<>'') and (Grilla.Row>0) then
   begin
-    AbrirMe_Hash(MeJuego);
+    //-AbrirMe_Hash(MeJuego);
     If BuscarHash (MeJuego,ClaveAux,Pos) then
     begin
       CapturarInfoHash(MeJuego,Pos,Reg);
@@ -157,10 +164,15 @@ begin
       EditValor.text := FloatToStr(reg.ValorVenta);
       posmodificar:= pos;
     end;
-    CerrarMe_Hash(MeJuego);
+    //-CerrarMe_Hash(MeJuego);
   end;
 
   //buscar el reg seleccionado en la grilla y ponerlo en los campos
+end;
+
+procedure TFormAbmJuegos.FormActivate(Sender: TObject);
+begin
+    AbrirMe_Hash(MeJuego);
 end;
 
 procedure TFormAbmJuegos.FormCreate(Sender: TObject);
@@ -168,21 +180,41 @@ begin
   CrearMe_Hash(MeJuego);
 end;
 
+procedure TFormAbmJuegos.FormDeactivate(Sender: TObject);
+begin
+    CerrarMe_Hash(MeJuego);
+end;
+
 procedure TFormAbmJuegos.FormShow(Sender: TObject);
 begin
+  AbrirMe_Hash(MeJuego);
   CargarGrilla;
 end;
 
-procedure TFormAbmJuegos.AltaJuego(nombreEvento:string; valor:real);
+procedure TFormAbmJuegos.GrillaDblClick(Sender: TObject);
+var
+  nombreEvento: string;
+  pos: tPosHash;
+  reg: tRegDatosHash;
+begin
+  nombreEvento := Grilla.Cells[0, grilla.Row];
+  BuscarHash(MeJuego,nombreEvento,pos);
+  CapturarInfoHash(MeJuego,pos,reg);
+  FormDetalleJuego.JuegoActual := reg;
+  FormDetalleJuego.ShowModal;
+end;
+
+procedure TFormAbmJuegos.AltaJuego(nombreEvento:string; valor:real; fecha:tdatetime);
 var
    reg:tRegDatosHash;
    pos: tPosHash;
 begin
-   AbrirMe_Hash(MeJuego);
+   //-AbrirMe_Hash(MeJuego);
 
    reg.nombreEvento := nombreEvento;
    reg.valorVenta := valor;
-   reg.estado := tEstadoJuego.N;
+   reg.fechaEvento := fecha;
+   reg.estado := tEstadoJuego.NoJugado;
    reg.ocupado := True;
    reg.prox := _POSNULA;
    reg.id := ObtenerProximoID(MeJuego);
@@ -210,23 +242,24 @@ begin
         begin
           Showmessage('La clave que intenta guardar ya existe.');
         end;
-      CerrarMe_Hash(MeJuego);
+      //-CerrarMe_Hash(MeJuego);
     end;
 end;
 
-procedure TFormAbmJuegos.ModificarJuego(nombreEvento:string; valor:real);
+procedure TFormAbmJuegos.ModificarJuego(nombreEvento:string; valor:real; fecha: tdatetime);
 var
    reg:tRegDatosHash;
    pos: tPosHash;
 begin
-  AbrirMe_Hash(MeJuego);
+  //-AbrirMe_Hash(MeJuego);
   CapturarInfoHash(MeJuego,PosModificar,Reg);
   reg.nombreEvento := nombreEvento;
   reg.valorVenta := valor;
+  reg.fechaEvento := fecha;
 
   InsertarHash (MeJuego,Reg,PosModificar);
 
-  CerrarMe_Hash(MeJuego);
+  //-CerrarMe_Hash(MeJuego);
 
 end;
 
@@ -235,7 +268,7 @@ var
   pos: tPosHash;
   reg: tRegDatosHash;
 begin
-  AbrirMe_Hash(MeJuego);
+  //-AbrirMe_Hash(MeJuego);
   If Total (MeJuego)>0 then
     Begin
       Begin
@@ -262,11 +295,11 @@ var
 begin
 
       ret:= false;
-     AbrirMe_Hash(MeJuego);
+     //-AbrirMe_Hash(MeJuego);
      CapturarInfoHash(MeJuego,PosModificar,Reg);
      if reg.TotalCartonesVendidos > 0 then
       ret:= true;
-     CerrarMe_Hash(MeJuego);
+     //-CerrarMe_Hash(MeJuego);
 
      result:= ret;
 end;

@@ -30,6 +30,8 @@ type
     procedure FormShow(Sender: TObject);
     procedure ButtonBloquearJugadorClick(Sender: TObject);
     procedure ButtonDesbloquearJugadorClick(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
 
 
 
@@ -60,8 +62,8 @@ begin
                                 grilla.Cells[2,grilla.Row] +'?'), 'Bloqueo jugador',
                                   MB_ICONQUESTION OR MB_YESNO ) = ID_YES then
       begin
-          AbrirMe_Archivos(MeJugadores);
-          AbrirMe_Indice(MeID);
+          //-AbrirMe_Archivos(MeJugadores);
+          //-AbrirMe_Indice(MeID);
           if BuscarNodo_Indice(MeID,clave,posIndiceID) then //simpre true, para buscar la posIndiceID
           begin
               posEnDatos := ObtenerInfo_Indice(MeID,posIndiceID).PosEnDatos;
@@ -69,8 +71,8 @@ begin
               reg.estado := Bloqueado;
               ModificarInfoMe_Archivos(MeJUGADORES,posEnDatos,reg);
           end;
-          CerrarMe_Archivos(MeJUGADORES);
-          Cerrarme_indice(MeID);
+          //-CerrarMe_Archivos(MeJUGADORES);
+          //-Cerrarme_indice(MeID);
           CargarGrilla;
       end;
   end
@@ -92,8 +94,8 @@ begin
                                 grilla.Cells[2,grilla.Row] +'?'), 'Desbloqueo jugador',
                                   MB_ICONQUESTION OR MB_YESNO ) = ID_YES then
       begin
-          AbrirMe_Archivos(MeJugadores);
-          AbrirMe_Indice(MeID);
+          //-AbrirMe_Archivos(MeJugadores);
+          //-AbrirMe_Indice(MeID);
           if BuscarNodo_Indice(MeID,clave,posIndiceID) then //simpre true, para buscar la posIndiceID
           begin
               posEnDatos := ObtenerInfo_Indice(MeID,posIndiceID).PosEnDatos;
@@ -101,8 +103,8 @@ begin
               reg.estado := Desconectado;
               ModificarInfoMe_Archivos(MeJUGADORES,posEnDatos,reg);
           end;
-          CerrarMe_Archivos(MeJUGADORES);
-          Cerrarme_indice(MeID);
+          //-CerrarMe_Archivos(MeJUGADORES);
+          //-Cerrarme_indice(MeID);
           CargarGrilla;
       end;
   end
@@ -117,7 +119,7 @@ var
   reg: tRegDatos;
 begin
   SetearHeaders;
-  AbrirMe_Archivos(MeJugadores);
+  //-AbrirMe_Archivos(MeJugadores);
 
   if RadioListadoGeneral.Checked then
   begin
@@ -192,12 +194,26 @@ Begin
 
 End;
 
+procedure TFormABMJugadores.FormActivate(Sender: TObject);
+begin
+    AbrirMe_Archivos(MeJugadores);
+    AbrirMe_Indice(MeID);
+end;
+
 procedure TFormABMJugadores.FormCreate(Sender: TObject);
 begin
   LO_ArbolBinario.CrearMe_Indice(MeID, 'CONTROLID.CON', 'DATOSID.DAT');
   LO_ArbolBinario.CrearMe_Indice(MeNICK, 'CONTROLNICK.CON', 'DATOSNICK.DAT');
   LO_ArbolBinario.CrearMe_Archivos(MeJugadores, 'CONTROLJUGADORES.CON', 'DATOSJUGADORES.DAT');
+  AbrirMe_Archivos(MeJugadores);
+  AbrirMe_Indice(MeID);
   InsertarAdminCuandoMEVacio();
+end;
+
+procedure TFormABMJugadores.FormDeactivate(Sender: TObject);
+begin
+  CerrarMe_Archivos(MeJUGADORES);
+  Cerrarme_indice(MeID);
 end;
 
 procedure TFormABMJugadores.FormShow(Sender: TObject);

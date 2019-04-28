@@ -1,4 +1,4 @@
-unit lo_hashabierto;
+unit lo_hashabierto; //JUEGO
 
 interface
 
@@ -20,13 +20,13 @@ type
  nombreEventoHash = String[20];  //clave de busqueda y hashing
  tID = String[10];
  tPosHash= _POSNULA.._maxHash;
- tEstadoJuego = (N = 0,J = 1,F = 2);
+ tEstadoJuego = (NoJugado = 0,Jugando = 1,Finalizado = 2);
 
  tRegDatosHash = record
     ID: tID;   //ultimo id interno del control
     nombreEvento: nombreEventoHash; //clave de busqueda y hashing
     posBolillero: integer;
-    fechaEvento: tDate;  //mandarle sysdate
+    fechaEvento: tDateTime;  //ingresada por admin
     estado: tEstadoJuego; //N(no activado), J(jugando), F(finalizado)
     ValorVenta: real;
     TotalCartonesVendidos: 0..100;
@@ -62,6 +62,7 @@ end;
   Procedure CrearMe_Hash(var MeHash:tMeHash);
 
   Procedure InsertarHash(var MeHash:tMeHash; RDEntrante: tRegDatosHash;pos:tPosHash);
+  Procedure ModificarHash (var me:tMeHash; pos:tPosHash; RH:tRegDatosHash);
 
   Function HashVacio(MeHash:tMeHash):boolean;
   Function CantMaxima (MeHash: tMeHash): Integer;
@@ -401,6 +402,12 @@ Begin
   Proximo:= RD.Prox;
 End;
 {******************************************************************************}
+Procedure ModificarHash (var me:tMeHash; pos:tPosHash; RH:tRegDatosHash);
+begin
+      seek(me.d,pos);
+      write (me.d,RH);
+end;
+
 
 Function ObtenerUltimoID(var me:tMeHash):tid;
 var

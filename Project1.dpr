@@ -1,6 +1,11 @@
 program Project1;
 
 uses
+  madExcept,
+  madLinkDisAsm,
+  madListHardware,
+  madListProcesses,
+  madListModules,
   Vcl.Forms,
   PantallaAdministrador in 'PantallaAdministrador.pas' {FormAdministrador},
   UnitRegistrarJugador in 'UnitRegistrarJugador.pas' {FormRegistrarJugador},
@@ -16,7 +21,15 @@ uses
   abmJugadores in 'abmJugadores.pas' {FormABMJugadores},
   CryptoUtils in 'Helpers\CryptoUtils.pas',
   Cypher in 'Helpers\Cypher.pas',
-  PantallaJugador in 'PantallaJugador.pas' {FormJugador};
+  PantallaJugador in 'PantallaJugador.pas' {FormJugador},
+  EditarPerfilJugador in 'Vistas\Jugadores\EditarPerfilJugador.pas' {FormEditarPerfilJugador},
+  JugadoresActivos in 'Vistas\Jugadores\JugadoresActivos.pas' {FormJugadoresActivos},
+  DetalleJuego in 'Vistas\Juegos\DetalleJuego.pas' {FormDetalleJuego},
+  lo_dobleEnlace in 'Librerias\lo_dobleEnlace.pas',
+  CalendarioJuegos in 'Vistas\Jugadores\CalendarioJuegos.pas' {FormCalendarioJuegos},
+  ComprarCartones in 'Vistas\Jugadores\ComprarCartones.pas' {FormComprarCartones},
+  la_dobleEnlace in 'Librerias\la_dobleEnlace.pas',
+  Globals in 'Helpers\Globals.pas';
 
 {$R *.res}
 
@@ -29,5 +42,10 @@ begin
   Application.CreateForm(TFormAbmJuegos, FormAbmJuegos);
   Application.CreateForm(TFormABMJugadores, FormABMJugadores);
   Application.CreateForm(TFormJugador, FormJugador);
+  Application.CreateForm(TFormEditarPerfilJugador, FormEditarPerfilJugador);
+  Application.CreateForm(TFormJugadoresActivos, FormJugadoresActivos);
+  Application.CreateForm(TFormDetalleJuego, FormDetalleJuego);
+  Application.CreateForm(TFormCalendarioJuegos, FormCalendarioJuegos);
+  Application.CreateForm(TFormComprarCartones, FormComprarCartones);
   Application.Run;
 end.

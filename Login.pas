@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Menus, LO_ArbolBinario, la_arbolbinario,
-    cypher, PantallaAdministrador, UnitRegistrarJugador, PantallaJugador;
+    cypher, PantallaAdministrador, UnitRegistrarJugador, PantallaJugador, Globals, lo_dobleEnlace;
 
 type
   TFormLogin = class(TForm)
@@ -18,6 +18,9 @@ type
     Button1: TButton;
     procedure Button1Click(Sender: TObject);
     procedure re1Click(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -42,8 +45,8 @@ var
   pass: string;
 begin
   //si es usuario comun mandarlo a pantalla principal, si es admin al panel de control
-    AbrirMe_Archivos(MeJugadores);
-    AbrirMe_Indice(MeNick);
+    //-AbrirMe_Archivos(MeJugadores);
+    //-AbrirMe_Indice(MeNick);
     if BuscarNodo_Indice(MeNick,string.UpperCase(EditNick.Text),posIndiceNick) then //si true es que existe jugador
     begin
         posEnDatos := ObtenerInfo_Indice(MeNick,posIndiceNick).PosEnDatos;
@@ -63,11 +66,9 @@ begin
                   reg.fechaUltimaConexion := Now;
                   ModificarInfoMe_Archivos(MeJUGADORES,posEnDatos,reg);
                   FormJugador.JugadorActual := reg;
-                  FormLogin.Hide();
-                  FormJugador.Show();
-
-
-
+                  Globals.JugadorLogueado := reg;
+                  //FormLogin.Hide();
+                  FormJugador.ShowModal;
               end;
         end;
 
@@ -75,6 +76,24 @@ begin
     else
       ShowMessage ('Jugador no existe o contraseña inválida.');
 
+    //-CerrarMe_Archivos(MeJUGADORES);
+    //-Cerrarme_indice(MeNick);
+end;
+
+procedure TFormLogin.FormActivate(Sender: TObject);
+begin
+    AbrirMe_Archivos(MeJugadores);
+    AbrirMe_Indice(MeNick);
+end;
+
+procedure TFormLogin.FormCreate(Sender: TObject);
+begin
+   CrearMe(MeCartones);
+   //centralizar aca la creacion de MEs? total todos los forms se crean en arranque
+end;
+
+procedure TFormLogin.FormDeactivate(Sender: TObject);
+begin
     CerrarMe_Archivos(MeJUGADORES);
     Cerrarme_indice(MeNick);
 end;
