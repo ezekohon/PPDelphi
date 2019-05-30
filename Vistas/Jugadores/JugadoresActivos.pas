@@ -9,8 +9,7 @@ uses
 type
   TFormJugadoresActivos = class(TForm)
     grilla: TStringGrid;
-    procedure FormActivate(Sender: TObject);
-    procedure FormDeactivate(Sender: TObject);
+  
 
 
         //propios
@@ -32,18 +31,6 @@ var
 implementation
 
 {$R *.dfm}
-
-procedure TFormJugadoresActivos.FormActivate(Sender: TObject);
-begin
-   AbrirMe_Archivos(MeJugadores);
-   AbrirMe_Indice(MeID);
-end;
-
-procedure TFormJugadoresActivos.FormDeactivate(Sender: TObject);
-begin
-  CerrarMe_Archivos(MeJUGADORES);
-  Cerrarme_indice(MeID);
-end;
 
 procedure TFormJugadoresActivos.FormShow(Sender: TObject);
 begin

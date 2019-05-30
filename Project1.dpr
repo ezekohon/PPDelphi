@@ -24,12 +24,19 @@ uses
   PantallaJugador in 'PantallaJugador.pas' {FormJugador},
   EditarPerfilJugador in 'Vistas\Jugadores\EditarPerfilJugador.pas' {FormEditarPerfilJugador},
   JugadoresActivos in 'Vistas\Jugadores\JugadoresActivos.pas' {FormJugadoresActivos},
-  DetalleJuego in 'Vistas\Juegos\DetalleJuego.pas' {FormDetalleJuego},
   lo_dobleEnlace in 'Librerias\lo_dobleEnlace.pas',
   CalendarioJuegos in 'Vistas\Jugadores\CalendarioJuegos.pas' {FormCalendarioJuegos},
   ComprarCartones in 'Vistas\Jugadores\ComprarCartones.pas' {FormComprarCartones},
   la_dobleEnlace in 'Librerias\la_dobleEnlace.pas',
-  Globals in 'Helpers\Globals.pas';
+  Globals in 'Helpers\Globals.pas',
+  DetalleJuego in 'Vistas\Jugadores\DetalleJuego.pas' {FormDetalleJuego},
+  EjecucionJuegoAdmin in 'Vistas\Administrador\EjecucionJuegoAdmin.pas' {EjecucionJuegoAdminForm},
+  PruebaCartones in 'Vistas\Pruebas\PruebaCartones.pas' {FormPruebaCartones},
+  BolillasRestantes in 'Vistas\Administrador\BolillasRestantes.pas' {FormBolillasRestantes},
+  BolillasSacadas in 'Vistas\Administrador\BolillasSacadas.pas' {FormBolillasSacadas},
+  FichaJugador in 'Vistas\Administrador\FichaJugador.pas' {FormFichaJugador},
+  lo_arboltrinario in 'Librerias\lo_arboltrinario.pas',
+  la_arboltrinario in 'Librerias\la_arboltrinario.pas';
 
 {$R *.res}
 
@@ -44,8 +51,13 @@ begin
   Application.CreateForm(TFormJugador, FormJugador);
   Application.CreateForm(TFormEditarPerfilJugador, FormEditarPerfilJugador);
   Application.CreateForm(TFormJugadoresActivos, FormJugadoresActivos);
-  Application.CreateForm(TFormDetalleJuego, FormDetalleJuego);
   Application.CreateForm(TFormCalendarioJuegos, FormCalendarioJuegos);
   Application.CreateForm(TFormComprarCartones, FormComprarCartones);
+  Application.CreateForm(TFormDetalleJuego, FormDetalleJuego);
+  Application.CreateForm(TEjecucionJuegoAdminForm, EjecucionJuegoAdminForm);
+  Application.CreateForm(TFormPruebaCartones, FormPruebaCartones);
+  Application.CreateForm(TFormBolillasRestantes, FormBolillasRestantes);
+  Application.CreateForm(TFormBolillasSacadas, FormBolillasSacadas);
+  Application.CreateForm(TFormFichaJugador, FormFichaJugador);
   Application.Run;
 end.

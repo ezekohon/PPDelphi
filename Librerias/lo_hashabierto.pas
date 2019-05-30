@@ -3,7 +3,7 @@ unit lo_hashabierto; //JUEGO
 interface
 
 uses SysUtils, Math, Windows, Messages, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Menus, StdCtrls;
+  Dialogs, Menus, StdCtrls, Globals;
 
 const
   _CategMin='A';
@@ -11,16 +11,21 @@ const
   _fila = 60;
   _POSNULA = -1;
   _RUTA= 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\';
-  _cobertura_de_venta= 15;
+
   _ARCHIVO_DATOS = 'JUEGOS.DAT';
   _ARCHIVO_CONTROL = 'JUEGOS.CON';
   _PremioLinea = 3;
 
 type
  nombreEventoHash = String[20];  //clave de busqueda y hashing
- tID = String[10];
+ tID = integer;//String[10];
  tPosHash= _POSNULA.._maxHash;
- tEstadoJuego = (NoJugado = 0,Jugando = 1,Finalizado = 2);
+ tEstadoJuego = (NoActivado = 0,Jugando = 1,Finalizado = 2); //Solo puede haber una en estado Jugando (?
+ tPremiosEntregados = record
+   tipoPremio: tTipoPremio;
+   entregado: boolean;
+ end;
+ arrPremiosEntregados = array[0..7] of tPremiosEntregados;
 
  tRegDatosHash = record
     ID: tID;   //ultimo id interno del control
@@ -35,10 +40,10 @@ type
     PorcentajePremioCruz: integer;
     PorcentajePremioCuadradoChico: integer;
     PorcentajePremioCuadradoGrande: integer;
-    PozoAcumulado: integer;
+    PozoAcumulado: real;   //cambiado a real
     ocupado:Boolean;
     Ant,Prox:tPosHash;
-
+    arrPremiosEntregados: arrPremiosEntregados;
     end;
 
  tRegControlHash =  record
@@ -140,6 +145,7 @@ var
     RD:tRegDatosHash;
     x:integer;
     ioD,ioC:integer;
+
 begin
 
   assign(MeHash.D,_RUTA + _ARCHIVO_DATOS);
@@ -153,6 +159,7 @@ begin
       rd.nombreEvento:='';
 
       rd.ocupado:=false;
+
       For x:=1 to _maxHash do
       Begin
        seek(MeHash.D,x-1);
@@ -163,7 +170,8 @@ begin
       RC.total:=0;
       RC.borrados:=_POSNULA;
       RC.ultimo :=_POSNULA;
-      RC.ultimoIDinterno := '0';
+      RC.ultimoIDinterno := 0;//'0';
+
 
       write(MeHash.C,rc);
 
@@ -424,7 +432,7 @@ var
 begin
    seek(me.C,0);
    read(me.c,rc);
-   result:= inttostr(strtoint(rc.ultimoIDinterno)+1);
+   result:= (rc.ultimoIDinterno)+1;//inttostr(strtoint(rc.ultimoIDinterno)+1);
 end;
 
 end.

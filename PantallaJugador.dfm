@@ -23,6 +23,20 @@ object FormJugador: TFormJugador
     Width = 105
     Height = 105
   end
+  object Label1: TLabel
+    Left = 176
+    Top = 100
+    Width = 96
+    Height = 13
+    Caption = 'PARTIDA EN JUEGO'
+  end
+  object StringGrid1: TStringGrid
+    Left = 152
+    Top = 128
+    Width = 320
+    Height = 120
+    TabOrder = 0
+  end
   object MainMenu1: TMainMenu
     Left = 144
     Top = 24
@@ -44,6 +58,13 @@ object FormJugador: TFormJugador
     object SalirMenuItem: TMenuItem
       Caption = 'Salir'
       OnClick = SalirMenuItemClick
+    end
+    object Pruebas1: TMenuItem
+      Caption = 'Pruebas'
+      object CARTONES1: TMenuItem
+        Caption = 'CARTONES'
+        OnClick = CARTONES1Click
+      end
     end
   end
 end

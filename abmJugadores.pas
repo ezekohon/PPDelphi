@@ -30,8 +30,8 @@ type
     procedure FormShow(Sender: TObject);
     procedure ButtonBloquearJugadorClick(Sender: TObject);
     procedure ButtonDesbloquearJugadorClick(Sender: TObject);
-    procedure FormActivate(Sender: TObject);
-    procedure FormDeactivate(Sender: TObject);
+
+
 
 
 
@@ -194,11 +194,7 @@ Begin
 
 End;
 
-procedure TFormABMJugadores.FormActivate(Sender: TObject);
-begin
-    AbrirMe_Archivos(MeJugadores);
-    AbrirMe_Indice(MeID);
-end;
+
 
 procedure TFormABMJugadores.FormCreate(Sender: TObject);
 begin
@@ -210,11 +206,7 @@ begin
   InsertarAdminCuandoMEVacio();
 end;
 
-procedure TFormABMJugadores.FormDeactivate(Sender: TObject);
-begin
-  CerrarMe_Archivos(MeJUGADORES);
-  Cerrarme_indice(MeID);
-end;
+
 
 procedure TFormABMJugadores.FormShow(Sender: TObject);
 begin

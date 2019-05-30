@@ -1,0 +1,106 @@
+unit BolillasRestantes;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, lo_pila;
+
+type
+  TFormBolillasRestantes = class(TForm)
+    grilla: TStringGrid;
+    procedure CargarGrilla();      //ANDA BIEN.
+    Procedure SetearHeaders();
+    Procedure AgregarReglon(RD: tipodato; IndexRenglon: Integer);
+    procedure LimpiarGrilla();
+    procedure FormShow(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FormBolillasRestantes: TFormBolillasRestantes;
+
+implementation
+
+{$R *.dfm}
+
+procedure TFormBolillasRestantes.CargarGrilla();
+var
+  i: Integer;
+  reg, raux: tipodato;
+  arr: array of Integer;
+begin
+  SetearHeaders;
+  i := 1;
+  while not pilaVacia(MeBOLILLERO) do
+  begin
+    tope(MeBOLILLERO, reg);
+    desapilar(MeBOLILLERO);
+   
+    SetLength(arr, Length(arr) + 1);
+    arr[Length(arr) - 1] := reg.Numero;
+
+    AgregarReglon(reg, i);
+    i := i + 1;
+  end;
+
+  for i := High(arr) downto Low(arr) do
+  begin
+    raux.Numero := arr[i];
+    apilar(MeBOLILLERO, raux);
+  end;
+end;
+
+procedure TFormBolillasRestantes.FormPaint(Sender: TObject);
+begin
+OutputDebugString(PChar('TFormBolillasRestantes.FormPaint'));
+
+end;
+
+procedure TFormBolillasRestantes.FormShow(Sender: TObject);
+begin
+  OutputDebugString(PChar('TFormBolillasRestantes.FormShow'));
+  limpiarGrilla;
+     CargarGrilla;
+end;
+
+Procedure TFormBolillasRestantes.SetearHeaders();
+Begin
+  with grilla do
+  Begin
+    // Título de las columnas
+    ColWidths[0] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
+
+    Cells[0, 0] := 'BOLILLA';
+
+  End;
+End;
+
+Procedure TFormBolillasRestantes.AgregarReglon(RD: tipodato;
+  IndexRenglon: Integer);
+Begin
+
+  with grilla do
+  Begin
+    Cells[0, IndexRenglon] := IntToStr(RD.Numero);
+
+    FixedRows := 1;
+  End;
+
+End;
+
+procedure TFormBolillasRestantes.LimpiarGrilla();
+var
+  I: Integer;
+begin
+  for I := 0 to grilla.ColCount - 1 do
+    grilla.Cols[I].Clear;
+  grilla.RowCount := 1;
+end;
+
+end.

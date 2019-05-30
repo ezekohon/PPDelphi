@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, LO_ArbolBinario, Vcl.ExtCtrls, Vcl.Menus, EditarPerfilJugador,
-   JugadoresActivos, CalendarioJuegos, lo_dobleenlace, la_dobleEnlace, lo_hashabierto;
+   JugadoresActivos, CalendarioJuegos, lo_dobleEnlace, lo_hashabierto, PruebaCartones,
+  Vcl.StdCtrls, Vcl.Grids;
 
 type
   TFormJugador = class(TForm)
@@ -16,6 +17,10 @@ type
     EditarPerfil2: TMenuItem;
     Verjugadoresconectados1: TMenuItem;
     CalendariodeJuegos1: TMenuItem;
+    Pruebas1: TMenuItem;
+    CARTONES1: TMenuItem;
+    StringGrid1: TStringGrid;
+    Label1: TLabel;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure SalirMenuItemClick(Sender: TObject);
@@ -24,6 +29,7 @@ type
   
     procedure CalendariodeJuegos1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure CARTONES1Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -43,6 +49,11 @@ implementation
 procedure TFormJugador.CalendariodeJuegos1Click(Sender: TObject);
 begin
   FormCalendarioJuegos.ShowModal;
+end;
+
+procedure TFormJugador.CARTONES1Click(Sender: TObject);
+begin
+      FormPruebaCartones.ShowModal;
 end;
 
 procedure TFormJugador.EditarPerfil1Click(Sender: TObject);
@@ -91,9 +102,10 @@ begin
 
    AbrirMe_Archivos(MeJugadores);
    AbrirMe_Indice(MeID);
+   AbrirMe_Indice(MeNICK);
     AbrirMe(MeCartones);
     AbrirMe_Hash(MeJuego);
-     OutputDebugString(PChar('Abro MES'));
+  //   OutputDebugString(PChar('Abro MES'));
 end;
 
 procedure TFormJugador.SalirMenuItemClick(Sender: TObject);

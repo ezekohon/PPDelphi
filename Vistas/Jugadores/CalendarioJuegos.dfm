@@ -19,7 +19,9 @@ object FormCalendarioJuegos: TFormCalendarioJuegos
     Top = 8
     Width = 537
     Height = 223
+    FixedCols = 0
     TabOrder = 0
     OnDblClick = grillaDblClick
+    OnDrawCell = grillaDrawCell
   end
 end

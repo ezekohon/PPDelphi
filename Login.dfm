@@ -15,6 +15,7 @@ object FormLogin: TFormLogin
   OnActivate = FormActivate
   OnCreate = FormCreate
   OnDeactivate = FormDeactivate
+  OnKeyPress = FormKeyPress
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -37,6 +38,7 @@ object FormLogin: TFormLogin
     Width = 121
     Height = 21
     TabOrder = 0
+    Text = 'administrador'
   end
   object EditPassword: TEdit
     Left = 88
@@ -45,6 +47,7 @@ object FormLogin: TFormLogin
     Height = 21
     PasswordChar = '*'
     TabOrder = 1
+    Text = 'mandrake'
   end
   object Button1: TButton
     Left = 64

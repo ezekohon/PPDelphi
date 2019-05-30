@@ -26,14 +26,16 @@ type
 
     tRegControl_DE = record
       ultimoIdInterno: LongInt; //se autoincrementa(? inicial en 0
-      idJuego: String[10];  //de juegos.dat (lo_hashabierto)
+      //idJuego: String[10];  //de juegos.dat (lo_hashabierto)
       primero,ultimo:  tPos;
       borrado: tPos;
       cantidad: integer;
     end;
 
     tRegDatos_DE = record
-        idCarton : longInt; //lo genera a partir del ultimoIdInterno
+        idCarton : integer; //lo genera a partir del ultimoIdInterno
+        idJuego: integer;//String[10];   //de juegos.dat (lo_hashabierto)
+        nombreEvento: string[20];
         idJugador : string[10]; //de jugadores.dat(lo_arbolbinario)
         grilla : tMatriz;
         ant,sig : tPos;
@@ -521,7 +523,7 @@ end;
 function BuscarInfo(var Me:MeDobleEnlace; Clave:integer;var Pos:tPos):Boolean;
 var
   rc:tRegControl_DE;
-  {PosAnt,p:TipoPosicion;}
+  PosAnt,p:tPos;
   corte,encontre:Boolean;
   rd:tRegDatos_DE;
 begin
@@ -540,10 +542,15 @@ begin
               if RD.idCarton > clave then
                 corte:=true
               else
-                   pos:=RD.Sig;
+              begin
+                 // PosAnt:= pos;
+                  pos:=RD.Sig;
+              end;
+
 
         end;
      BuscarInfo:=Encontre;
+    // pos:= posant;
 end;
 ////////////////////////////////////////////////////////////
 Function ObtenerProximoIDInterno(var Me:MeDobleEnlace):LongInt;

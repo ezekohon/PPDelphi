@@ -1,198 +1,229 @@
-unit lo_colasparciales;    //TIRADAS
+unit lo_colasparciales; // TIRADAS
+
 
 interface
 
+ uses
+  lo_pila;
+
 const
-  _RUTA = 'C:\Users\Ezequiel\Google Drive\Juan23\PROG2\MIO\TRABAJOFINALDELPHI\Archivos\';
+  _RUTA= 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\';
   _ARCHIVO_DATOS = 'TiradasCola.DAT';
   _ARCHIVO_CONTROL = 'TiradasCola.CON';
-  __POSNULA= -1;
+  __POSNULA = -1;
   __LONGCLAVE = 4;
 
 type
-TipoPos = longint;
+  //TipoPos = longint;
 
-TipoClave = string[__LONGCLAVE];
+  TipoClave = string[__LONGCLAVE];
 
-TipoDato =  Record
-            Numero: integer;
-            Enlace: tipoPos;
-            End;
+  TipoDato = Record
+    Numero: integer;
+    Enlace: TipoPos;
+  End;
 
-TipoArchivoDato = file of TipoDato;
+  TipoArchivoDato = file of TipoDato;
 
-TipoControl = Record
-              Pri: tipopos;
-              Ult: tipopos;
-              bajas: tipopos;
-              End;
+  TipoControl = Record
+    Pri: TipoPos;
+    Ult: TipoPos;
+    bajas: TipoPos;
+    cantidad: integer;
+  End;
 
-TipoArchivoControl = file of TipoControl;
+  TipoArchivoControl = file of TipoControl;
 
-TipoCola = record
-         D: TipoArchivoDato;
-         C: TipoArchivoControl;
-         end;
+  TipoCola = record
+    D: TipoArchivoDato;
+    C: TipoArchivoControl;
+  end;
 
-procedure crearME(var cola:TipoCola; archivo:string);
-Procedure AbrirMe (Var cola:TipoCola);
-Procedure CerrarMe (Var cola:TipoCola);
-function colaVacia(var cola:tipocola):boolean;
-procedure encolar(var cola:tipoCola; reg:tipoDato; esCabecera:boolean);
-procedure decolar(var cola:tipocola);
-procedure tope (var cola:tipocola; var reg:tipoDato);
+procedure crearME(var cola: TipoCola);
+Procedure AbrirMe(Var cola: TipoCola);
+Procedure CerrarMe(Var cola: TipoCola);
+function colaVacia(var cola: TipoCola; cabeceraControl: TipoPos): boolean;
+procedure encolar(var cola: TipoCola; reg: TipoDato; cabeceraControl: TipoPos);
+procedure decolar(var cola: TipoCola; cabeceraControl: TipoPos); // esta igual que desapilar
+procedure tope(var cola: TipoCola; var reg: TipoDato; cabeceraControl: TipoPos);
+procedure insertarCabeceraControl(var cola: TipoCola; cabeceraControl: TipoPos);
+function cantidadElementos(var cola: TipoCola; cabeceraControl: TipoPos):integer;
 
 var
-  MeTIRADAS: tipocola;
-
-
+  MeTIRADAS: TipoCola;
 
 implementation
 
-procedure crearME(var cola:TipoCola; archivo:string);
+procedure crearME(var cola: TipoCola);
 var
-   berrrorcontrol,berrordatos: boolean;
-   rc: tipoControl;
+  berrrorcontrol, berrordatos: boolean;
+  rc: TipoControl;
 begin
-     assign(cola.D, _RUTA + _ARCHIVO_DATOS);
-     assign(cola.C, _RUTA + _ARCHIVO_CONTROL);
-     {$I-}
-     reset(cola.c);
-     berrrorcontrol:=ioresult<>0;
-     reset(cola.d);
-     berrordatos:=ioresult<>0;
-     if berrrorcontrol and berrordatos then
-     begin
-             rewrite(cola.C);
-             rewrite(cola.D);
-             rc.Pri:=__POSNULA;
-             rc.ult:=__POSNULA;
-             rc.bajas:=__POSNULA;
-             seek(cola.c, 0); //siempre hacer seek
-             write(cola.C, rc);
+  assign(cola.D, _RUTA + _ARCHIVO_DATOS);
+  assign(cola.C, _RUTA + _ARCHIVO_CONTROL);
+{$I-}
+  reset(cola.C);
+  berrrorcontrol := ioresult <> 0;
+  reset(cola.D);
+  berrordatos := ioresult <> 0;
+  if berrrorcontrol and berrordatos then
+  begin
+    rewrite(cola.C);
+    rewrite(cola.D);
+    rc.Pri := __POSNULA;
+    rc.Ult := __POSNULA;
+    rc.bajas := __POSNULA;
+    rc.cantidad := 0;
+    seek(cola.C, 0); // siempre hacer seek
+    write(cola.C, rc);
 
-     end;      ///habria que agregar los casos para si hay error en control y otro si hay error en datos
+  end;
 
-     close(cola.C);
-     close(cola.D);
-     {$I+}
+  close(cola.C);
+  close(cola.D);
+{$I+}
 end;
 
-Procedure AbrirMe (Var cola:TipoCola);
+Procedure AbrirMe(Var cola: TipoCola);
 // reset a los 2 archivos del M.E.
 Begin
-     reset(cola.D);
-     reset(cola.C);
+  reset(cola.D);
+  reset(cola.C);
 End;
 
-Procedure CerrarMe (Var cola:TipoCola);
+Procedure CerrarMe(Var cola: TipoCola);
 // close M.E.
 Begin
-     close(cola.D);
-     close(cola.C);
+  close(cola.D);
+  close(cola.C);
 End;
 
-function colaVacia(var cola:tipocola):boolean;
+function colaVacia(var cola: TipoCola; cabeceraControl: TipoPos): boolean;
 var
-  rc: tipocontrol;
+  rc: TipoControl;
 begin
-     seek(cola.C, 0);
-     read(cola.c, rc);
-     colaVacia:= (rc.pri = __POSNULA);
+  seek(cola.C, cabeceraControl); // 0
+  read(cola.C, rc);
+  colaVacia := (rc.Pri = __POSNULA);
 end;
 
-procedure encolar(var cola:tipoCola; reg:tipoDato; esCabecera:boolean);
+procedure encolar(var cola: TipoCola; reg: TipoDato; cabeceraControl: TipoPos);
 var
-  rc: tipocontrol;
-  rd, raux: tipodato;
-  posNueva: tipoPos;
+  rc: TipoControl;
+  rd, raux: TipoDato;
+  posNueva: TipoPos;
 begin
-     seek(cola.C, 0);
-     read(cola.c, rc);
+  seek(cola.C, cabeceraControl); // 0
+  read(cola.C, rc);
 
-     //determinar posNueva
-     if (rc.bajas=__POSNULA) then
-        posNueva:= fileSize(cola.d)
-     else
-      begin
-           posNueva:= rc.bajas;
-           seek(cola.D, posNueva);
-           read(cola.d, rd);
-           rc.bajas:= rd.enlace;
-      end;
+  // determinar posNueva
+  if (rc.bajas = __POSNULA) then
+    posNueva := fileSize(cola.D)
+  else
+  begin
+    posNueva := rc.bajas;
+    seek(cola.D, posNueva);
+    read(cola.D, rd);
+    rc.bajas := rd.Enlace;
+  end;
 
+  if rc.Pri = __POSNULA then // si cola vacia
+  begin
+    rc.Pri := posNueva;
+    rc.Ult := posNueva;
+    reg.Enlace := __POSNULA;
+  end
+  else // caso general, encolo al final
+  begin
+    seek(cola.D, rc.Ult);
+    read(cola.D, raux);
+    // if (esCabecera) then
+    // rAux.Enlace:= __POSNULA
+    // else
+    raux.Enlace := posNueva;
 
-     if rc.pri = __POSNULA then //si cola vacia
-     begin
-          rc.pri:= posNueva;
-          rc.ult:= posNueva;
-          reg.Enlace:= __POSNULA;
-     end
-     else      //caso general, encolo al final
-     begin
-          seek(cola.d, rc.ult);
-          read(cola.d, raux);
-          if (esCabecera) then
-            rAux.Enlace:= __POSNULA
-          else
-            raux.enlace:= posNueva;
-
-
-          seek(cola.d, rc.ult);  //lo guardo
-          write(cola.d, raux);
-          reg.Enlace:= __POSNULA;//posNueva; //__POSNULA????
-          rc.ult:= posNueva;
-     end;
-
-     seek(cola.C, 0);
-     write(cola.C, rc);
-     seek(cola.d, posnueva);
-     write(cola.d, reg);
+    seek(cola.D, rc.Ult); // lo guardo
+    write(cola.D, raux);
+    reg.Enlace := __POSNULA;
+    rc.Ult := posNueva;
+  end;
+  rc.cantidad := rc.cantidad +1;
+  seek(cola.C, cabeceraControl); // 0
+  write(cola.C, rc);
+  seek(cola.D, posNueva);
+  write(cola.D, reg);
 end;
 
-procedure decolar(var cola:tipocola);
+procedure decolar(var cola: TipoCola; cabeceraControl: TipoPos);
 var
-  rc: tipocontrol;
-  rd, raux: tipodato;
-  pos, posBorrado: tipopos;
+  rc: TipoControl;
+  rd, raux: TipoDato;
+  pos, posBorrado: TipoPos;
 begin
-     seek(cola.C, 0);
-     read(cola.c, rc);
-     if rc.pri = rc.ult then //cola con 1 elemento
-     begin //elimino y queda cola vacia
-          posBorrado:= rc.pri;
-          rc.pri:= __POSNULA;
-          rc.ult:= __POSNULA;
+  seek(cola.C, cabeceraControl); // 0
+  read(cola.C, rc);
+  if rc.Pri = rc.Ult then // cola con 1 elemento
+  begin // elimino y queda cola vacia
+    posBorrado := rc.Pri;
+    rc.Pri := __POSNULA;
+    rc.Ult := __POSNULA;
 
-     end
-     else //caso general
-     begin
-          posBorrado:= rc.pri;
-          seek(cola.d, posBorrado);
-          read(cola.d, raux);
-          rc.pri:= raux.enlace;   //raux.enlace es el segundo
-                                  //pongo como primero lo que antes era el segundo
-     end;
+  end
+  else // caso general
+  begin
+    posBorrado := rc.Pri;
+    seek(cola.D, posBorrado);
+    read(cola.D, raux);
+    rc.Pri := raux.Enlace; // raux.enlace es el segundo
+    // pongo como primero lo que antes era el segundo
+  end;
 
-     seek(cola.d, posBorrado);
-     read(cola.d, raux);
-     raux.enlace:= rc.bajas;
-     rc.bajas:= posBorrado;
-     seek(cola.c, 0);
-     write(cola.c, rc);
-     seek(cola.D, posBorrado);
-     write(cola.d, raux);
+  seek(cola.D, posBorrado);
+  read(cola.D, raux);
+
+  raux.Enlace := rc.bajas;
+  rc.bajas := posBorrado;
+
+  rc.cantidad := rc.cantidad -1;
+  seek(cola.C, cabeceraControl); // 0
+  write(cola.C, rc);
+  seek(cola.D, posBorrado);
+  write(cola.D, raux);
 end;
 
-//tope es igual a frente
-procedure tope (var cola:tipocola; var reg:tipoDato);
+// tope es igual a frente
+procedure tope(var cola: TipoCola; var reg: TipoDato; cabeceraControl: TipoPos);
 var
-  rc: tipocontrol;
+  rc: TipoControl;
 begin
-     seek(cola.C, 0);
-     read(cola.c, rc);
-     seek(cola.d, rc.pri);
-     read(cola.d, reg);
+  seek(cola.C, cabeceraControl); // 0
+  read(cola.C, rc);
+  seek(cola.D, rc.Pri);
+  read(cola.D, reg);
+end;
+
+procedure insertarCabeceraControl(var cola: TipoCola; cabeceraControl: TipoPos);
+//cabeceraControl va a ser el id del juego. Se llama desde form ABMJuegos
+var
+  rc: TipoControl;
+begin
+  reset(cola.C);
+  rc.Pri := __POSNULA;
+  rc.Ult := __POSNULA;
+  rc.bajas := __POSNULA;
+   rc.cantidad := 0;
+  seek(cola.C, cabeceraControl); // siempre hacer seek
+  write(cola.C, rc);
+  //close(cola.C);
+end;
+
+function cantidadElementos(var cola: TipoCola; cabeceraControl: TipoPos):integer;
+var
+  rc: TipoControl;
+begin
+  seek(cola.C, cabeceraControl); // 0
+  read(cola.C, rc);
+  result:= rc.cantidad;
 end;
 
 end.

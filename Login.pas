@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Menus, LO_ArbolBinario, la_arbolbinario,
-    cypher, PantallaAdministrador, UnitRegistrarJugador, PantallaJugador, Globals, lo_dobleEnlace;
+    cypher, PantallaAdministrador, UnitRegistrarJugador, PantallaJugador, Globals, lo_dobleEnlace
+    ,lo_pila, lo_colasparciales, lo_arboltrinario;
 
 type
   TFormLogin = class(TForm)
@@ -21,6 +22,7 @@ type
     procedure FormActivate(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
   public
@@ -56,8 +58,8 @@ begin
         begin
               if reg.nick = 'ADMINISTRADOR' then
               begin
-                  FormLogin.Hide();
-                  FormAdministrador.Show();
+                  //FormLogin.Hide();
+                  FormAdministrador.showmodal;//Show();
               end
               else
               begin
@@ -88,7 +90,12 @@ end;
 
 procedure TFormLogin.FormCreate(Sender: TObject);
 begin
-   CrearMe(MeCartones);
+   lo_dobleEnlace.CrearMe(MeCartones);
+   lo_pila.CrearMe(MeBolillero, lo_pila._RUTA_ARCHIVO_DATOS, lo_pila._RUTA_ARCHIVO_CONTROL);
+   lo_pila.CrearMe(MePilaGanadores, _RUTA_ARCHIVO_PILA_DATOS, _RUTA_ARCHIVO_PILA_CONTROL);
+   lo_arboltrinario.CrearMe_ArbolTri(MeIndiceGanadores);
+   CrearMe(MeTiradas);
+
    //centralizar aca la creacion de MEs? total todos los forms se crean en arranque
 end;
 
@@ -96,6 +103,15 @@ procedure TFormLogin.FormDeactivate(Sender: TObject);
 begin
     CerrarMe_Archivos(MeJUGADORES);
     Cerrarme_indice(MeNick);
+end;
+
+procedure TFormLogin.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+   if ord(Key) = VK_RETURN then
+  begin
+    Key := #0; // prevent beeping
+    Button1Click(sender);
+  end;
 end;
 
 procedure TFormLogin.re1Click(Sender: TObject);

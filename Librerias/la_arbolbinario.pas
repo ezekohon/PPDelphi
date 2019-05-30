@@ -15,6 +15,7 @@ function BuscarMail(mail:string):boolean;
 //function GenerarProximoIDusuario():tidusuario;
 Procedure InsertarAdminCuandoMEVacio();
 
+
 implementation
 
 Function AltaJugador (Nick, Nombre, Mail, password: string; imagen: tjpegimage):Boolean;
@@ -140,13 +141,50 @@ begin
   //-CerrarMe_Archivos(MeJugadores);
 end;
 
+Procedure InOrden (Arbol:MeArbol; Raiz: tPosArbol);
+var
+  Rd: tRegDatos;
+  N:tNodoIndice;
+begin
+    If raiz =PosNula_Indice (Arbol) then exit;
 
+    //Primero recursivo tendiendo a la Izquierda
+    InOrden (Arbol,ProximoIzq_Indice(Arbol,Raiz));
+
+    //Guardo en N el nodo indice.
+    N:=ObtenerInfo_Indice (Arbol,Raiz);
+
+    //De N utilizo la posicion en Clientes para leer el registro.
+    ObtenerInfoMe_Archivos(MeJUGADORES,N.PosEnDatos,RD);
+    //-PARA AGREGAR EN ORDEN DE ID O NICK A UNA GRILLA-AgregarReglon (Rd);
+
+    //Recursividad tendiendo a la Derecha.
+    InOrden (Arbol,ProximoDer_Indice(Arbol,Raiz));
+end;
+
+
+
+{
 function tieneCartonesComprados(idJugador:tidUsuario; idJuego:tId; var meCartones:MeDobleEnlace):boolean;
 //dado id de jugador e id de juego, devolver si el jugador tiene cartones comprados del juego
-
+var
+  tiene: boolean;
+  j: Integer;
+  reg: tRegDatos_DE;
 begin
+     //detallar en la documentacion
+     j := Primero(MeCartones);
+     //while i <> _posnula do
+     repeat
+             reg:= CapturarInfo(MeCartones, j);
+         if ((reg.idJugador= idJugador) and (reg.idJuego = idJuego)) then
+           Exit(true);
+         j:= Proximo(MeCartones,j);
+     until (j = _posnula);
 
-end;
+     result:= false;
+end;   LA PASE A LA DOBLE ENLACE}
+
 
 end.
 

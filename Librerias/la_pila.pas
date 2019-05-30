@@ -3,19 +3,21 @@ unit la_pila;
 interface
 
 uses
-  classes, sysutils, LO_PILA;
+  math, classes, sysutils, LO_PILA;
 
   const
     cantBolillas = 75;
 
-procedure generarBolilleroMezclado();
+procedure generarBolilleroMezclado();  //ANDA BIEN
+procedure randomizarArray(var A: array of integer); //ANDA BIEN
+procedure mezclarBolillas(var pila: tipopila);  //ANDA BIEN
 
 implementation
 
 procedure generarBolilleroMezclado();
 var
   i,j,r,aux: integer;
-  rd: tipodato;
+  rd: tDatoPila;
   arrayBolillas: array[1..75] of integer;
 begin
 
@@ -38,6 +40,49 @@ begin
         apilar(meBolillero,rd);
     end;
 
+end;
+
+procedure mezclarBolillas(var pila: tipopila);
+var
+  arr : array of integer;
+  rd,  raux: tDatoPila;
+  I: Integer;
+begin
+     //pasar pila a array
+    while not pilavacia(pila) do
+    begin
+      tope(pila, rd);
+      desapilar(pila);
+      SetLength(arr, Length(arr)+1);
+      arr[Length(arr)-1]:= rd.Numero;
+    end;
+     //randomizar array
+     randomizarArray(arr);
+     //pasar array a pila
+     for I := Low(arr) to High(arr) do
+     begin
+       raux.Numero := arr[i];
+       apilar(pila,raux);
+     end;
+
+end;
+
+
+procedure randomizarArray(var A: array of integer);
+  procedure Swap(n, m: integer);
+  var
+    tmp: integer;
+  begin
+    tmp := A[n];
+    A[n] := A[m];
+    A[m] := tmp;
+  end;
+var
+  i: Integer;
+begin
+  randomize;
+  for i := High(A) downto 1 do
+    Swap(i, RandomRange(0, i));
 end;
 
 

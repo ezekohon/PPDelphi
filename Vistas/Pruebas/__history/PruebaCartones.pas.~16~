@@ -1,0 +1,100 @@
+unit PruebaCartones;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, lo_dobleenlace;
+
+type
+  TFormPruebaCartones = class(TForm)
+    grilla: TStringGrid;
+
+      procedure CargarGrilla();
+    Procedure SetearHeaders();
+    Procedure AgregarReglon (RD: tregdatos_de; IndexRenglon:Integer);
+    procedure FormShow(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FormPruebaCartones: TFormPruebaCartones;
+
+implementation
+
+{$R *.dfm}
+
+
+procedure TFormPruebaCartones.CargarGrilla();
+var
+  //pos: tPosHash;
+  i, count: integer;
+  reg: tregdatos_de;
+begin
+  SetearHeaders;
+   { for i := Primero(mecartones) to Ultimo(mecartones) do
+      begin
+        reg:= CapturarInfo(mecartones,i);
+        AgregarReglon(reg,i);
+      end;
+      }
+     i:=primero(mecartones);
+    //while i<>_posnula do
+    //begin
+    repeat
+                     reg:= CapturarInfo(mecartones,i);
+        AgregarReglon(reg,i+1);
+        i:= Proximo(mecartones,i)
+    until (i=_posnula);
+
+   // end;
+end;
+
+
+procedure TFormPruebaCartones.FormShow(Sender: TObject);
+begin
+
+  CargarGrilla;
+end;
+
+
+
+Procedure TFormPruebaCartones.SetearHeaders();
+Begin
+  with grilla do
+  Begin
+  // Título de las columnas
+    ColWidths[0] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+    ColWidths[1] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+    ColWidths[2] := Canvas.TextWidth('xxxxxxxxxxxxxxxx');
+    ColWidths[3] := Canvas.TextWidth('xxxxxxxxxxxxxxxx');
+
+    Cells[0, 0] := 'ID CARTON';
+    Cells[1, 0] := 'ANT';
+    Cells[2, 0] := 'SIG';
+    Cells[3, 0] := 'IDJUEGO';
+
+  End;
+End;
+
+Procedure TFormPruebaCartones.AgregarReglon (RD: tRegDatos_de; IndexRenglon:Integer);
+Begin
+
+
+    with grilla do
+    Begin
+      Cells[0, IndexRenglon] := IntToStr(RD.idCarton);
+      Cells[1, IndexRenglon] := IntToStr(rd.ant);
+      Cells[2, IndexRenglon] := IntToStr(rd.sig);//TRttiEnumerationType.GetName( RD.estado);
+      Cells[3, IndexRenglon] := rd.idJugador;//IntToStr(RD.TotalCartonesVendidos);
+
+      FixedRows:=1;
+    End;
+
+End;
+
+
+end.

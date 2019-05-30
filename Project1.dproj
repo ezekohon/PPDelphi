@@ -170,10 +170,6 @@
             <Form>FormJugadoresActivos</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="Vistas\Juegos\DetalleJuego.pas">
-            <Form>FormDetalleJuego</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
         <DCCReference Include="Librerias\lo_dobleEnlace.pas"/>
         <DCCReference Include="Vistas\Jugadores\CalendarioJuegos.pas">
             <Form>FormCalendarioJuegos</Form>
@@ -185,6 +181,32 @@
         </DCCReference>
         <DCCReference Include="Librerias\la_dobleEnlace.pas"/>
         <DCCReference Include="Helpers\Globals.pas"/>
+        <DCCReference Include="Vistas\Jugadores\DetalleJuego.pas">
+            <Form>FormDetalleJuego</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Vistas\Administrador\EjecucionJuegoAdmin.pas">
+            <Form>EjecucionJuegoAdminForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Vistas\Pruebas\PruebaCartones.pas">
+            <Form>FormPruebaCartones</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Vistas\Administrador\BolillasRestantes.pas">
+            <Form>FormBolillasRestantes</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Vistas\Administrador\BolillasSacadas.pas">
+            <Form>FormBolillasSacadas</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Vistas\Administrador\FichaJugador.pas">
+            <Form>FormFichaJugador</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Librerias\lo_arboltrinario.pas"/>
+        <DCCReference Include="Librerias\la_arboltrinario.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

@@ -441,12 +441,14 @@ var
 	encont:boolean;
 	posPadre:tposArbol;
 begin
-	seek(Arbol.c,0); read(Arbol.c,rc);
+	seek(Arbol.c,0);
+  read(Arbol.c,rc);
 	pos:=rc.raiz; encont:=false;
 	posPadre:=_posnula_arbol;
 	while (not encont) and (pos<>_posnula_arbol) do
 	begin
-		seek(Arbol.d,pos); read(Arbol.d,reg);
+		seek(Arbol.d,pos);
+    read(Arbol.d,reg);
 		if (clave=reg.clave) then
 		begin
 			encont:=true;
@@ -710,7 +712,7 @@ end;
 {******************************************************************************}
 Procedure AVL_Indice (Arbol:MeArbol; Raiz: tPosArbol;
                                      var PosNodo: tPosArbol;Var Balance:Boolean);
-{Indica si el Arbol DNI esta balanceado. Si no lo esta me envia la pos del nodo
+{Indica si el Arbol esta balanceado. Si no lo esta me envia la pos del nodo
 que esta causando el desequilibrio. Este siempre es el nodo de mas ALTO nivel.
 La idea es ir balanceandolo de los nodos mas pesados hasta llegar a la raiz.}
 var

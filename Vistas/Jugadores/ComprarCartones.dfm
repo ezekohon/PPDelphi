@@ -11,6 +11,7 @@ object FormComprarCartones: TFormComprarCartones
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnPaint = FormPaint
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -43,12 +44,22 @@ object FormComprarCartones: TFormComprarCartones
     TabOrder = 0
   end
   object ButtonComprar: TButton
-    Left = 112
+    Left = 56
     Top = 128
     Width = 75
     Height = 25
     Caption = 'Comprar'
     TabOrder = 1
     OnClick = ButtonComprarClick
+  end
+  object ButtonDevolucion: TButton
+    Left = 176
+    Top = 128
+    Width = 129
+    Height = 25
+    Caption = 'Devoluci'#243'n de cartones'
+    Enabled = False
+    TabOrder = 2
+    OnClick = ButtonDevolucionClick
   end
 end

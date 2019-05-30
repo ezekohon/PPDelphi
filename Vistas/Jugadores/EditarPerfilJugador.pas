@@ -23,8 +23,7 @@ type
     ButtonInsertar: TButton;
     OpenPictureDialog1: TOpenPictureDialog;
     procedure FormShow(Sender: TObject);
-    procedure FormActivate(Sender: TObject);
-    procedure FormDeactivate(Sender: TObject);
+ 
     procedure ButtonInsertarClick(Sender: TObject);
   private
     { Private declarations }
@@ -61,19 +60,6 @@ begin
   ModificarInfoMe_Archivos(MeJUGADORES,posEnDatos,reg);
 end;
 
-procedure TFormEditarPerfilJugador.FormActivate(Sender: TObject);
-begin
-  AbrirMe_Archivos(MeJugadores);
-  AbrirMe_Indice (MeNick);
-  AbrirMe_Indice (MeID);
-end;
-
-procedure TFormEditarPerfilJugador.FormDeactivate(Sender: TObject);
-begin
-    CerrarMe_Archivos(MeJugadores);
-    CerrarMe_Indice(MeNick);
-    CerrarMe_Indice(MeID);
-end;
 
 procedure TFormEditarPerfilJugador.FormShow(Sender: TObject);
 begin
