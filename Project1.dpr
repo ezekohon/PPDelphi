@@ -36,7 +36,8 @@ uses
   BolillasSacadas in 'Vistas\Administrador\BolillasSacadas.pas' {FormBolillasSacadas},
   FichaJugador in 'Vistas\Administrador\FichaJugador.pas' {FormFichaJugador},
   lo_arboltrinario in 'Librerias\lo_arboltrinario.pas',
-  la_arboltrinario in 'Librerias\la_arboltrinario.pas';
+  la_arboltrinario in 'Librerias\la_arboltrinario.pas',
+  ListadoJugadores in 'Vistas\Administrador\ListadoJugadores.pas' {FormListadoJugadores};
 
 {$R *.res}
 
@@ -59,5 +60,6 @@ begin
   Application.CreateForm(TFormBolillasRestantes, FormBolillasRestantes);
   Application.CreateForm(TFormBolillasSacadas, FormBolillasSacadas);
   Application.CreateForm(TFormFichaJugador, FormFichaJugador);
+  Application.CreateForm(TFormListadoJugadores, FormListadoJugadores);
   Application.Run;
 end.

@@ -207,6 +207,10 @@
         </DCCReference>
         <DCCReference Include="Librerias\lo_arboltrinario.pas"/>
         <DCCReference Include="Librerias\la_arboltrinario.pas"/>
+        <DCCReference Include="Vistas\Administrador\ListadoJugadores.pas">
+            <Form>FormListadoJugadores</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

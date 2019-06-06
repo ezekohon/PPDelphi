@@ -157,7 +157,7 @@ begin
     begin
       Rewrite(MeHash.D);
       rd.nombreEvento:='';
-
+      rd.estado:= NoActivado;
       rd.ocupado:=false;
 
       For x:=1 to _maxHash do
@@ -380,7 +380,8 @@ Function Primero (MeHash:tMeHash):tPosHash;
 Var
   RC: tRegControlHash;
 Begin
-  Seek(Mehash.C,0);Read(Mehash.C,RC);
+  Seek(Mehash.C,0);
+  Read(Mehash.C,RC);
   Primero:=RC.primero;
 End;
 {******************************************************************************}

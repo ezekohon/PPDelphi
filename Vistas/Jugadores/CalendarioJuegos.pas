@@ -37,22 +37,29 @@ implementation
 procedure TFormCalendarioJuegos.CargarGrilla();
 var
   //pos: tPosHash;
-  i, count: integer;
+   count: integer;
   reg: tRegDatosHash;
+   pos: tPosHash;
 begin
   SetearHeaders;
    count := 1;
-    for i := 0 to lo_hashabierto.Ultimo(MeJuego) do
+    //for i := 0 to lo_hashabierto.Ultimo(MeJuego) do
+    if Total(MeJuego)>0 then
+    begin
+    Pos:=lo_hashabierto.Primero (MeJuego);
+    While pos <> _posnula do
       begin
-        CapturarInfoHash(MeJuego,i,reg);
+        CapturarInfoHash(MeJuego,pos,reg);
          if reg.estado = NoActivado then
          begin
               AgregarReglon(reg,count);
-              if tieneCartonesComprados(globals.JugadorLogueado.clave, reg.ID, mecartones)  then
-                  rowsToColor[i]:= count;
+             // if isTieneCartonesComprados(globals.JugadorLogueado.clave, reg.ID, mecartones)  then
+              //    rowsToColor[i]:= count;
               count:= count + 1;
          end;
+         pos:=lo_hashabierto.Proximo(MeJuego,pos);
       end;
+    end;
 end;
 
 

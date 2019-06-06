@@ -103,9 +103,9 @@ begin
    AbrirMe_Archivos(MeJugadores);
    AbrirMe_Indice(MeID);
    AbrirMe_Indice(MeNICK);
-    AbrirMe(MeCartones);
-    AbrirMe_Hash(MeJuego);
-  //   OutputDebugString(PChar('Abro MES'));
+   AbrirMe(MeCartones);
+   AbrirMe_Hash(MeJuego);
+   OutputDebugString(PChar('Abro MES'));
 end;
 
 procedure TFormJugador.SalirMenuItemClick(Sender: TObject);

@@ -55,18 +55,19 @@ begin
      begin
        repeat
          grilla:= generarGrilla();
-       until (not isGrillaEnMe(MeCartones, grilla));
+       until (not isGrillaEnMe(MeCartones, grilla, JuegoActual.nombreEvento));
 
-       //falta chequear que la grilla no exista ya ( hacerlo en LA)
+
        altaCarton(Globals.JugadorLogueado.clave, juegoactual.nombreEvento, grilla);
      end;
      //cambiar cant cartones vendidos del juego,
      JuegoActual.TotalCartonesVendidos := JuegoActual.TotalCartonesVendidos + cantidadCartones;
-
+     JuegoActual.PozoAcumulado :=  JuegoActual.PozoAcumulado + cantidadCartones*JuegoActual.ValorVenta;
 
      BuscarHash(MeJuego,juegoactual.nombreEvento,posHash);
      CapturarInfoHash(MeJuego,poshash, reg);
      reg.TotalCartonesVendidos := JuegoActual.TotalCartonesVendidos;
+     reg.PozoAcumulado :=  JuegoActual.PozoAcumulado;
      ModificarHash(MeJuego,poshash,reg);
 
 
@@ -86,7 +87,7 @@ begin
     buttonSelected := messagedlg('Seguro que desea devolver todos sus cartones en el juego seleccionado?',mtConfirmation, mbOKCancel, 0);
     if buttonSelected = mrOK     then
     begin
-      cantEliminados:= eliminarCartonesDeJugador(globals.JugadorLogueado.clave, juegoActual.ID, mecartones);
+      cantEliminados:= eliminarCartonesDeJugador(globals.JugadorLogueado.clave, juegoActual.nombreEvento, mecartones);
       restarCantidadCartonesVendidos(cantEliminados, juegoActual.nombreEvento);
     end;
 end;
@@ -99,7 +100,7 @@ end;
 
 procedure TFormComprarCartones.toggleBotonDevolucion();
 begin
-    if la_dobleEnlace.tieneCartonesComprados(globals.JugadorLogueado.clave, juegoActual.ID, mecartones) then
+    if la_dobleEnlace.isTieneCartonesComprados(globals.JugadorLogueado.clave, juegoActual.nombreEvento, mecartones) then
       ButtonDevolucion.Enabled := True
     else
     begin

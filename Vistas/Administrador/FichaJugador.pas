@@ -4,9 +4,10 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.Classes, Vcl.Graphics,
+  System.Classes, Vcl.Graphics, StrUtils,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, lo_arbolbinario, Vcl.ExtCtrls,
-  Vcl.StdCtrls, Vcl.Grids, lo_dobleenlace, la_dobleenlace, lo_hashabierto;
+  Vcl.StdCtrls, Vcl.Grids, lo_dobleenlace, la_dobleenlace, lo_hashabierto,
+  la_arboltrinario, lo_arboltrinario, lo_pila, rtti, math;
 
 type
   TFormFichaJugador = class(TForm)
@@ -18,7 +19,7 @@ type
     FechaIngresoEdit: TEdit;
     PremiosAcumuladosEdit: TEdit;
     Label4: TLabel;
-    Edit3: TEdit;
+    PartidaActualEdit: TEdit;
     Label5: TLabel;
     CartonesEdit: TEdit;
     Label6: TLabel;
@@ -27,12 +28,20 @@ type
     Cartón: TLabel;
     grillaCarton: TStringGrid;
     Label7: TLabel;
-    StringGrid1: TStringGrid;
+    grillaDetallePremios: TStringGrid;
     panel1: TPanel;
     procedure CargarGrilla();
     Procedure SetearHeaders();
     Procedure AgregarReglon(RD: tRegDatos_DE; IndexRenglon: Integer);
     procedure LimpiarGrilla();
+    procedure LimpiarGrillaDetallePremios();
+    procedure FormShow(Sender: TObject);
+    procedure grillaClick(Sender: TObject);
+    Procedure AgregarCeldaCarton(celdaCarton: tRegCampoMatriz;
+      IndexRenglon: Integer; IndexCol: Integer);
+    procedure grillaCartonDrawCell(Sender: TObject; ACol, ARow: Integer;
+      Rect: TRect; State: TGridDrawState);
+    Procedure SetearHeadersDetallePremio();
   private
     { Private declarations }
   public
@@ -50,7 +59,7 @@ implementation
 
 procedure TFormFichaJugador.CargarGrilla();
 var
-  i, j,count: Integer;
+  i, j, count: Integer;
   reg, raux: tRegDatos_DE;
   arr: array of Integer;
   idJugador: tidUsuario;
@@ -66,14 +75,185 @@ begin
     repeat
       reg := lo_dobleenlace.CapturarInfo(MeCartones, j);
 
-      if ((reg.idJugador = jugadoractual.clave) and (reg.idJuego = juegoactual.id)) then
+      if ((reg.idJugador = JugadorActual.clave) and
+        (reg.nombreEvento = JuegoActual.nombreEvento)) then
+      begin
         AgregarReglon(reg, count);
+        count := count + 1;
+      end;
+
       j := lo_dobleenlace.Proximo(MeCartones, j);
 
     until (j = _posnula);
   end;
 
 end;
+
+procedure TFormFichaJugador.FormShow(Sender: TObject);
+var
+  dir, dirfull, ganado: string;
+  cuenta:integer;
+  suma:real;
+begin
+  dir := ExpandFileName(GetCurrentDir + '\..\..\');
+  dirfull := dir + 'imgs\' + JugadorActual.nick + '.bmp';
+  Image1.Picture.LoadFromFile(dirfull);
+
+  JugadorEdit.Text := JugadorActual.nick;
+  FechaIngresoEdit.Text := DateTimeToStr(JugadorActual.fechaUltimaConexion);
+
+  PartidaActualEdit.Text := JuegoActual.nombreEvento;
+  CartonesEdit.Text := inttostr(cantidadCartonesComprados(JugadorActual.clave,
+    JuegoActual.nombreEvento, MeCartones));
+
+  ganado := inttostr(contarPremiosGanadorEnJuego(MeIndiceGanadores,
+    JuegoActual.nombreEvento, JugadorActual.clave)) + ' por $' +
+    floattostr(sumarPremiosGanadorEnJuego(MeIndiceGanadores,
+    JuegoActual.nombreEvento, JugadorActual.clave));
+
+  PremiosGanadosEdit.Text := ganado;
+
+  cuenta:=0;
+  suma:=0;
+  InOrderContarPremiosAcumuladosTotales(MeIndiceGanadores,raiz_tri(MeIndiceGanadores),
+    jugadoractual.clave, cuenta);
+  InOrderSumarPremiosAcumuladosTotales(MeIndiceGanadores,raiz_tri(MeIndiceGanadores),
+    jugadoractual.clave, suma);
+
+  PremiosAcumuladosEdit.text := inttostr(cuenta) + ' por $' + floattostr(RoundTo(suma, -2));
+  CargarGrilla;
+end;
+
+procedure TFormFichaJugador.grillaCartonDrawCell(Sender: TObject;
+  ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
+begin
+  with Sender as TStringGrid do
+    with Canvas do
+    begin
+      { selección del color de fondo }
+      if ContainsText(grillaCarton.Cells[ACol, ARow], '.') then
+      begin
+        Brush.Color := clRed;
+
+        { pintado del fondo }
+        Rect.Left := Rect.Left - 4;
+        FillRect(Rect);
+
+        { selección del color de escritura }
+
+        Font.Color := clWhite;
+
+        { dibujado del texto }
+        TextOut(Rect.Left + 9, Rect.top + 9, Cells[ACol, ARow]);
+      end;
+    End;
+
+end;
+
+procedure TFormFichaJugador.grillaClick(Sender: TObject);
+var
+  idCarton, j, i, k: Integer;
+  reg: tRegDatos_DE;
+  encontre, existeGanador: boolean;
+  claveGanador: string;
+  PosTri: tPosTri;
+  N: tNodoIndiceTri;
+  /// ///////--INTERNO--//////////////////////////////////////////////
+  Procedure AgregarReglonDetallePremio(cabecera: Integer; idCarton: Integer);
+  { Metodo Recursivo }
+  var
+    RD: tdatopila;
+  begin
+    If not PilaVacia(MePilaGanadores, cabecera) then
+    begin
+      Tope(MePilaGanadores, RD, cabecera);
+      Desapilar(MePilaGanadores, cabecera);
+      AgregarReglonDetallePremio(cabecera, idCarton);
+
+      if RD.idCarton = idCarton then
+      begin
+        with grillaDetallePremios do
+        Begin
+          RowCount := RowCount + 1;
+          Cells[0, RowCount - 1] := TRttiEnumerationType.GetName(RD.tipoPremio);
+          Cells[1, RowCount - 1] := floattostr(RD.importe);
+
+          FixedRows := 1;
+        End;
+      end;
+
+      apilar(MePilaGanadores, RD, cabecera);
+    end;
+  end;
+
+/// ///////--INTERNO--//////////////////////////////////////////////
+begin
+  // cargar grillas de carton y detalle premio
+  idCarton := strtoint(grilla.Cells[0, grilla.Row]);
+
+  if not MeVacio(MeCartones) then
+  begin
+    j := lo_dobleenlace.Primero(MeCartones);
+    encontre := false;
+    // while j <> _posnula do
+    repeat
+      reg := lo_dobleenlace.CapturarInfo(MeCartones, j);
+
+      if ((reg.idCarton = idCarton) and (not encontre)) then
+      begin
+        // llenar grilla carton
+        for i := low(reg.grilla) to high(reg.grilla) do
+        begin
+          for k := low(reg.grilla[0]) to high(reg.grilla[0]) do
+          begin
+            if (not((i = 2) and (k = 2))) then
+              AgregarCeldaCarton(reg.grilla[i, k], i, k);
+          end;
+        end;
+
+        // llenar grilla detalles premio
+        claveGanador := generarClaveGanador(JugadorActual.clave,
+          JuegoActual.nombreEvento);
+        existeGanador := BuscarNodo_Tri(MeIndiceGanadores,
+          claveGanador, PosTri);
+
+        LimpiarGrillaDetallePremios;
+        SetearHeadersDetallePremio;
+        if existeGanador then
+        begin
+          ObtenerNodo(MeIndiceGanadores, PosTri, N);
+          AgregarReglonDetallePremio(N.hm, reg.idCarton);
+        end;
+
+        encontre := true;
+      end;
+
+      j := lo_dobleenlace.Proximo(MeCartones, j);
+
+    until (j = _posnula);
+  end;
+
+end;
+
+Procedure TFormFichaJugador.AgregarCeldaCarton(celdaCarton: tRegCampoMatriz;
+  IndexRenglon: Integer; IndexCol: Integer);
+Begin
+
+  with grillaCarton do
+  Begin
+
+    if celdaCarton.tachado then
+
+      Cells[IndexCol, IndexRenglon] := inttostr(celdaCarton.numero) + '.'
+    else
+    begin
+      Cells[IndexCol, IndexRenglon] := inttostr(celdaCarton.numero);
+    end;
+
+    FixedRows := 1;
+  End;
+
+End;
 
 Procedure TFormFichaJugador.SetearHeaders();
 Begin
@@ -87,22 +267,38 @@ Begin
     Cells[0, 0] := 'CARTÓN';
     Cells[1, 0] := 'PREMIOS';
     Cells[2, 0] := 'DINERO';
-
   End;
 End;
 
-Procedure TFormFichaJugador.AgregarReglon(RD: tRegDatos_DE; IndexRenglon: Integer);
+Procedure TFormFichaJugador.AgregarReglon(RD: tRegDatos_DE;
+  IndexRenglon: Integer);
 Begin
 
   with grilla do
   Begin
-    Cells[0, IndexRenglon] := IntToStr(RD.idcarton);
-    Cells[1, IndexRenglon] := 'HACER';
-    Cells[2, IndexRenglon] := 'HACER';
+    Cells[0, IndexRenglon] := inttostr(RD.idCarton);
+    Cells[1, IndexRenglon] := inttostr(contarPremiosCarton(MeIndiceGanadores,
+      JuegoActual.nombreEvento, JugadorActual.clave, RD.idCarton));
+    Cells[2, IndexRenglon] := '$'+floattostr(RoundTo(sumarPremiosCarton(MeIndiceGanadores,
+      JuegoActual.nombreEvento, JugadorActual.clave, RD.idCarton),-2));
 
     FixedRows := 1;
   End;
 
+End;
+
+Procedure TFormFichaJugador.SetearHeadersDetallePremio();
+Begin
+  with grillaDetallePremios do
+  Begin
+    // Título de las columnas
+    ColWidths[0] := Canvas.TextWidth('xxxxxxxxxxxxxxx');
+    ColWidths[1] := Canvas.TextWidth('xxxxxxxxxxxx');
+
+    Cells[0, 0] := 'PREMIO';
+    Cells[1, 0] := 'IMPORTE';
+
+  End;
 End;
 
 procedure TFormFichaJugador.LimpiarGrilla();
@@ -112,6 +308,15 @@ begin
   for i := 0 to grilla.RowCount - 1 do
     grilla.Rows[i].Clear;
   grilla.RowCount := 76;
+end;
+
+procedure TFormFichaJugador.LimpiarGrillaDetallePremios();
+var
+  i: Integer;
+begin
+  for i := 0 to grillaDetallePremios.RowCount - 1 do
+    grillaDetallePremios.Rows[i].Clear;
+  grillaDetallePremios.RowCount := 1;
 end;
 
 end.

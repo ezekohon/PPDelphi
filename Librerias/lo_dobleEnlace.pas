@@ -34,7 +34,7 @@ type
 
     tRegDatos_DE = record
         idCarton : integer; //lo genera a partir del ultimoIdInterno
-        idJuego: integer;//String[10];   //de juegos.dat (lo_hashabierto)
+        //idJuego: integer;//String[10];   //de juegos.dat (lo_hashabierto)
         nombreEvento: string[20];
         idJugador : string[10]; //de jugadores.dat(lo_arbolbinario)
         grilla : tMatriz;

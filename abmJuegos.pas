@@ -179,7 +179,6 @@ end;
 
 procedure TFormAbmJuegos.FormShow(Sender: TObject);
 begin
-
   CargarGrilla;
 end;
 

@@ -45,21 +45,27 @@ end;
 function hayPartidaJugando(me:tmehash; out nombreEvento:string):boolean; //PROBAR
 //chequea en el me si hay una partida jugandose y si hay, devulve el nombre
 var
-  i: integer;
+  //i: integer;
   reg: tRegDatosHash;
+  pos: tPosHash;
+  hayJugando: boolean;
 begin
-       for i := 0 to lo_hashabierto.Ultimo(Me) do
+      hayJugando:= false;
+      Pos:=lo_hashabierto.Primero (MeJuego);
+      While ((pos <> _posnula) and (not hayJugando)) do
+     //  for i := 0 to lo_hashabierto.Ultimo(Me) do
       begin
-        CapturarInfoHash(Me,i,reg);
+        CapturarInfoHash(Me,pos,reg);
         if (reg.estado = Jugando) then
          begin
               nombreEvento:= reg.nombreEvento;
-              result:= true;
-              Exit(true);
+              hayJugando:= true;
+
          end;
+         pos:=lo_hashabierto.Proximo(MeJuego,pos);
       end;
 
-      result:= false;
+      result:= hayJugando;
 end;
 
 procedure empezarJuego(nombreEvento:string);

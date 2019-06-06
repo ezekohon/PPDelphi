@@ -73,15 +73,15 @@ Begin
   with grilla do
   Begin
   // Título de las columnas
-    ColWidths[0] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-    ColWidths[1] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-    ColWidths[2] := Canvas.TextWidth('xxxxxxxxxxxxxxxx');
+    ColWidths[0] := Canvas.TextWidth('xxxxxxxxxxxxxx');
+    ColWidths[1] := Canvas.TextWidth('xxxxxxxxxxx');
+    ColWidths[2] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
     ColWidths[3] := Canvas.TextWidth('xxxxxxxxxxxxxxxx');
      ColWidths[4] := Canvas.TextWidth('xxxxxxxxxxxxxxxx');
 
     Cells[0, 0] := 'ID CARTON';
-    Cells[1, 0] := 'POS logica?';
-    Cells[2, 0] := 'ANT';
+    Cells[1, 0] := 'ANT';
+    Cells[2, 0] := 'POS fisica(mientras que no borre nada)';
     Cells[3, 0] := 'SIG';
     Cells[4, 0] := 'IDJUEGO';
 
@@ -96,10 +96,10 @@ Begin
     Begin
 
       Cells[0, IndexRenglon] := IntToStr(RD.idCarton);
-      Cells[1, IndexRenglon] := IntToStr(IndexRenglon);
-      Cells[2, IndexRenglon] := IntToStr(rd.ant);
+      Cells[1, IndexRenglon] :=    IntToStr(rd.ant);
+      Cells[2, IndexRenglon] := IntToStr(IndexRenglon-1);
       Cells[3, IndexRenglon] := IntToStr(rd.sig);//TRttiEnumerationType.GetName( RD.estado);
-      Cells[4, IndexRenglon] := IntToStr(rd.idJuego);
+      Cells[4, IndexRenglon] := rd.nombreEvento;
 
       FixedRows:=1;
     End;

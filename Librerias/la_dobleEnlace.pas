@@ -15,32 +15,36 @@ function IsNumberInArray(const ANumber: integer;
   const AArray: array of tRegCampoMatriz): boolean;
 procedure altaCarton(idJugador: string; nombreEvento: string; grilla: tMatriz);
 function isGrillasIguales(grilla1, grilla2: tMatriz): boolean;
-function isGrillaEnMe(Var Me: MeDobleEnlace; grilla: tMatriz): boolean;
+function isGrillaEnMe(Var Me: MeDobleEnlace; grilla: tMatriz;
+  nombreEvento: string): boolean;
 Procedure OrdenarColumnaGrilla(var V: Array of tRegCampoMatriz);
 function getColumnaArreglo(V: tMatriz; index: integer): TArrayMatriz;
 procedure ordenarGrilla(var m: tMatriz);
-function tieneCartonesComprados(idJugador: tidUsuario; idJuego: tId;
+function isTieneCartonesComprados(idJugador: tidUsuario; nombreEvento: string;
   var meCartones: MeDobleEnlace): boolean;
-function eliminarCartonesDeJugador(idJugador: tidUsuario; idJuego: tId;
+function eliminarCartonesDeJugador(idJugador: tidUsuario; nombreEvento: string;
   var meCartones: MeDobleEnlace): integer;
-function cantidadCartonesComprados(idJugador: tidUsuario; idJuego: tId;
+function cantidadCartonesComprados(idJugador: tidUsuario; nombreEvento: string;
   var meCartones: MeDobleEnlace): integer;
-function cantidadJugadoresEnJuego(idJuego: tId;
+function cantidadJugadoresEnJuego(nombreEvento: string;
   var meCartones: MeDobleEnlace): integer;
 
 // PROBAR
-function tacharNumeroEnCarton(var carton: tRegDatos_DE; pos: tpos;
+function tacharNumeroSiEstaEnCarton(var carton: tRegDatos_DE; pos: tpos;
   numeroBolilla: integer): boolean;
 
-function esPremioDiagonal1(grilla: tMatriz): boolean;
-function esPremioDiagonal2(grilla: tMatriz): boolean;
-function esPremioCruz(grilla: tMatriz): boolean;
-function esPremioLineaV(grilla: tMatriz): boolean;
-function esPremioLineaH(grilla: tMatriz): boolean;
-function esPremioBingo(grilla: tMatriz): boolean;
-function esPremioCuadradoChico(grilla: tMatriz): boolean;
-function esPremioCuadradoGrande(grilla: tMatriz): boolean;
-function esPremioGeneral(grilla: tMatriz; tipoPremio: tTipoPremio): boolean;
+function isTienePremioDiagonal1(grilla: tMatriz): boolean;
+function isTienePremioDiagonal2(grilla: tMatriz): boolean;
+function isTienePremioCruz(grilla: tMatriz): boolean;
+function isTienePremioLineaV(grilla: tMatriz): boolean;
+function isTienePremioLineaH(grilla: tMatriz): boolean;
+function isTienePremioBingo(grilla: tMatriz): boolean;
+function isTienePremioCuadradoChico(grilla: tMatriz): boolean;
+function isTienePremioCuadradoGrande(grilla: tMatriz): boolean;
+function isTienePremioGeneral(grilla: tMatriz; tipoPremio: tTipoPremio)
+  : boolean;
+function verificarYDevolverSiCartonTienePremio(var carton: tRegDatos_DE;
+  out premio: tTipoPremio): boolean;
 
 implementation
 
@@ -150,25 +154,37 @@ begin
   reg.idJugador := idJugador;
   reg.grilla := grilla;
   BuscarInfo(meCartones, reg.idCarton, posicion);
+  //el posicion no sirve, creo posNueva al insertar
   InsertarInfo(meCartones, reg, posicion);
 end;
 
-function isGrillaEnMe(Var Me: MeDobleEnlace; grilla: tMatriz): boolean;
+function isGrillaEnMe(Var Me: MeDobleEnlace; grilla: tMatriz;
+  nombreEvento: string): boolean;
 var
   existe: boolean;
   i: integer;
   reg: tRegDatos_DE;
+  grillasIguales: boolean;
 begin
-  // detallar en la documentacion
+  { Por cada grilla insertada en el ME del juego actual,
+    se llama a la función ‘isGrillasIguales’. Si se encuentra una igual,
+    se deja de llamar y se retorna ‘true’. En caso de que se llegue al último registro del
+    ME sin encontrar coincidencia, se retorna ‘false’.
+  }
+  grillasIguales := false;
+
   i := LO_DobleEnlace.Primero(meCartones);
-  while i <> _posnula do
+  while ((i <> _posnula) and (not grillasIguales)) do
   begin
     reg := CapturarInfo(meCartones, i);
-    if isGrillasIguales(grilla, reg.grilla) then
-      Exit(true);
+    if reg.nombreEvento = nombreEvento then
+    begin
+      if isGrillasIguales(grilla, reg.grilla) then
+        grillasIguales := true;
+    end;
     i := LO_DobleEnlace.Proximo(meCartones, i);
   end;
-  result := false;
+  result := grillasIguales;
 end;
 
 function isGrillasIguales(grilla1, grilla2: tMatriz): boolean;
@@ -242,7 +258,7 @@ begin
   m[2, 2].numero := 0;
 end;
 
-function tieneCartonesComprados(idJugador: tidUsuario; idJuego: tId;
+function isTieneCartonesComprados(idJugador: tidUsuario; nombreEvento: string;
   var meCartones: MeDobleEnlace): boolean;
 // dado id de jugador e id de juego, devolver si el jugador tiene cartones comprados del juego
 var
@@ -259,7 +275,8 @@ begin
 
       reg := LO_DobleEnlace.CapturarInfo(meCartones, j);
 
-      if ((reg.idJugador = idJugador) and (reg.idJuego = idJuego)) then
+      if ((reg.idJugador = idJugador) and (reg.nombreEvento = nombreEvento))
+      then
         Exit(true);
       j := LO_DobleEnlace.Proximo(meCartones, j);
 
@@ -268,7 +285,7 @@ begin
   result := false;
 end;
 
-function cantidadCartonesComprados(idJugador: tidUsuario; idJuego: tId;
+function cantidadCartonesComprados(idJugador: tidUsuario; nombreEvento: string;
   var meCartones: MeDobleEnlace): integer;
 // dado id de jugador e id de juego, devolver cantidad cartones comprados por el jugador
 var
@@ -283,7 +300,8 @@ begin
     // while j <> _posnula do
     repeat
       reg := LO_DobleEnlace.CapturarInfo(meCartones, j);
-      if ((reg.idJugador = idJugador) and (reg.idJuego = idJuego)) then
+      if ((reg.idJugador = idJugador) and (reg.nombreEvento = nombreEvento))
+      then
         count := count + 1;
       j := LO_DobleEnlace.Proximo(meCartones, j);
     until (j = _posnula);
@@ -291,7 +309,7 @@ begin
   result := count;
 end;
 
-function cantidadJugadoresEnJuego(idJuego: tId;
+function cantidadJugadoresEnJuego(nombreEvento: string;
   var meCartones: MeDobleEnlace): integer;
 var
   tiene: boolean;
@@ -307,7 +325,7 @@ begin
     // while j <> _posnula do
     repeat
       reg := LO_DobleEnlace.CapturarInfo(meCartones, j);
-      if (reg.idJuego = idJuego) then
+      if (reg.nombreEvento = nombreEvento) then
       begin
         SetLength(arr, length(arr) + 1);
         arr[count] := reg.idJugador;
@@ -332,7 +350,7 @@ begin
   result := uniqueCount;
 end;
 
-function eliminarCartonesDeJugador(idJugador: tidUsuario; idJuego: tId;
+function eliminarCartonesDeJugador(idJugador: tidUsuario; nombreEvento: string;
   var meCartones: MeDobleEnlace): integer;
 // elimina y devuelve la cantidad que elimino
 var
@@ -345,7 +363,7 @@ begin
   repeat
     borro := false;
     reg := CapturarInfo(meCartones, j);
-    if ((reg.idJugador = idJugador) and (reg.idJuego = idJuego)) then
+    if ((reg.idJugador = idJugador) and (reg.nombreEvento = nombreEvento)) then
     begin
       Eliminar(meCartones, j);
       cant := cant + 1;
@@ -362,35 +380,54 @@ begin
   result := cant;
 end;
 
-function tacharNumeroEnCarton(var carton: tRegDatos_DE; pos: tpos;
+function tacharNumeroSiEstaEnCarton(var carton: tRegDatos_DE; pos: tpos;
   numeroBolilla: integer): boolean;
 var
   i, j: integer;
+  tache: boolean;
 begin
-  // POSIBILIDAD: modificar para que solo traiga el idCarton y buscarlo aca adentro, pero requeriria una busqueda mas
+  // POSIBILIDAD: modificar para que solo traiga el idCarton y buscarlo aca adentro,
+  // pero requeriria una busqueda mas
+  tache := false;
   for i := low(carton.grilla) to high(carton.grilla) do
   begin
     for j := low(carton.grilla[0]) to high(carton.grilla[0]) do
     begin
-      if (i <> 2) and (j <> 2) then
+        if ( not((i = 2) and (j = 2)) and not (tache)) then
         if (carton.grilla[i, j].numero = numeroBolilla) then
         begin
           carton.grilla[i, j].tachado := true;
           Modificar(meCartones, pos, carton);
-          Exit(true);
+          tache := true;
         end;
     end;
   end;
-  // si devuelve true, tacho el numero y  modifico en el archivo
-  result := false;
+  result := tache;
 end;
 
 // PREMIOS
 // tengo q chequear antes de calcularlo, que no se lo di ya en la bolilla anterior
-function esPremioDiagonal1(grilla: tMatriz): boolean;
+function isTienePremioDiagonal1(grilla: tMatriz): boolean;
 begin
-  if grilla[0, 0].tachado = true and grilla[1, 1].tachado = true and
-    grilla[3, 3].tachado = true and grilla[4, 4].tachado = true then
+  if (grilla[0, 0].tachado) and (grilla[1, 1].tachado) and
+    (grilla[3, 3].tachado) and (grilla[4, 4].tachado) then
+    result := true
+  else
+    result := false;
+end;
+
+function isTienePremioDiagonal2(grilla: tMatriz): boolean;
+begin
+  if (grilla[0, 4].tachado) and (grilla[1, 3].tachado) and
+    (grilla[3, 1].tachado) and (grilla[4, 0].tachado) then
+    result := true
+  else
+    result := false;
+end;
+
+function isTienePremioCruz(grilla: tMatriz): boolean;
+begin
+  if isTienePremioDiagonal1(grilla) and isTienePremioDiagonal2(grilla) then
     result := true
   else
   begin
@@ -398,28 +435,7 @@ begin
   end;
 end;
 
-function esPremioDiagonal2(grilla: tMatriz): boolean;
-begin
-  if grilla[0, 4].tachado = true and grilla[1, 3].tachado = true and
-    grilla[3, 1].tachado = true and grilla[4, 0].tachado = true then
-    result := true
-  else
-  begin
-    result := false;
-  end;
-end;
-
-function esPremioCruz(grilla: tMatriz): boolean;
-begin
-  if esPremioDiagonal1(grilla) and esPremioDiagonal2(grilla) then
-    result := true
-  else
-  begin
-    result := false;
-  end;
-end;
-
-function esPremioLineaH(grilla: tMatriz): boolean;
+function isTienePremioLineaH(grilla: tMatriz): boolean;
 var
   tieneLinea: boolean;
   i, j: integer;
@@ -429,11 +445,15 @@ begin
   begin
     for j := low(grilla[0]) to high(grilla[0]) do
     begin
-      if (i <> 2) and (j <> 2) then
+      if (not((i = 2) and (j = 2))) then
         if (grilla[i, j].tachado = true) then
           tieneLinea := true
         else
-          tieneLinea := false;
+        begin
+           tieneLinea := false;
+           break;
+        end;
+
     end;
     if tieneLinea then
       Exit(true);
@@ -442,7 +462,7 @@ begin
   result := false;
 end;
 
-function esPremioLineaV(grilla: tMatriz): boolean;
+function isTienePremioLineaV(grilla: tMatriz): boolean;
 var
   tieneLinea: boolean;
   i, j: integer;
@@ -452,11 +472,14 @@ begin
   begin
     for j := low(grilla[0]) to high(grilla[0]) do
     begin
-      if (i <> 2) and (j <> 2) then
+      if (not((i = 2) and (j = 2))) then
         if (grilla[j, i].tachado = true) then
           tieneLinea := true
         else
-          tieneLinea := false;
+        begin
+           tieneLinea := false;
+           break;
+        end;
     end;
     if tieneLinea then
       Exit(true);
@@ -465,7 +488,7 @@ begin
   result := false;
 end;
 
-function esPremioBingo(grilla: tMatriz): boolean;
+function isTienePremioBingo(grilla: tMatriz): boolean;
 var
   tieneLinea: boolean;
   i, j: integer;
@@ -475,7 +498,7 @@ begin
   begin
     for j := low(grilla[0]) to high(grilla[0]) do
     begin
-      if (i <> 2) and (j <> 2) then
+      if (not((i = 2) and (j = 2))) then
         if (not grilla[i, j].tachado) then
           Exit(false);
     end;
@@ -484,7 +507,7 @@ begin
   result := true;
 end;
 
-function esPremioCuadradoChico(grilla: tMatriz): boolean;
+function isTienePremioCuadradoChico(grilla: tMatriz): boolean;
 begin
   if grilla[1, 1].tachado and grilla[1, 2].tachado and grilla[1, 3].tachado and
     grilla[2, 3].tachado and grilla[3, 3].tachado and grilla[3, 2].tachado and
@@ -494,7 +517,7 @@ begin
     result := false
 end;
 
-function esPremioCuadradoGrande(grilla: tMatriz): boolean;
+function isTienePremioCuadradoGrande(grilla: tMatriz): boolean;
 begin
   if grilla[0, 0].tachado and grilla[0, 1].tachado and grilla[0, 2].tachado and
     grilla[0, 3].tachado and grilla[0, 4].tachado and grilla[1, 4].tachado and
@@ -507,90 +530,55 @@ begin
     result := false
 end;
 
-function esPremioGeneral(grilla: tMatriz; tipoPremio: tTipoPremio): boolean;
+function isTienePremioGeneral(grilla: tMatriz; tipoPremio: tTipoPremio)
+  : boolean;
 begin
   case tipoPremio of
 
     LineaHorizontal:
-      result := esPremioLineaH(grilla);
+      result := isTienePremioLineaH(grilla);
     LineaVertical:
-      result := esPremioLineaV(grilla);
+      result := isTienePremioLineaV(grilla);
     Diagonal1:
-      result := esPremioDiagonal1(grilla);
+      result := isTienePremioDiagonal1(grilla);
     Diagonal2:
-      result := esPremioDiagonal2(grilla);
+      result := isTienePremioDiagonal2(grilla);
     Cruz:
-      result := esPremioCruz(grilla);
+      result := isTienePremioCruz(grilla);
     CuadradoChico:
-      result := esPremioCuadradoChico(grilla);
+      result := isTienePremioCuadradoChico(grilla);
     CuadradoGrande:
-      result := esPremioCuadradoGrande(grilla);
+      result := isTienePremioCuadradoGrande(grilla);
     Bingo:
-      result := esPremioBingo(grilla);
+      result := isTienePremioBingo(grilla);
   end;
 end;
 
-function varificarEInsertarPremios(var carton: tRegDatos_DE;
+function verificarYDevolverSiCartonTienePremio(var carton: tRegDatos_DE;
   out premio: tTipoPremio): boolean;
 var
-  claveGanador: string;
-  posTri: tPosTri;
-  N: tNodoIndiceTri;
-  importePremio: real;
   juego: tRegDatosHash;
-  i: integer;
   tipoPremio: tTipoPremio;
   posHash: tPosHash;
+  tienePremio: boolean;
 begin
-  claveGanador := generarClaveGanador(carton.idJugador, carton.nombreEvento);
-  // buscar el ganador en el arbol trinario
-  BuscarNodo_Tri(meindiceganadores, claveGanador, posTri);
-  ObtenerNodo(meindiceganadores, posTri, N);
-  // TENGO EN N.MH la cabecera de la pila
-
-
-  // buscar en la pila si ya tiene el tipo de premio p/c uno
-  // si no lo tiene ve si ahora si
-  // si ahora si: insertar el premio en ganadores y notificar al jugador
-
-  BuscarHash(MeJuego, carton.nombreEvento, posHash);
-  CapturarInfoHash(MeJuego, posHash, juego);
-
-  // esto p/c premio
-  // for I := TRttiEnumerationType(tipoPremios).MinValue to TRttiEnumerationType(tipoPremios).MaxValue do
-  for tipoPremio := Low(tTipoPremio) to High(tTipoPremio) do
-  begin
-    // FALTA: IF not PremioYaEntregado pero a todos los jugadores del juego
-    if not isPremioEntregado(juego,tipoPremio) then
+    tienePremio := false;
+    BuscarHash(MeJuego, carton.nombreEvento, posHash);
+    CapturarInfoHash(MeJuego, posHash, juego);
+    for tipoPremio := Low(tTipoPremio) to High(tTipoPremio) do
     begin
-      if esPremioGeneral(carton.grilla, tipoPremio) then
+      //Consulta si en el juego, ya se entregó el premio en cuestion
+      if not isPremioEntregado(juego, tipoPremio) and not tienePremio then
       begin
-        if globals.JugadorLogueado.clave = carton.idJugador then
+        //Consulta si la grilla tiene algun premio
+        if isTienePremioGeneral(carton.grilla, tipoPremio) then
         begin
-          importePremio := la_arboltrinario.importePorTipoPremio(juego,
-            tipoPremio);
-          restarPremioAPozoAcumulado(juego, importePremio);
-          modificarPremioEntregado(juego,tipoPremio);
-          AltaGanador(claveGanador, tipoPremio, importePremio, carton.idCarton);
+            tienePremio := true;
+            premio := tipoPremio;
         end;
       end;
     end;
-  end;
-
-  // no iria, itero arriba
-  { if not premioYaEntregado(n.hm,tTipoPremio.LineaHorizontal) then
-    begin
-    if esPremioLineaH(carton.grilla) then
-    begin
-    if globals.JugadorLogueado.clave = carton.idJugador then
-    begin
-    importePremio := la_arboltrinario.importePorTipoPremio(juego,LineaHorizontal);
-    restarPremioAPozoAcumulado(juego,importePremio);
-    AltaGanador(claveGanador,LineaHorizontal,importePremio,carton.idCarton);
-    end;
-
-    end;
-    end; }
+  result := tienePremio;
 end;
 
 function mensajeGanadorPremio(premio: tTipoPremio): string;

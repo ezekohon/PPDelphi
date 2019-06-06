@@ -9,7 +9,7 @@ uses
   Vcl.Menus, abmJugadores,
   Vcl.Grids, Vcl.StdCtrls, lo_hashabierto, lo_dobleEnlace, LO_ArbolBinario,
   EjecucionJuegoAdmin,
-  Rtti, la_hashabierto, lo_pila, lo_colasparciales, lo_arboltrinario;
+  Rtti, la_hashabierto, lo_pila, lo_colasparciales, lo_arboltrinario, Pruebacartones;
 
 type
   TFormAdministrador = class(TForm)
@@ -20,6 +20,8 @@ type
     ABMJuegadores: TMenuItem;
     Label1: TLabel;
     grilla: TStringGrid;
+    PRUEBAS1: TMenuItem;
+    CARTONES1: TMenuItem;
     procedure RegistrarJugador1Click(Sender: TObject);
     procedure ABMJuegos1Click(Sender: TObject);
     procedure ABMJuegadoresClick(Sender: TObject);
@@ -30,6 +32,7 @@ type
     procedure grillaDblClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure CARTONES1Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -93,6 +96,11 @@ begin
       pos:=lo_hashabierto.Proximo(MeJuego,pos);
     end;
   end;
+end;
+
+procedure TFormAdministrador.CARTONES1Click(Sender: TObject);
+begin
+  FormPruebaCartones.ShowModal;
 end;
 
 procedure TFormAdministrador.FormClose(Sender: TObject;

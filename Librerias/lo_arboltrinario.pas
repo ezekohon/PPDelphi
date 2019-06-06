@@ -80,11 +80,14 @@ Procedure InsertarNodo_Tri(var Arbol: tMeIndiceTri; var nodo: tNodoIndiceTri;
 //  pos, posPadre: tPosTri);
 
 Function CantidadNodos(Arbol: tMeIndiceTri): integer;
-Procedure ObtenerNodo(Arbol: tMeIndiceTri; pos: tPosTri; var nodo: tNodoIndiceTri);
+Procedure ObtenerNodo(Arbol: tMeIndiceTri; pos: tPosTri; out nodo: tNodoIndiceTri);
 Function ProximoDer_Tri(Arbol: tMeIndiceTri; pos: tPosTri): tPosTri;
 Function ProximoIzq_Tri(Arbol: tMeIndiceTri; pos: tPosTri): tPosTri;
 Procedure Aumentar_UltimaCabeceraPila(var Arbol: tMeIndiceTri);
 Function Obtener_UltimaCabeceraPila(Arbol: tMeIndiceTri): integer;
+Function  Raiz_Tri(var Arbol:tMeIndiceTri):tPosTri;
+Function  PosNula_Tri(arbol:tMeIndiceTri):tPosTri;
+
 
 Var
   MeIndiceGanadores: tMeIndiceTri;
@@ -233,7 +236,7 @@ var // El pos que entra es la posicion fisica de su padre...
   Reg, rd: tNodoIndiceTri;
   RC: tControlTri;
 begin
-  nodo.hm := _posnula_tri;
+  //nodo.hm := _posnula_tri;
   seek(Arbol.C, 0);
   read(Arbol.C, RC);
   if RC.borrados = _posnula_tri then
@@ -358,7 +361,7 @@ begin
 end;
 
 { ****************************************************************************** }
-Procedure ObtenerNodo(Arbol: tMeIndiceTri; pos: tPosTri; var nodo: tNodoIndiceTri);
+Procedure ObtenerNodo(Arbol: tMeIndiceTri; pos: tPosTri; out nodo: tNodoIndiceTri);
 begin
   seek(Arbol.I, pos);
   Read(Arbol.I, nodo);
@@ -407,7 +410,20 @@ Begin
 end;
 
 { ****************************************************************************** }
+Function  Raiz_Tri(var Arbol:tMeIndiceTri):tPosTri;
+var
+   RC:tControlTri;
+begin
+   seek(Arbol.C,0);
+   read(Arbol.C,RC);
+   Raiz_Tri:=RC.Raiz;
+end;
 
+{ ****************************************************************************** }
+Function  PosNula_Tri(arbol:tMeIndiceTri):tPosTri;
+begin
+  PosNula_Tri:=_posnula_tri;
+end;
 
 
 end.

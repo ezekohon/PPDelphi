@@ -11,6 +11,7 @@
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object Cartón: TLabel
@@ -43,8 +44,7 @@
     Left = 8
     Top = 8
     Width = 642
-    Height = 129
-    Caption = 'panel1'
+    Height = 121
     TabOrder = 0
     object Image1: TImage
       Left = 528
@@ -81,15 +81,15 @@
       Caption = 'Partida actual'
     end
     object Label5: TLabel
-      Left = 272
-      Top = 46
+      Left = 248
+      Top = 40
       Width = 96
       Height = 13
       Caption = 'Cartones adquiridos'
     end
     object Label6: TLabel
-      Left = 272
-      Top = 78
+      Left = 262
+      Top = 65
       Width = 82
       Height = 13
       Caption = 'Premios Ganados'
@@ -121,7 +121,7 @@
       TabOrder = 2
       Text = 'JugadorEdit'
     end
-    object Edit3: TEdit
+    object PartidaActualEdit: TEdit
       Left = 358
       Top = 8
       Width = 121
@@ -131,7 +131,7 @@
       Text = 'JugadorEdit'
     end
     object CartonesEdit: TEdit
-      Left = 374
+      Left = 358
       Top = 35
       Width = 121
       Height = 21
@@ -140,8 +140,8 @@
       Text = 'JugadorEdit'
     end
     object PremiosGanadosEdit: TEdit
-      Left = 374
-      Top = 75
+      Left = 358
+      Top = 62
       Width = 121
       Height = 21
       ReadOnly = True
@@ -155,7 +155,10 @@
     Width = 642
     Height = 152
     FixedCols = 0
+    RowCount = 10
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect]
     TabOrder = 1
+    OnClick = grillaClick
   end
   object grillaCarton: TStringGrid
     Left = 126
@@ -167,14 +170,17 @@
     FixedCols = 0
     FixedRows = 0
     TabOrder = 2
+    OnDrawCell = grillaCartonDrawCell
   end
-  object StringGrid1: TStringGrid
+  object grillaDetallePremios: TStringGrid
     Left = 448
     Top = 320
     Width = 193
     Height = 145
     ColCount = 2
     FixedCols = 0
+    RowCount = 1
+    FixedRows = 0
     TabOrder = 3
   end
 end
