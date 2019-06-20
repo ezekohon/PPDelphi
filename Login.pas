@@ -3,10 +3,12 @@ unit Login;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Menus, LO_ArbolBinario, la_arbolbinario,
-    cypher, PantallaAdministrador, UnitRegistrarJugador, PantallaJugador, Globals, lo_dobleEnlace
-    ,lo_pila, lo_colasparciales, lo_arboltrinario;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Menus,
+  LO_ArbolBinario, la_arbolbinario,
+  cypher, PantallaAdministrador, UnitRegistrarJugador, PantallaJugador, Globals,
+  lo_dobleEnlace, lo_pila, lo_colasparciales, lo_arboltrinario, rtti;
 
 type
   TFormLogin = class(TForm)
@@ -31,8 +33,9 @@ type
 
 var
   FormLogin: TFormLogin;
+
 const
-    encryptionKey = 'MAKV2SPBNI99212';
+  encryptionKey = 'MAKV2SPBNI99212';
 
 implementation
 
@@ -46,78 +49,88 @@ var
   reg: tRegDatos;
   pass: string;
 begin
-  //si es usuario comun mandarlo a pantalla principal, si es admin al panel de control
-    //-AbrirMe_Archivos(MeJugadores);
-    //-AbrirMe_Indice(MeNick);
-    if BuscarNodo_Indice(MeNick,string.UpperCase(EditNick.Text),posIndiceNick) then //si true es que existe jugador
+  // si es usuario comun mandarlo a pantalla principal, si es admin al panel de control
+  // -AbrirMe_Archivos(MeJugadores);
+  // -AbrirMe_Indice(MeNick);
+  if BuscarNodo_Indice(MeNick, string.UpperCase(EditNick.Text), posIndiceNICK)
+  then // si true es que existe jugador
+  begin
+    posEnDatos := ObtenerInfo_Indice(MeNick, posIndiceNICK).posEnDatos;
+    ObtenerInfoMe_Archivos(MeJUGADORES, posEnDatos, reg);
+    pass := DecryptStr(reg.password, 3);
+    if pass = EditPassword.Text then
     begin
-        posEnDatos := ObtenerInfo_Indice(MeNick,posIndiceNick).PosEnDatos;
-        ObtenerInfoMe_Archivos(MeJUGADORES,posEnDatos,reg);
-        pass := DecryptStr(reg.password, 3) ;
-        if  pass = EditPassword.Text then
+      if reg.nick = 'ADMINISTRADOR' then
+      begin
+        // FormLogin.Hide();
+        FormAdministrador.showmodal; // Show();
+      end
+      else
+      begin
+
+        ObtenerInfoMe_Archivos(MeJUGADORES, posEnDatos, reg);
+
+        if ((reg.estado = Baja) or (reg.estado = Bloqueado)) then
+          ShowMessage('No puede loguearse. Su estado es: ' + TRttiEnumerationType.GetName(reg.estado))
+        else
         begin
-              if reg.nick = 'ADMINISTRADOR' then
-              begin
-                  //FormLogin.Hide();
-                  FormAdministrador.showmodal;//Show();
-              end
-              else
-              begin
-                  ObtenerInfoMe_Archivos(MeJUGADORES,posEnDatos,reg);
-                  reg.estado := Conectado;
-                  reg.fechaUltimaConexion := Now;
-                  ModificarInfoMe_Archivos(MeJUGADORES,posEnDatos,reg);
-                  FormJugador.JugadorActual := reg;
-                  Globals.JugadorLogueado := reg;
-                  //FormLogin.Hide();
-                  FormJugador.ShowModal;
-              end;
+          reg.estado := Conectado;
+          reg.fechaUltimaConexion := Now;
+          ModificarInfoMe_Archivos(MeJUGADORES, posEnDatos, reg);
+          FormJugador.JugadorActual := reg;
+          Globals.JugadorLogueado := reg;
+          // FormLogin.Hide();
+          FormJugador.showmodal;
         end;
 
-    end
-    else
-      ShowMessage ('Jugador no existe o contraseña inválida.');
+      end;
+    end;
 
-    //-CerrarMe_Archivos(MeJUGADORES);
-    //-Cerrarme_indice(MeNick);
+  end
+  else
+    ShowMessage('Jugador no existe o contraseña inválida.');
 end;
 
 procedure TFormLogin.FormActivate(Sender: TObject);
 begin
-    AbrirMe_Archivos(MeJugadores);
-    AbrirMe_Indice(MeNick);
+  AbrirMe_Archivos(MeJUGADORES);
+  AbrirMe_Indice(MeNick);
 end;
 
 procedure TFormLogin.FormCreate(Sender: TObject);
 begin
-   lo_dobleEnlace.CrearMe(MeCartones);
-   lo_pila.CrearMe(MeBolillero, lo_pila._RUTA_ARCHIVO_DATOS, lo_pila._RUTA_ARCHIVO_CONTROL);
-   lo_pila.CrearMe(MePilaGanadores, _RUTA_ARCHIVO_PILA_DATOS, _RUTA_ARCHIVO_PILA_CONTROL);
-   lo_arboltrinario.CrearMe_ArbolTri(MeIndiceGanadores);
-   CrearMe(MeTiradas);
+  lo_dobleEnlace.CrearMe(MeCartones);
+  lo_pila.CrearMe(MeBolillero, RUTA + _ARCHIVO_BOLILLERO_DATOS,//lo_pila._RUTA_ARCHIVO_DATOS,
+    RUTA + _ARCHIVO_BOLILLERO_CONTROL);//lo_pila._RUTA_ARCHIVO_CONTROL);
+  lo_pila.CrearMe(MePilaGanadores, RUTA + _ARCHIVO_GANADORES_DATOS,//_RUTA_ARCHIVO_PILA_DATOS,
+    RUTA + _ARCHIVO_GANADORES_CONTROL);//_RUTA_ARCHIVO_PILA_CONTROL);
+  lo_arboltrinario.CrearMe_ArbolTri(MeIndiceGanadores);
+  lo_colasparciales.CrearMe(MeTiradas,ruta + lo_colasparciales._ARCHIVO_DATOS,ruta + lo_colasparciales._ARCHIVO_CONTROL);
+  lo_colasparciales.crearME(mepremios,RUTA + _ARCHIVO_PREMIOS_DATOS,
+  RUTA + _ARCHIVO_PREMIOS_CONTROL);
+  lo_colasparciales.crearME(MeTiradasVirtualizacion,ruta + lo_colasparciales._ARCHIVO_DATOS_V,ruta + lo_colasparciales._ARCHIVO_CONTROL_V);
 
-   //centralizar aca la creacion de MEs? total todos los forms se crean en arranque
+  // centralizar aca la creacion de MEs? total todos los forms se crean en arranque
 end;
 
 procedure TFormLogin.FormDeactivate(Sender: TObject);
 begin
-    CerrarMe_Archivos(MeJUGADORES);
-    Cerrarme_indice(MeNick);
+  CerrarMe_Archivos(MeJUGADORES);
+  Cerrarme_indice(MeNick);
 end;
 
 procedure TFormLogin.FormKeyPress(Sender: TObject; var Key: Char);
 begin
-   if ord(Key) = VK_RETURN then
+  if ord(Key) = VK_RETURN then
   begin
     Key := #0; // prevent beeping
-    Button1Click(sender);
+    Button1Click(Sender);
   end;
 end;
 
 procedure TFormLogin.re1Click(Sender: TObject);
 begin
-      //FormLogin.Hide();
-      FormRegistrarJugador.Show();
+  FormRegistrarJugador.Show();
 end;
 
 end.

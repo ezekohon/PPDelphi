@@ -1,0 +1,349 @@
+unit abmJuegos;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, Vcl.StdCtrls, Vcl.ExtCtrls,
+  Vcl.Menus, lo_hashabierto, RTTI, DetalleJuego, Vcl.ComCtrls,
+  lo_colasparciales, globals;
+
+type
+  TFormAbmJuegos = class(TForm)
+    Grilla: TStringGrid;
+    PanelABM: TPanel;
+    ButtonAlta: TButton;
+    ButtonModificar: TButton;
+    ButtonEliminar: TButton;
+    PanelCampos: TPanel;
+    PanelGuardar: TPanel;
+    ButtonCancelar: TButton;
+    ButtonGuardar: TButton;
+    EditValor: TEdit;
+    Label2: TLabel;
+    Label1: TLabel;
+    EditNombreEvento: TEdit;
+    Label3: TLabel;
+    DateTimePicker1: TDateTimePicker;
+
+    // propios
+    procedure AltaJuego(nombreEvento: string; valor: real; fecha: tdatetime);
+    procedure ModificarJuego(nombreEvento: string; valor: real;
+      fecha: tdatetime);
+    procedure LimpiarCampos();
+    procedure PonerEnEstadoInicial();
+    procedure CargarGrilla();
+    Procedure SetearHeaders();
+    Procedure AgregarReglon(RD: tRegDatosHash; IndexRenglon: Integer);
+    function TieneCartonesVendidosOEmpezado(): boolean;
+
+    // procedure FormCreate(Sender: TObject);
+    procedure ButtonAltaClick(Sender: TObject);
+    procedure ButtonModificarClick(Sender: TObject);
+    procedure ButtonGuardarClick(Sender: TObject);
+    procedure ButtonCancelarClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure ButtonEliminarClick(Sender: TObject);
+    procedure GrillaDblClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    // procedure FormActivate(Sender: TObject);
+    // procedure FormDeactivate(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FormAbmJuegos: TFormAbmJuegos;
+
+implementation
+
+var
+  AccionActual: char;
+  PosModificar: tposhash;
+
+{$R *.dfm}
+  // como en c#. pasar por parametro un char A(alta), M(modif)
+
+procedure TFormAbmJuegos.ButtonAltaClick(Sender: TObject);
+begin
+  AccionActual := 'A';
+  PanelABM.Enabled := false;
+  PanelGuardar.Enabled := true;
+  PanelCampos.Enabled := true;
+end;
+
+procedure TFormAbmJuegos.ButtonCancelarClick(Sender: TObject);
+begin
+  PonerEnEstadoInicial;
+end;
+
+procedure TFormAbmJuegos.ButtonEliminarClick(Sender: TObject);
+var
+  ClaveAux: String;
+  Pos: tposhash;
+begin
+  ClaveAux := Grilla.Cells[0, Grilla.Row];
+  If (ClaveAux <> '') and (Grilla.Row > 0) then
+  begin
+    If TieneCartonesVendidosOEmpezado() then
+      Application.MessageBox
+        ('El juego tiene Cartones vendidos. No puede ser eliminado.',
+        'Acción no permitida', MB_ICONSTOP)
+    Else
+    begin
+      if Application.MessageBox
+        (PChar('¿Está seguro de que desea eliminar el juego: ' + ClaveAux +
+        '?'), 'Eliminando juego', MB_ICONQUESTION OR MB_YESNO) = ID_YES then
+      begin
+        // -AbrirMe_Hash(MeJuego);
+        if BuscarHash(MeJuego, ClaveAux, Pos) then // deberia ser siempre true
+          EliminarHash(MeJuego, Pos);
+        // -CerrarMe_Hash(MeJuego);
+      end;
+
+    end;
+  End
+  Else
+    ShowMessage('Seleccione un registro válido.');
+  CargarGrilla;
+end;
+
+procedure TFormAbmJuegos.LimpiarCampos();
+begin
+  EditNombreEvento.Clear;
+  EditValor.Clear;
+end;
+
+procedure TFormAbmJuegos.PonerEnEstadoInicial();
+begin
+  LimpiarCampos;
+  PanelCampos.Enabled := false;
+  PanelGuardar.Enabled := false;
+  PanelABM.Enabled := true;
+end;
+
+procedure TFormAbmJuegos.ButtonGuardarClick(Sender: TObject);
+var
+  nEvento: nombreEventoHash;
+  valor: real;
+  fecha: tdatetime;
+begin
+  nEvento := UpperCase(EditNombreEvento.text);
+  valor := StrToFloat(EditValor.text);
+  fecha := DateTimePicker1.Date;
+  if (AccionActual = 'A') then
+    AltaJuego(nEvento, valor, fecha)
+  else
+    ModificarJuego(nEvento, valor, fecha);
+
+  CargarGrilla;
+end;
+
+procedure TFormAbmJuegos.ButtonModificarClick(Sender: TObject);
+var
+  ClaveAux: nombreEventoHash;
+  Pos: tposhash;
+  Reg: tRegDatosHash;
+begin
+  AccionActual := 'M';
+  PanelABM.Enabled := false;
+  PanelGuardar.Enabled := true;
+  PanelCampos.Enabled := true;
+
+  ClaveAux := Grilla.Cells[0, Grilla.Row];
+  If (ClaveAux <> '') and (Grilla.Row > 0) then
+  begin
+    // -AbrirMe_Hash(MeJuego);
+    If BuscarHash(MeJuego, ClaveAux, Pos) then
+    begin
+      CapturarInfoHash(MeJuego, Pos, Reg);
+      EditNombreEvento.text := Reg.nombreEvento;
+      EditValor.text := FloatToStr(Reg.ValorVenta);
+      PosModificar := Pos;
+    end;
+    // -CerrarMe_Hash(MeJuego);
+  end;
+
+  // buscar el reg seleccionado en la grilla y ponerlo en los campos
+end;
+
+procedure TFormAbmJuegos.FormCreate(Sender: TObject);
+begin
+
+  CrearMe_Hash(MeJuego);
+
+end;
+
+procedure TFormAbmJuegos.FormShow(Sender: TObject);
+begin
+  CargarGrilla;
+end;
+
+procedure TFormAbmJuegos.GrillaDblClick(Sender: TObject);
+var
+  nombreEvento: string;
+  Pos: tposhash;
+  Reg: tRegDatosHash;
+begin
+  nombreEvento := Grilla.Cells[0, Grilla.Row];
+  BuscarHash(MeJuego, nombreEvento, Pos);
+  CapturarInfoHash(MeJuego, Pos, Reg);
+  FormDetalleJuego.JuegoActual := Reg;
+  FormDetalleJuego.ShowModal;
+end;
+
+procedure TFormAbmJuegos.AltaJuego(nombreEvento: string; valor: real;
+  fecha: tdatetime);
+var
+  Reg: tRegDatosHash;
+  Pos: tposhash;
+  tipoPremio: tTipoPremio;
+begin
+  // -AbrirMe_Hash(MeJuego);
+
+  Reg.nombreEvento := nombreEvento;
+  Reg.ValorVenta := valor;
+  Reg.fechaEvento := fecha;
+  Reg.estado := tEstadoJuego.NoActivado;
+  Reg.ocupado := true;
+  Reg.prox := _POSNULA;
+  Reg.id := ObtenerProximoID(MeJuego);
+  Reg.TotalCartonesVendidos := 0;
+  Reg.pozoAcumulado := 0;
+  Reg.PorcentajePremioLinea := 2;
+  Reg.PorcentajePremioDiagonal := 3;
+  Reg.PorcentajePremioCruz := 3;
+  Reg.PorcentajePremioCuadradoChico := 5;
+  Reg.PorcentajePremioCuadradoGrande := 7;
+
+  for tipoPremio := Low(tTipoPremio) to High(tTipoPremio) do
+  begin
+    Reg.arrPremiosEntregados[Integer(tipoPremio)].tipoPremio := tipoPremio;
+    Reg.arrPremiosEntregados[Integer(tipoPremio)].entregado := false;
+  end;
+
+  If HashLleno(MeJuego) then
+    ShowMessage('Archivo sin lugares disponibles.')
+  else
+  begin
+    If (not BuscarHash(MeJuego, Reg.nombreEvento, Pos)) and (Pos <> _POSNULA)
+    then
+    begin
+      Reg.Ant := Ultimo(MeJuego);
+      CambiarSiguiente(MeJuego, Pos);
+      InsertarHash(MeJuego, Reg, Pos);
+      CambiarCabeceraInsercion(MeJuego, Pos);
+      // insertar una cabecera al archivo de control en tiradas para este juego
+      insertarCabeceraControl(MeTIRADAS, Reg.id);
+      insertarCabeceraControl(MeTiradasVirtualizacion, reg.id);
+      insertarCabeceraControl(mepremios, reg.id);
+    end
+    Else
+    begin
+      ShowMessage('La clave que intenta guardar ya existe.');
+    end;
+    // -CerrarMe_Hash(MeJuego);
+  end;
+end;
+
+procedure TFormAbmJuegos.ModificarJuego(nombreEvento: string; valor: real;
+  fecha: tdatetime);
+var
+  Reg: tRegDatosHash;
+  Pos: tposhash;
+begin
+  // -AbrirMe_Hash(MeJuego);
+  CapturarInfoHash(MeJuego, PosModificar, Reg);
+  Reg.nombreEvento := nombreEvento;
+  Reg.ValorVenta := valor;
+  Reg.fechaEvento := fecha;
+
+  InsertarHash(MeJuego, Reg, PosModificar);
+
+  // -CerrarMe_Hash(MeJuego);
+
+end;
+
+procedure TFormAbmJuegos.CargarGrilla();
+var
+  Pos: tposhash;
+  Reg: tRegDatosHash;
+begin
+  // -AbrirMe_Hash(MeJuego);
+  If Total(MeJuego) > 0 then
+  Begin
+    Begin
+      Grilla.RowCount := 1;
+      SetearHeaders;
+      Pos := Primero(MeJuego);
+      While Pos <> _POSNULA do
+      Begin
+        CapturarInfoHash(MeJuego, Pos, Reg);
+        Grilla.RowCount := Grilla.RowCount + 1;
+        AgregarReglon(Reg, Grilla.RowCount - 1);
+        Pos := Proximo(MeJuego, Pos);
+      End;
+    End;
+
+  end;
+end;
+
+function TFormAbmJuegos.TieneCartonesVendidosOEmpezado(): boolean;
+var
+  ret: boolean;
+  Pos: tposhash;
+  Reg: tRegDatosHash;
+  nombreEvento: string;
+begin
+
+  ret := false;
+  nombreEvento := grilla.Cells[0, grilla.Row];
+  BuscarHash(MeJuego, nombreEvento, pos);
+  CapturarInfoHash(MeJuego, PosModificar, Reg);
+  if ((Reg.TotalCartonesVendidos > 0) or (not reg.estado = NoActivado)) then
+    ret := true;
+  // -CerrarMe_Hash(MeJuego);
+
+  result := ret;
+end;
+
+Procedure TFormAbmJuegos.SetearHeaders();
+Begin
+  with Grilla do
+  Begin
+    // Título de las columnas
+    ColWidths[0] := Canvas.TextWidth
+      ('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+    ColWidths[1] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
+    ColWidths[2] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
+    // ColWidths[3] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+    // ColWidths[4] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxx');
+    Cells[0, 0] := 'NOMBRE EVENTO';
+    Cells[1, 0] := 'ESTADO';
+    Cells[2, 0] := 'CARTONES VENDIDOS';
+    // Cells[3, 0] := 'APELLIDO';
+    // Cells[4, 0] := 'TEL';
+  End;
+End;
+
+Procedure TFormAbmJuegos.AgregarReglon(RD: tRegDatosHash;
+  IndexRenglon: Integer);
+Begin
+  If RD.ocupado then
+  Begin
+    with Grilla do
+    Begin
+      Cells[0, IndexRenglon] := RD.nombreEvento;
+      Cells[1, IndexRenglon] := TRttiEnumerationType.GetName(RD.estado);
+      Cells[2, IndexRenglon] := IntToStr(RD.TotalCartonesVendidos);
+      // Cells[3, IndexRenglon] := Rh.apellidos;
+      // Cells[4, IndexRenglon] := Rh.telefono;
+      FixedRows := 1;
+    End;
+  End;
+End;
+
+end.

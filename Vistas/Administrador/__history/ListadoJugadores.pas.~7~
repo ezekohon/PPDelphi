@@ -1,0 +1,55 @@
+unit ListadoJugadores;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, lo_hashabierto, LO_ArbolBinario;
+
+type
+  TFormListadoJugadores = class(TForm)
+    grillaJugadores: TStringGrid;
+    procedure FormShow(Sender: TObject);
+    procedure CargarGrillaJugadores();
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    JuegoActual: tRegDatosHash;
+  end;
+
+var
+  FormListadoJugadores: TFormListadoJugadores;
+
+implementation
+
+{$R *.dfm}
+
+procedure TFormListadoJugadores.CargarGrillaJugadores();
+var
+  // pos: tPosHash;
+  i, count: Integer;
+  reg: tRegDatos;
+begin
+  SetearHeadersJugadores;
+  { count := 1;
+    for i := 0 to Ultimo_Archivos(MeJugadores) do
+    begin
+
+    ObtenerInfoMe_Archivos(MeJugadores, i, reg);
+    if isTieneCartonesComprados(reg.clave, JuegoActual.id, mecartones) then
+    begin
+    AgregarReglonJugadores(reg, count);
+    count := count + 1;
+    end;
+
+    end; }
+  InOrdenArbolBi(MeNick, Raiz_Indice(MeNick));
+end;
+
+procedure TFormListadoJugadores.FormShow(Sender: TObject);
+begin
+  CargarGrillaJugadores;
+end;
+
+end.

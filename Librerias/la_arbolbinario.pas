@@ -1,7 +1,5 @@
 unit la_arbolbinario;
 
- //C:\Users\ezeko\Google Drive\Juan 23\PROG 2\FinalesViejos\Programación II - TP Final año 2010-Adan Gatica\Programación II - TP Final año 2010-Adan Gatica\Librerias\Clientes
-
 interface
 
 uses
@@ -14,6 +12,8 @@ Function AltaJugador (Nick, Nombre, Mail, password: string; imagen: tjpegimage):
 function BuscarMail(mail:string):boolean;
 //function GenerarProximoIDusuario():tidusuario;
 Procedure InsertarAdminCuandoMEVacio();
+Procedure InOrdenContarJugadoresConectados(Arbol: MeArbol;
+  Raiz: tPosArbol;var cuenta:integer);
 
 
 implementation
@@ -28,7 +28,6 @@ Var
   IdUsuario: tIDusuario;
   ultimoid: tidusuario;
 Begin
-
   //obtengo ultimo IDusuario
   //-AbrirMe_Archivos(MeJugadores);
   ultimoid:= ObtenerUltimoID_Archivos(MeJugadores);
@@ -162,29 +161,31 @@ begin
     InOrden (Arbol,ProximoDer_Indice(Arbol,Raiz));
 end;
 
-
-
-{
-function tieneCartonesComprados(idJugador:tidUsuario; idJuego:tId; var meCartones:MeDobleEnlace):boolean;
-//dado id de jugador e id de juego, devolver si el jugador tiene cartones comprados del juego
+Procedure InOrdenContarJugadoresConectados(Arbol: MeArbol;
+  Raiz: tPosArbol;var cuenta:integer);
 var
-  tiene: boolean;
-  j: Integer;
-  reg: tRegDatos_DE;
+  RD: tRegDatos;
+  N: tNodoIndice;
 begin
-     //detallar en la documentacion
-     j := Primero(MeCartones);
-     //while i <> _posnula do
-     repeat
-             reg:= CapturarInfo(MeCartones, j);
-         if ((reg.idJugador= idJugador) and (reg.idJuego = idJuego)) then
-           Exit(true);
-         j:= Proximo(MeCartones,j);
-     until (j = _posnula);
+  If Raiz = PosNula_Indice(Arbol) then
+    exit;
 
-     result:= false;
-end;   LA PASE A LA DOBLE ENLACE}
+  // Primero recursivo tendiendo a la Izquierda
+  InOrdenContarJugadoresConectados(Arbol, ProximoIzq_Indice(Arbol, Raiz), cuenta);
 
+  // Guardo en N el nodo indice.
+  N := ObtenerInfo_Indice(Arbol, Raiz);
+
+  // De N utilizo la posicion en Clientes para leer el registro.
+  ObtenerInfoMe_Archivos(MeJugadores, N.PosEnDatos, RD);
+
+  if rd.estado = Conectado
+  then
+    cuenta:= cuenta + 1;
+
+  InOrdenContarJugadoresConectados(Arbol, ProximoDer_Indice(Arbol, Raiz), cuenta);
+
+end;
 
 end.
 

@@ -93,6 +93,7 @@ object FormAbmJuegos: TFormAbmJuegos
       Top = 56
       Width = 121
       Height = 21
+      NumbersOnly = True
       TabOrder = 1
     end
     object EditNombreEvento: TEdit

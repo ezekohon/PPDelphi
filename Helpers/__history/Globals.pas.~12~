@@ -1,0 +1,31 @@
+unit Globals;
+
+interface
+
+uses
+  lo_arbolbinario,math;
+
+  type
+   tTipoPremio = (LineaHorizontal, LineaVertical, Diagonal1,
+    Diagonal2, Cruz, CuadradoChico, CuadradoGrande, Bingo);
+   tModoEjecucion = (Normal, VManual, VAutomatica);
+    function dosDecimales(numero:real):real;
+
+var
+  JugadorLogueado: lo_arbolbinario.tregdatos;
+const
+ ruta = 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\';
+
+implementation
+
+function dosDecimales(numero:real):real;
+begin
+  result:= RoundTo(numero,-2);
+end;
+
+procedure mensajeInformacion(msg:string);
+begin
+  messagedlg('El administrador no puede ser bloqueado', mtInformation, [mbOk], 0, mbOk);
+end;
+
+end.

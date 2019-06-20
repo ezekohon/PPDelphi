@@ -9,7 +9,7 @@ procedure restarCantidadCartonesVendidos(cantidad:integer; nombreEvento:nombreEv
 function hayPartidaJugando(me:tmehash; out nombreEvento:string):boolean;
 procedure empezarJuego(nombreEvento:string);
 procedure finalizarJuego(nombreEvento:string);
-procedure modificarPremioEntregado(juego: tRegDatosHash; tipoPremio: ttipopremio); //PROBAR
+procedure modificarPremioEntregado(juego: tRegDatosHash; tipoPremio: ttipopremio);
 function isPremioEntregado (juego: tRegDatosHash; tipoPremio: ttipopremio):boolean;
 
 

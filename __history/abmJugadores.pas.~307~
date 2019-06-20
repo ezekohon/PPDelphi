@@ -1,0 +1,749 @@
+unit abmJugadores;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, lo_arbolbinario,
+  la_arbolbinario, la_arboltrinario, lo_arboltrinario,
+  Vcl.StdCtrls, Vcl.ExtCtrls, RTTI, la_dobleenlace, lo_dobleenlace, globals,
+  lo_hashabierto, lo_colasparciales;
+
+type
+  TFormABMJugadores = class(TForm)
+    grilla: TStringGrid;
+    RadioGroup1: TRadioGroup;
+    RadioListadoGeneral: TRadioButton;
+    RadioPorCartones: TRadioButton;
+    RadioPorPremios: TRadioButton;
+    RadioDineroTotal: TRadioButton;
+    ButtonBloquearJugador: TButton;
+    ButtonDesbloquearJugador: TButton;
+    ComboBoxPremios: TComboBox;
+    grillaCarton: TStringGrid;
+    Image1: TImage;
+    Panel1: TPanel;
+    RadioCartonesBingo: TRadioButton;
+
+    // propios
+    procedure CargarGrilla();
+    Procedure SetearHeaders();
+    Procedure SetearHeadersTotalCartones();
+    Procedure SetearHeadersDineroTotal();
+    Procedure AgregarReglon(RD: tRegDatos);
+    // Procedure EnOrden (Arbol:MeArbol; Raiz: tPosArbol);
+
+    procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure ButtonBloquearJugadorClick(Sender: TObject);
+    procedure ButtonDesbloquearJugadorClick(Sender: TObject);
+    Procedure EnOrdenTotalCartones(Arbol: MeArbol; Raiz: tPosArbol);
+    procedure RadioPorCartonesClick(Sender: TObject);
+    procedure LimpiarGrilla();
+    procedure SortGridByCols2(Grid: TStringGrid; ColOrder: array of Integer);
+    procedure RadioListadoGeneralClick(Sender: TObject);
+    procedure RadioPorPremiosClick(Sender: TObject);
+    Procedure EnOrdenListaPremios(Arbol: MeArbol; Raiz: tPosArbol;
+      tipoPremio: string);
+    procedure ComboBoxPremiosChange(Sender: TObject);
+    procedure RadioDineroTotalClick(Sender: TObject);
+    Procedure EnOrdenDineroTotal(Arbol: MeArbol; Raiz: tPosArbol);
+    procedure RadioCartonesBingoClick(Sender: TObject);
+    Procedure EnOrdenCartonesConBingo(Arbol: tMeIndiceTri; Raiz: tPosTri);
+    Procedure AgregarReglonCartonesConBingo(idCarton: Integer; importe: real;
+      idGanador: string);
+    Procedure SetearHeadersartonesConBingo();
+
+
+    Procedure AgregarCeldaCarton(celdaCarton: tRegCampoMatriz;
+      IndexRenglon: Integer; IndexCol: Integer);
+    procedure grillaClick(Sender: TObject);
+
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+
+  end;
+
+var
+  FormABMJugadores: TFormABMJugadores;
+
+implementation
+
+{$R *.dfm}
+
+type
+  TMoveSG = class(TCustomGrid);
+
+  TSortInfo = Record
+    col: Integer;
+    asc: Boolean;
+  End;
+
+procedure TFormABMJugadores.ButtonBloquearJugadorClick(Sender: TObject);
+var
+  clave: tIDusuario;
+  posEnDatos: tposarchi;
+  posIndiceID: tPosArbol;
+  reg: tRegDatos;
+  estado: string;
+begin
+  if not RadioCartonesBingo.Checked then
+  begin
+        estado := grilla.Cells[3, grilla.Row];
+    clave := grilla.Cells[0, grilla.Row];
+    If (clave <> '') and (clave <> '1') and (grilla.Row > 0) and (estado <> 'Bloqueado') then
+    begin
+      if Application.MessageBox
+        (PChar('¿Está seguro de que desea bloquear al jugador: ' + grilla.Cells
+        [2, grilla.Row] + '?'), 'Bloqueo jugador', MB_ICONQUESTION OR MB_YESNO)
+        = ID_YES then
+      begin
+        if BuscarNodo_Indice(MeID, clave, posIndiceID) then
+        // simpre true, para buscar la posIndiceID
+        begin
+          posEnDatos := ObtenerInfo_Indice(MeID, posIndiceID).posEnDatos;
+          ObtenerInfoMe_Archivos(MeJUGADORES, posEnDatos, reg);
+          reg.estado := Bloqueado;
+          ModificarInfoMe_Archivos(MeJUGADORES, posEnDatos, reg);
+        end;
+        CargarGrilla;
+      end;
+    end;
+        if clave = '1' then
+      ShowMessage('El administrador no puede ser bloqueado.');
+     if (estado = 'Bloqueado') then
+      ShowMessage('El jugador ya se encuentra bloqueado.');
+     if (grilla.Row < 0) or (clave = '') then
+      ShowMessage('Seleccione un registro válido.');
+
+  end;
+end;
+
+procedure TFormABMJugadores.ButtonDesbloquearJugadorClick(Sender: TObject);
+var
+  clave: tIDusuario;
+  posEnDatos: tposarchi;
+  posIndiceID: tPosArbol;
+  reg: tRegDatos;
+  estado: string;
+begin
+  if not RadioCartonesBingo.Checked then
+  begin
+    clave := grilla.Cells[0, grilla.Row];
+    estado := grilla.Cells[3, grilla.Row];
+    If (clave <> '') and (clave <> '1') and (grilla.Row > 0) and
+    (estado <> 'Desconectado') or (estado <> 'Conectado') or (estado <> 'Baja') then
+    begin
+      if Application.MessageBox
+        (PChar('¿Está seguro de que desea desbloquear al jugador: ' +
+        grilla.Cells[2, grilla.Row] + '?'), 'Desbloqueo jugador',
+        MB_ICONQUESTION OR MB_YESNO) = ID_YES then
+      begin
+        // -AbrirMe_Archivos(MeJugadores);
+        // -AbrirMe_Indice(MeID);
+        if BuscarNodo_Indice(MeID, clave, posIndiceID) then
+        // simpre true, para buscar la posIndiceID
+        begin
+          posEnDatos := ObtenerInfo_Indice(MeID, posIndiceID).posEnDatos;
+          ObtenerInfoMe_Archivos(MeJUGADORES, posEnDatos, reg);
+          reg.estado := Desconectado;
+          ModificarInfoMe_Archivos(MeJUGADORES, posEnDatos, reg);
+        end;
+        // -CerrarMe_Archivos(MeJUGADORES);
+        // -Cerrarme_indice(MeID);
+        CargarGrilla;
+      end;
+    end;
+
+    if clave = '1' then
+      ShowMessage('El administrador no puede ser desbloqueado.');
+     if ((estado = 'Desconectado') or (estado = 'Conectado') or (estado = 'Baja') ) then
+      ShowMessage('El jugador ya se encuentra desbloqueado.');
+     if (grilla.Row < 0) or (clave = '') then
+      ShowMessage('Seleccione un registro válido.');
+  end;
+
+end;
+
+procedure TFormABMJugadores.CargarGrilla();
+var
+  // pos: tPosHash;
+  i: Integer;
+  reg: tRegDatos;
+begin
+  SetearHeaders;
+  // -AbrirMe_Archivos(MeJugadores);
+
+  if RadioListadoGeneral.Checked then
+  begin
+    LimpiarGrilla;
+    SetearHeaders;
+    for i := 0 to Ultimo_Archivos(MeJUGADORES) do
+    begin
+      ObtenerInfoMe_Archivos(MeJUGADORES, i, reg);
+      AgregarReglon(reg);
+    end;
+    // listado ordenado por cartones comrpados (ME cartones)
+
+    // listado ordenado por dinero ganado (ME ganadores?)
+  end;
+  if RadioPorCartones.Checked then
+  begin
+    LimpiarGrilla;
+    SetearHeadersTotalCartones;
+    EnOrdenTotalCartones(MeID, raiz_indice(MeID));
+    SortGridByCols2(grilla, [4, 0, 3, 2, 1]);
+  end;
+  if RadioPorPremios.Checked then
+  begin
+    LimpiarGrilla;
+    SetearHeaders;
+
+  end;
+  if RadioDineroTotal.Checked then
+  begin
+    LimpiarGrilla;
+    SetearHeadersDineroTotal;
+    EnOrdenDineroTotal(MeID, raiz_indice(MeID));
+    SortGridByCols2(grilla, [4, 0, 3, 2, 1]);
+  end;
+  if RadioCartonesBingo.Checked then
+  begin
+    LimpiarGrilla;
+    SetearHeadersartonesConBingo;
+    EnOrdenCartonesConBingo(MeIndiceGanadores, raiz_tri(MeIndiceGanadores));
+
+  end;
+
+end;
+
+procedure TFormABMJugadores.ComboBoxPremiosChange(Sender: TObject);
+begin
+  if RadioPorPremios.Checked then
+  begin
+    LimpiarGrilla;
+    SetearHeaders;
+    EnOrdenListaPremios(MeID, raiz_indice(MeID),
+      ComboBoxPremios.Items[ComboBoxPremios.ItemIndex]);
+  end;
+
+end;
+
+Procedure TFormABMJugadores.EnOrdenTotalCartones(Arbol: MeArbol;
+  Raiz: tPosArbol);
+var
+  RD: tRegDatos;
+  N: tNodoIndice;
+  Procedure AgregarReglon(RD: tRegDatos; cantCartones: Integer);
+  Begin
+
+    with grilla do
+    Begin
+      RowCount := RowCount + 1;
+      Cells[0, RowCount - 1] := RD.clave;
+      Cells[1, RowCount - 1] := RD.MAIL;
+      // TRttiEnumerationType.GetName( RD.estado);
+      Cells[2, RowCount - 1] := RD.nick; // IntToStr(RD.TotalCartonesVendidos);
+      Cells[3, RowCount - 1] := TRttiEnumerationType.GetName(RD.estado);
+      Cells[4, RowCount - 1] := inttostr(cantCartones);
+      FixedRows := 1;
+    End;
+  End;
+
+begin
+  If Raiz = PosNula_Indice(Arbol) then
+    exit;
+
+  EnOrdenTotalCartones(Arbol, ProximoIzq_Indice(Arbol, Raiz));
+
+  N := ObtenerInfo_Indice(Arbol, Raiz);
+
+  ObtenerInfoMe_Archivos(MeJUGADORES, N.posEnDatos, RD);
+
+  if RD.clave <> '1' then
+    AgregarReglon(RD, cantidadCartonesCompradosTotales(RD.clave, MeCartones));
+
+  EnOrdenTotalCartones(Arbol, ProximoDer_Indice(Arbol, Raiz));
+end;
+
+Procedure TFormABMJugadores.EnOrdenListaPremios(Arbol: MeArbol; Raiz: tPosArbol;
+  tipoPremio: string);
+var
+  RD: tRegDatos;
+  N: tNodoIndiceTri;
+  NJug: tNodoIndice;
+  obtuvoPremio: Boolean;
+  Procedure AgregarReglon(RD: tRegDatos);
+  Begin
+    with grilla do
+    Begin
+      RowCount := RowCount + 1;
+      Cells[0, RowCount - 1] := RD.clave;
+      Cells[1, RowCount - 1] := RD.MAIL;
+      Cells[2, RowCount - 1] := RD.nick;
+      Cells[3, RowCount - 1] := TRttiEnumerationType.GetName(RD.estado);
+      Cells[4, RowCount - 1] := RD.nombre;
+      FixedRows := 1;
+    End;
+  End;
+
+begin
+  If Raiz = PosNula_Indice(Arbol) then
+    exit;
+
+  EnOrdenListaPremios(Arbol, ProximoIzq_Indice(Arbol, Raiz), tipoPremio);
+
+  NJug := ObtenerInfo_Indice(Arbol, Raiz);
+
+  ObtenerInfoMe_Archivos(MeJUGADORES, NJug.posEnDatos, RD);
+
+  obtuvoPremio := false;
+
+  InOrderIsGanadorObtuvoPremio(MeIndiceGanadores, raiz_tri(MeIndiceGanadores),
+    NJug.clave, tipoPremio, obtuvoPremio);
+  if obtuvoPremio then
+  begin
+    AgregarReglon(RD);
+  end;
+  EnOrdenListaPremios(Arbol, ProximoDer_Indice(Arbol, Raiz), tipoPremio);
+end;
+
+Procedure TFormABMJugadores.EnOrdenDineroTotal(Arbol: MeArbol; Raiz: tPosArbol);
+var
+  RD: tRegDatos;
+  N: tNodoIndiceTri;
+  NJug: tNodoIndice;
+  suma: real;
+  pos: tPosArbol;
+
+  Procedure AgregarReglon(RD: tRegDatos; suma: real);
+  Begin
+    with grilla do
+    Begin
+      RowCount := RowCount + 1;
+      Cells[0, RowCount - 1] := RD.clave;
+      Cells[1, RowCount - 1] := RD.MAIL;
+      Cells[2, RowCount - 1] := RD.nick;
+      Cells[3, RowCount - 1] := TRttiEnumerationType.GetName(RD.estado);
+      Cells[4, RowCount - 1] := FloatToStr(dosDecimales(suma));
+      FixedRows := 1;
+    End;
+  End;
+
+begin
+  If Raiz = PosNula_Indice(Arbol) then
+    exit;
+
+  // Primero recursivo tendiendo a la Izquierda
+  EnOrdenDineroTotal(Arbol, ProximoIzq_Indice(Arbol, Raiz));
+
+  // Guardo en N el nodo indice.
+
+  NJug := ObtenerInfo_Indice(Arbol, Raiz);
+
+  ObtenerInfoMe_Archivos(MeJUGADORES, NJug.posEnDatos, RD);
+  suma := 0;
+  InOrderSumarPremiosAcumuladosTotales(MeIndiceGanadores,
+    raiz_tri(MeIndiceGanadores), NJug.clave, suma);
+  if RD.clave <> '1' then
+    AgregarReglon(RD, suma);
+
+  // Recursividad tendiendo a la Derecha.
+  EnOrdenDineroTotal(Arbol, ProximoDer_Indice(Arbol, Raiz));
+  SortGridByCols2(grilla, [4, 0, 3, 2, 1]);
+end;
+
+Procedure TFormABMJugadores.EnOrdenCartonesConBingo(Arbol: tMeIndiceTri;
+  Raiz: tPosTri);
+var
+  RD: tRegDatos;
+  N: tNodoIndiceTri;
+  NJug: tNodoIndice;
+  obtuvoBingo, encontrado: Boolean;
+  pos: tPosArbol;
+  idCarton: Integer;
+  importe: real;
+const
+  tipoPremio = Bingo;
+  Procedure AgregarReglon(RD: tRegDatos);
+  Begin
+    with grilla do
+    Begin
+      RowCount := RowCount + 1;
+      Cells[0, RowCount - 1] := RD.clave;
+      Cells[1, RowCount - 1] := RD.MAIL;
+      Cells[2, RowCount - 1] := RD.nick;
+      Cells[3, RowCount - 1] := TRttiEnumerationType.GetName(RD.estado);
+      Cells[4, RowCount - 1] := RD.nombre;
+      FixedRows := 1;
+    End;
+  End;
+
+begin
+  If Raiz = PosNula_Tri(Arbol) then
+    exit;
+
+  // Primero recursivo tendiendo a la Izquierda
+  EnOrdenCartonesConBingo(Arbol, ProximoIzq_Tri(Arbol, Raiz));
+
+  ObtenerNodo(Arbol, Raiz, N);
+
+  obtuvoBingo := false;
+
+  // proc de la arboltrinario
+  isjugadorganobingo(obtuvoBingo, N.hm, idCarton, importe);
+  if obtuvoBingo then
+  begin
+    AgregarReglonCartonesConBingo(idCarton, importe, N.idGanador);
+  end;
+
+  // Recursividad tendiendo a la Derecha.
+  EnOrdenCartonesConBingo(Arbol, ProximoDer_Tri(Arbol, Raiz));
+end;
+
+Procedure TFormABMJugadores.SetearHeaders();
+Begin
+  with grilla do
+  Begin
+    // Título de las columnas
+    ColWidths[0] := Canvas.TextWidth('xxxxxxxxxx');
+    ColWidths[1] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
+    ColWidths[2] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
+    ColWidths[3] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
+    ColWidths[4] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
+    Cells[0, 0] := 'CLAVE-ID';
+    Cells[1, 0] := 'MAIL';
+    Cells[2, 0] := 'NICK';
+    Cells[3, 0] := 'ESTADO';
+    Cells[4, 0] := 'NOMBRE';
+  End;
+End;
+
+Procedure TFormABMJugadores.SetearHeadersTotalCartones();
+Begin
+  with grilla do
+  Begin
+    // Título de las columnas
+    ColWidths[0] := Canvas.TextWidth('xxxxxxxxxx');
+    ColWidths[1] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
+    ColWidths[2] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
+    ColWidths[3] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
+    ColWidths[4] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
+    Cells[0, 0] := 'CLAVE-ID';
+    Cells[1, 0] := 'MAIL';
+    Cells[2, 0] := 'NICK';
+    Cells[3, 0] := 'ESTADO';
+    Cells[4, 0] := 'CANT CARTONES';
+  End;
+End;
+
+Procedure TFormABMJugadores.SetearHeadersDineroTotal();
+Begin
+  with grilla do
+  Begin
+    ColWidths[0] := Canvas.TextWidth('xxxxxxxxxxx');
+    ColWidths[1] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
+    ColWidths[2] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
+    ColWidths[3] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
+    ColWidths[4] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
+    Cells[0, 0] := 'CLAVE-ID';
+    Cells[1, 0] := 'MAIL';
+    Cells[2, 0] := 'NICK';
+    Cells[3, 0] := 'ESTADO';
+    Cells[4, 0] := 'DINERO TOTAL';
+  End;
+End;
+
+Procedure TFormABMJugadores.AgregarReglon(RD: tRegDatos);
+Begin
+
+  with grilla do
+  Begin
+    RowCount := RowCount + 1;
+    Cells[0, RowCount - 1] := RD.clave;
+    Cells[1, RowCount - 1] := RD.MAIL;
+    Cells[2, RowCount - 1] := RD.nick;
+    Cells[3, RowCount - 1] := TRttiEnumerationType.GetName(RD.estado);
+    Cells[4, RowCount - 1] := RD.nombre;
+    FixedRows := 1;
+  End;
+
+End;
+
+Procedure TFormABMJugadores.SetearHeadersartonesConBingo();
+Begin
+  with grilla do
+  Begin
+    ColWidths[0] := Canvas.TextWidth('xxxxxxxxxxx');
+    ColWidths[1] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
+    ColWidths[2] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
+    ColWidths[3] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
+    ColWidths[4] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
+    ColWidths[5] := Canvas.TextWidth('xxxxxxxx');
+    Cells[0, 0] := 'idCarton';
+    Cells[1, 0] := 'Nombre Evento';
+    Cells[2, 0] := 'Fecha Evento';
+    Cells[3, 0] := 'Monto Ganado';
+    Cells[4, 0] := 'Nick';
+    Cells[5, 0] := 'Bolillas Tiradas';
+  End;
+End;
+
+Procedure TFormABMJugadores.AgregarReglonCartonesConBingo(idCarton: Integer;
+  importe: real; idGanador: string);
+var
+  posCarton: lo_dobleenlace.tpos;
+  regCarton: tRegDatos_DE;
+  posJuego: tPosHash;
+  regJuego: tRegDatosHash;
+  cantidadTiradas: Integer;
+  idJugador: string;
+  posJugador: tPosArbol;
+  regJugador: tNodoIndice;
+  regJugadorArch: tRegDatos;
+Begin
+
+  // buscar el nombre del evento y fecha
+  lo_dobleenlace.Buscar(MeCartones, idCarton, posCarton);
+  regCarton := lo_dobleenlace.CapturarInfo(MeCartones, posCarton);
+  BuscarHash(MeJuego, regCarton.nombreEvento, posJuego);
+  CapturarInfoHash(MeJuego, posJuego, regJuego);
+  // buscar cant tiradas
+  cantidadTiradas := cantidadElementos(MeTIRADAS, regJuego.ID);
+  // buscar jugador
+  idJugador := getJugadorConGanador(idGanador);
+  BuscarNodo_Indice(MeID, idJugador, posJugador);
+  regJugador := ObtenerInfo_Indice(MeID, posJugador);
+  ObtenerInfoMe_Archivos(MeJUGADORES, regJugador.posEnDatos, regJugadorArch);
+
+  with grilla do
+  Begin
+    RowCount := RowCount + 1;
+    Cells[0, RowCount - 1] := inttostr(idCarton);
+    Cells[1, RowCount - 1] := regJuego.nombreEvento;
+    Cells[2, RowCount - 1] := DateTimeToStr(regJuego.fechaEvento);
+    Cells[3, RowCount - 1] := FloatToStr(dosDecimales(importe));
+    Cells[4, RowCount - 1] := regJugadorArch.nick;
+    Cells[5, RowCount - 1] := inttostr(cantidadTiradas);
+    FixedRows := 1;
+  End;
+
+End;
+
+procedure TFormABMJugadores.FormCreate(Sender: TObject);
+begin
+  lo_arbolbinario.CrearMe_Indice(MeID, 'CONTROLID.CON', 'DATOSID.DAT');
+  lo_arbolbinario.CrearMe_Indice(MeNICK, 'CONTROLNICK.CON', 'DATOSNICK.DAT');
+  lo_arbolbinario.CrearMe_Archivos(MeJUGADORES, 'CONTROLJUGADORES.CON',
+    'DATOSJUGADORES.DAT');
+  AbrirMe_Archivos(MeJUGADORES);
+  AbrirMe_Indice(MeID);
+  InsertarAdminCuandoMEVacio();
+end;
+
+procedure TFormABMJugadores.LimpiarGrilla();
+var
+  i: Integer;
+begin
+  for i := 0 to grilla.RowCount - 1 do
+    grilla.Rows[i].Clear;
+  grilla.RowCount := 1;
+end;
+
+procedure TFormABMJugadores.FormShow(Sender: TObject);
+
+begin
+  RadioListadoGeneral.Checked := true;
+
+end;
+
+procedure TFormABMJugadores.grillaClick(Sender: TObject);
+var
+  dir, dirfull, nick: string;
+  idCarton, j, i, k: Integer;
+  encontre: Boolean;
+  reg: tRegDatos_DE;
+begin
+  if RadioCartonesBingo.Checked then
+  begin
+    Panel1.Visible := true;
+    nick := grilla.Cells[4, grilla.Row];
+    dir := ExpandFileName(GetCurrentDir + '\..\..\');
+    dirfull := dir + 'imgs\' + nick + '.bmp';
+    Image1.Picture.LoadFromFile(dirfull);
+    // cargar carton
+    idCarton := strtoint(grilla.Cells[0, grilla.Row]);
+
+    if not MeVacio(MeCartones) then
+    begin
+      j := lo_dobleenlace.Primero(MeCartones);
+      encontre := false;
+      // while j <> _posnula do
+      repeat
+        reg := lo_dobleenlace.CapturarInfo(MeCartones, j);
+
+        if ((reg.idCarton = idCarton) and (not encontre)) then
+        begin
+          // llenar grilla carton
+          for i := low(reg.grilla) to high(reg.grilla) do
+          begin
+            for k := low(reg.grilla[0]) to high(reg.grilla[0]) do
+            begin
+              if (not((i = 2) and (k = 2))) then
+                AgregarCeldaCarton(reg.grilla[i, k], i, k);
+            end;
+          end;
+          encontre := true;
+        end;
+
+        j := lo_dobleenlace.Proximo(MeCartones, j);
+
+      until (j = _posnula) or encontre;
+    end;
+
+  end;
+
+end;
+
+
+
+Procedure TFormABMJugadores.AgregarCeldaCarton(celdaCarton: tRegCampoMatriz;
+  IndexRenglon: Integer; IndexCol: Integer);
+Begin
+
+  with grillaCarton do
+  Begin
+
+    if celdaCarton.tachado then
+
+      Cells[IndexCol, IndexRenglon] := inttostr(celdaCarton.numero) + '.'
+    else
+    begin
+      Cells[IndexCol, IndexRenglon] := inttostr(celdaCarton.numero);
+    end;
+
+    FixedRows := 1;
+  End;
+
+End;
+
+procedure TFormABMJugadores.RadioCartonesBingoClick(Sender: TObject);
+begin
+  Panel1.Visible := false;
+  CargarGrilla;
+end;
+
+procedure TFormABMJugadores.RadioDineroTotalClick(Sender: TObject);
+begin
+  Panel1.Visible := false;
+  CargarGrilla;
+end;
+
+procedure TFormABMJugadores.RadioListadoGeneralClick(Sender: TObject);
+begin
+  Panel1.Visible := false;
+  CargarGrilla;
+end;
+
+procedure TFormABMJugadores.RadioPorCartonesClick(Sender: TObject);
+begin
+  Panel1.Visible := false;
+  CargarGrilla;
+end;
+
+procedure TFormABMJugadores.RadioPorPremiosClick(Sender: TObject);
+var
+  tipoPremio: ttipopremio;
+begin
+  ComboBoxPremios.Items.Clear;
+  for tipoPremio := Low(ttipopremio) to High(ttipopremio) do
+  begin
+    ComboBoxPremios.Items.Add(TRttiEnumerationType.GetName(tipoPremio));
+  end;
+  CargarGrilla;
+  ComboBoxPremios.Visible := true;
+  LimpiarGrilla;
+end;
+
+/// ORDEN STRINGGRID///////////////////////////////////////////////////////
+///
+function CompareNumber(i1, i2: Double): Integer;
+// Result: -1 if i1 < i2, 1 if i1 > i2, 0 if i1 = i2
+begin
+  if i1 < i2 then
+    Result := -1
+  else if i1 > i2 then
+    Result := 1
+  else
+    Result := 0;
+end;
+
+// Compare Strings if possible try to interpret as numbers
+function CompareValues(const S1, S2: String; asc: Boolean): Integer;
+var
+  V1, V2: Double;
+  C1, C2: Integer;
+begin
+  Val(S1, V1, C1);
+  Val(S2, V2, C2);
+  if (C1 = 0) and (C2 = 0) then // both as numbers
+    Result := CompareNumber(V1, V2)
+  else // not both as nubers
+    Result := AnsiCompareStr(S1, S2);
+  if not asc then
+    Result := Result * -1;
+
+end;
+
+procedure TFormABMJugadores.SortGridByCols2(Grid: TStringGrid;
+  ColOrder: array of Integer);
+var
+  i, j: Integer;
+  Sorted: Boolean;
+
+  function Sort(Row1, Row2: Integer): Integer;
+  var
+    C: Integer;
+  begin
+    C := 0;
+    Result := CompareValues(Grid.Cols[ColOrder[C]][Row1],
+      Grid.Cols[ColOrder[C]][Row2], false);
+    if Result = 0 then
+    begin
+      Inc(C);
+      while (C <= High(ColOrder)) and (Result = 0) do
+      begin
+        Result := CompareValues(Grid.Cols[ColOrder[C]][Row1],
+          Grid.Cols[ColOrder[C]][Row2], false);
+        Inc(C);
+      end;
+    end;
+  end;
+
+begin
+  if SizeOf(ColOrder) div SizeOf(i) <> Grid.ColCount then
+    exit;
+
+  for i := 0 to High(ColOrder) do
+    if (ColOrder[i] < 0) or (ColOrder[i] >= Grid.ColCount) then
+      exit;
+
+  j := 0;
+  Sorted := false;
+  repeat
+    Inc(j);
+    with Grid do
+      for i := 0 to RowCount - 2 do
+        if Sort(i, i + 1) > 0 then
+        begin
+          TMoveSG(Grid).MoveRow(i + 1, i);
+          Sorted := false;
+        end;
+  until Sorted or (j = 1000);
+  Grid.Repaint;
+end;
+
+end.

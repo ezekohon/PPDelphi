@@ -7,7 +7,7 @@ uses
   System.Classes, Vcl.Graphics, StrUtils,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, lo_arbolbinario, Vcl.ExtCtrls,
   Vcl.StdCtrls, Vcl.Grids, lo_dobleenlace, la_dobleenlace, lo_hashabierto,
-  la_arboltrinario, lo_arboltrinario, lo_pila, rtti, math;
+  la_arboltrinario, lo_arboltrinario, lo_pila, rtti, math, globals;
 
 type
   TFormFichaJugador = class(TForm)
@@ -35,6 +35,7 @@ type
     Procedure AgregarReglon(RD: tRegDatos_DE; IndexRenglon: Integer);
     procedure LimpiarGrilla();
     procedure LimpiarGrillaDetallePremios();
+    procedure LimpiarGrillaCarton();
     procedure FormShow(Sender: TObject);
     procedure grillaClick(Sender: TObject);
     Procedure AgregarCeldaCarton(celdaCarton: tRegCampoMatriz;
@@ -108,8 +109,8 @@ begin
 
   ganado := inttostr(contarPremiosGanadorEnJuego(MeIndiceGanadores,
     JuegoActual.nombreEvento, JugadorActual.clave)) + ' por $' +
-    floattostr(sumarPremiosGanadorEnJuego(MeIndiceGanadores,
-    JuegoActual.nombreEvento, JugadorActual.clave));
+    floattostr(dosDecimales(sumarPremiosGanadorEnJuego(MeIndiceGanadores,
+    JuegoActual.nombreEvento, JugadorActual.clave)));
 
   PremiosGanadosEdit.Text := ganado;
 
@@ -120,8 +121,10 @@ begin
   InOrderSumarPremiosAcumuladosTotales(MeIndiceGanadores,raiz_tri(MeIndiceGanadores),
     jugadoractual.clave, suma);
 
-  PremiosAcumuladosEdit.text := inttostr(cuenta) + ' por $' + floattostr(RoundTo(suma, -2));
+  PremiosAcumuladosEdit.text := inttostr(cuenta) + ' por $' + floattostr(dosDecimales(suma));
   CargarGrilla;
+  LimpiarGrillaCarton;
+  LimpiarGrillaDetallePremios;
 end;
 
 procedure TFormFichaJugador.grillaCartonDrawCell(Sender: TObject;
@@ -317,6 +320,15 @@ begin
   for i := 0 to grillaDetallePremios.RowCount - 1 do
     grillaDetallePremios.Rows[i].Clear;
   grillaDetallePremios.RowCount := 1;
+end;
+
+procedure TFormFichaJugador.LimpiarGrillaCarton();
+var
+  i: Integer;
+begin
+  for i := 0 to grillaCarton.RowCount - 1 do
+    grillaCarton.Rows[i].Clear;
+  grillaCarton.RowCount := 5;
 end;
 
 end.

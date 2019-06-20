@@ -3,7 +3,7 @@ object FormABMJugadores: TFormABMJugadores
   Top = 0
   Caption = 'ABM Juegadores'
   ClientHeight = 388
-  ClientWidth = 664
+  ClientWidth = 668
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,9 +20,11 @@ object FormABMJugadores: TFormABMJugadores
     Top = 224
     Width = 648
     Height = 160
+    ColCount = 6
     FixedCols = 0
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing, goRowSelect]
     TabOrder = 0
+    OnClick = grillaClick
   end
   object RadioGroup1: TRadioGroup
     Left = 8
@@ -34,35 +36,39 @@ object FormABMJugadores: TFormABMJugadores
   end
   object RadioListadoGeneral: TRadioButton
     Left = 24
-    Top = 184
+    Top = 176
     Width = 113
     Height = 17
     Caption = 'Listado General'
     TabOrder = 2
+    OnClick = RadioListadoGeneralClick
   end
   object RadioPorCartones: TRadioButton
-    Left = 143
-    Top = 184
-    Width = 113
+    Left = 24
+    Top = 199
+    Width = 129
     Height = 17
     Caption = 'Listado Por Cartones'
     TabOrder = 3
+    OnClick = RadioPorCartonesClick
   end
-  object RadioButton3: TRadioButton
-    Left = 280
-    Top = 184
+  object RadioPorPremios: TRadioButton
+    Left = 159
+    Top = 176
     Width = 113
     Height = 17
-    Caption = 'RadioButton3'
+    Caption = 'Listado Por Premios'
     TabOrder = 4
+    OnClick = RadioPorPremiosClick
   end
-  object RadioButton4: TRadioButton
-    Left = 408
-    Top = 184
+  object RadioDineroTotal: TRadioButton
+    Left = 159
+    Top = 199
     Width = 113
     Height = 17
-    Caption = 'RadioButton4'
+    Caption = 'Dinero Total'
     TabOrder = 5
+    OnClick = RadioDineroTotalClick
   end
   object ButtonBloquearJugador: TButton
     Left = 24
@@ -75,11 +81,56 @@ object FormABMJugadores: TFormABMJugadores
   end
   object ButtonDesbloquearJugador: TButton
     Left = 24
-    Top = 80
+    Top = 72
     Width = 129
     Height = 25
     Caption = 'Desbloquear Jugador'
     TabOrder = 7
     OnClick = ButtonDesbloquearJugadorClick
+  end
+  object ComboBoxPremios: TComboBox
+    Left = 296
+    Top = 174
+    Width = 104
+    Height = 21
+    TabOrder = 8
+    Text = 'ComboBoxPremios'
+    Visible = False
+    OnChange = ComboBoxPremiosChange
+  end
+  object Panel1: TPanel
+    Left = 220
+    Top = 0
+    Width = 440
+    Height = 168
+    Caption = 'Panel1'
+    TabOrder = 9
+    Visible = False
+    object Image1: TImage
+      Left = 288
+      Top = 24
+      Width = 105
+      Height = 105
+    end
+    object grillaCarton: TStringGrid
+      Left = 52
+      Top = 5
+      Width = 187
+      Height = 163
+      DefaultColWidth = 35
+      DefaultRowHeight = 30
+      FixedCols = 0
+      FixedRows = 0
+      TabOrder = 0
+    end
+  end
+  object RadioCartonesBingo: TRadioButton
+    Left = 439
+    Top = 199
+    Width = 113
+    Height = 17
+    Caption = 'Cartones con Bingo'
+    TabOrder = 10
+    OnClick = RadioCartonesBingoClick
   end
 end

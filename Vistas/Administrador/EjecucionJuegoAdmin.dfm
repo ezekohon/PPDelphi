@@ -11,6 +11,7 @@ object EjecucionJuegoAdminForm: TEjecucionJuegoAdminForm
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnClose = FormClose
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -185,6 +186,16 @@ object EjecucionJuegoAdminForm: TEjecucionJuegoAdminForm
       TabOrder = 3
       OnClick = SacarBolillaButtonClick
     end
+    object PausaButton: TButton
+      Left = 280
+      Top = 58
+      Width = 193
+      Height = 25
+      Caption = 'Pausar'
+      TabOrder = 4
+      Visible = False
+      OnClick = PausaButtonClick
+    end
   end
   object Panel3: TPanel
     Left = 771
@@ -238,5 +249,11 @@ object EjecucionJuegoAdminForm: TEjecucionJuegoAdminForm
       TabOrder = 1
       OnClick = listadoJugadoresButtonClick
     end
+  end
+  object Timer1: TTimer
+    Enabled = False
+    OnTimer = Timer1Timer
+    Left = 792
+    Top = 64
   end
 end

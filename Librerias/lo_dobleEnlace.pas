@@ -1,565 +1,499 @@
-unit lo_dobleEnlace;    //CARTONES
+unit lo_dobleEnlace; // CARTONES
 
 interface
 
 uses SysUtils, math;
 
 const
-     _posnula = -1;
-    _ARCHIVO_DATOS = 'CARTONES.DAT';
-    _ARCHIVO_CONTROL = 'CARTONES.CON';
-    carpeta='D:\';
-   _RUTA= 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\';
+  _posnula = -1;
+  _ARCHIVO_DATOS = 'CARTONES.DAT';
+  _ARCHIVO_CONTROL = 'CARTONES.CON';
+  carpeta = 'D:\';
+  _RUTA = 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\';
 
 type
-    tPos = _posnula..maxint;
-    tcantidad= longint;
-    tcadena = String[40];
-    numeroMatriz = 0..75;
+  tPos = _posnula .. maxint;
+  tcantidad = longint;
+  tcadena = String[40];
+  numeroMatriz = 0 .. 75;
 
-    tRegCampoMatriz = record
-      numero :  numeroMatriz;
-      tachado : boolean;
-    end;
+  tRegCampoMatriz = record
+    numero: numeroMatriz;
+    tachado: boolean;
+  end;
 
-    tMatriz = Array[0..4, 0..4] of tRegCampoMatriz;
+  tMatriz = Array [0 .. 4, 0 .. 4] of tRegCampoMatriz;
 
-    tRegControl_DE = record
-      ultimoIdInterno: LongInt; //se autoincrementa(? inicial en 0
-      //idJuego: String[10];  //de juegos.dat (lo_hashabierto)
-      primero,ultimo:  tPos;
-      borrado: tPos;
-      cantidad: integer;
-    end;
+  tRegControl_DE = record
+    ultimoIdInterno: longint; // se autoincrementa(? inicial en 0
+    // idJuego: String[10];  //de juegos.dat (lo_hashabierto)
+    primero, ultimo: tPos;
+    borrado: tPos;
+    cantidad: integer;
+  end;
 
-    tRegDatos_DE = record
-        idCarton : integer; //lo genera a partir del ultimoIdInterno
-        //idJuego: integer;//String[10];   //de juegos.dat (lo_hashabierto)
-        nombreEvento: string[20];
-        idJugador : string[10]; //de jugadores.dat(lo_arbolbinario)
-        grilla : tMatriz;
-        ant,sig : tPos;
-    end;
+  tRegDatos_DE = record
+    idCarton: integer; // lo genera a partir del ultimoIdInterno
+    // idJuego: integer;//String[10];   //de juegos.dat (lo_hashabierto)
+    nombreEvento: string[20];
+    idJugador: string[10]; // de jugadores.dat(lo_arbolbinario)
+    grilla: tMatriz;
+    ant, sig: tPos;
+  end;
 
-    archivoControl= File of tRegControl_DE;
-    archivoDatos= File of tRegDatos_DE;
+  archivoControl = File of tRegControl_DE;
+  archivoDatos = File of tRegDatos_DE;
 
-
-    MeDobleEnlace= record
-            c:archivoControl;
-            d:archivoDatos;
-          end;
+  MeDobleEnlace = record
+    c: archivoControl;
+    d: archivoDatos;
+  end;
 
 var
-    MeCartones: MeDobleEnlace;
+  MeCartones: MeDobleEnlace;
 
-Procedure CrearMe (var me:MeDobleEnlace);
-Function MeVacio (me: MeDobleEnlace):boolean;
-procedure AbrirMe (var me:MeDobleEnlace);
-Procedure Cerrarme (var me: MeDobleEnlace);
-Function Primero (var me:MeDobleEnlace): tPos;
-Function Ultimo (var me:MeDobleEnlace): tPos;
-Function Borrados (var me:MeDobleEnlace; var pos:tPos):boolean;
-Function Cantidad (var me:MeDobleEnlace): tcantidad;
-Function Anterior (var me:MeDobleEnlace; pos:tPos): tPos;
-Function Proximo (var me:MeDobleEnlace; pos:tPos): tPos;
-function CapturarInfo (var me:MeDobleEnlace; pos:tPos): tRegDatos_DE;
-Procedure InsertarInfo (Var Me:MeDobleEnlace; Reg:tRegDatos_DE; Pos:tPos);
-Function Buscar (var me:MeDobleEnlace; idCarton:integer; var pos:tPos):boolean; {devuelve pos solo si encuentra al elemento}
-Procedure Eliminar (Var Me:MeDobleEnlace; Pos:tPos);
-Procedure Modificar (var me:MeDobleEnlace; pos:tPos; reg:tRegDatos_DE);
-/////////////////////////////////////////////////////////////NUEVOS
-Function LeerRegControl(var me:MeDobleEnlace;pos:tPos):tRegControl_DE;
-Function LeerRegDatos(var me:MeDobleEnlace;pos:tPos):tRegDatos_DE;
-Procedure ModSig(var reg:tRegDatos_DE; sig:tPos);
-Procedure ModAnt(var reg:tRegDatos_DE; ant:tPos);
-Procedure ModPrim(var me:MeDobleEnlace;pos:tPos);
-Procedure ModUlt (var me:MeDobleEnlace;pos:tPos);
-Function RecuperaridCarton(reg:tRegDatos_DE):integer;
-Function RecuperarAnt (reg:tRegDatos_DE):tPos;
-Function RecuperarSig (reg:tRegDatos_DE):tPos;
-Function RecuperarBorrado (var me:MeDobleEnlace): tPos;
-function BuscarInfo(var Me:MeDobleEnlace; Clave:integer;var Pos:tPos):Boolean; {devuelve la pos en la que deberia ir}
-Function ObtenerProximoIDInterno(var Me:MeDobleEnlace):LongInt;
-////////////////////////////////////////////////////FIN NUEVOS
+Procedure CrearMe(var me: MeDobleEnlace);
+Function MeVacio(me: MeDobleEnlace): boolean;
+procedure AbrirMe(var me: MeDobleEnlace);
+Procedure Cerrarme(var me: MeDobleEnlace);
+Function primero(var me: MeDobleEnlace): tPos;
+Function ultimo(var me: MeDobleEnlace): tPos;
+Function Borrados(var me: MeDobleEnlace; var pos: tPos): boolean;
+Function cantidad(var me: MeDobleEnlace): tcantidad;
+Function Anterior(var me: MeDobleEnlace; pos: tPos): tPos;
+Function Proximo(var me: MeDobleEnlace; pos: tPos): tPos;
+function CapturarInfo(var me: MeDobleEnlace; pos: tPos): tRegDatos_DE;
+Procedure InsertarInfo(Var me: MeDobleEnlace; Reg: tRegDatos_DE; pos: tPos);
+Function Buscar(var me: MeDobleEnlace; idCarton: integer; var pos: tPos)
+  : boolean; { devuelve pos solo si encuentra al elemento }
+Procedure Eliminar(Var me: MeDobleEnlace; pos: tPos);
+Procedure Modificar(var me: MeDobleEnlace; pos: tPos; Reg: tRegDatos_DE);
+function BuscarInfo(var me: MeDobleEnlace; Clave: integer; var pos: tPos)
+  : boolean; { devuelve la pos en la que deberia ir }
+Function ObtenerProximoIDInterno(var me: MeDobleEnlace): longint;
+
 implementation
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-Procedure CrearMe (var me:MeDobleEnlace);
+
+/// ///////////////////////////////////////////////////////////////////////////////////////////////////
+Procedure CrearMe(var me: MeDobleEnlace);
 var
-   rc:tRegControl_DE;
+  rc: tRegControl_DE;
 begin
 
-      assign(me.d, _Ruta + _archivo_datos);
-      assign(me.c ,_Ruta + _archivo_control);
-      if (not FileExists(_Ruta + _archivo_datos)) or
-      (not FileExists(_Ruta + _archivo_control)) then
-            begin
-                      Rewrite(me.d);
-                      Rewrite(me.c);
-                      rc.primero:= _posnula;
-                      rc.ultimo:= _posnula;
-                      rc.borrado:= _posnula;
-                      rc.cantidad:= 0;
-                      rc.ultimoIdInterno:= 0;
-                      seek(me.c, 0);
-                      write(me.c,rc);
-             end
-             else
-                  begin
-                       Reset(me.d);
-                       Reset(me.c);
-                   end;
-       Close(me.d);
-       Close(me.c);
+  assign(me.d, _RUTA + _ARCHIVO_DATOS);
+  assign(me.c, _RUTA + _ARCHIVO_CONTROL);
+  if (not FileExists(_RUTA + _ARCHIVO_DATOS)) or
+    (not FileExists(_RUTA + _ARCHIVO_CONTROL)) then
+  begin
+    Rewrite(me.d);
+    Rewrite(me.c);
+    rc.primero := _posnula;
+    rc.ultimo := _posnula;
+    rc.borrado := _posnula;
+    rc.cantidad := 0;
+    rc.ultimoIdInterno := 0;
+    seek(me.c, 0);
+    write(me.c, rc);
+  end
+  else
+  begin
+    Reset(me.d);
+    Reset(me.c);
+  end;
+  Close(me.d);
+  Close(me.c);
 end;
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-Function MeVacio (me: MeDobleEnlace):boolean;
-var
-  rc:tRegControl_DE;
-begin
-    seek(me.c,filesize(me.c)-1);
-    read(me.c,rc);
-    result:= (rc.ultimo= _posnula);
-end;
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-Procedure Abrirme (var me: MeDobleEnlace);
-begin
-     Reset (me.d);
-     Reset (me.c);
-end;
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-Procedure Cerrarme (var me: MeDobleEnlace);
-begin
-     CloseFile (me.d);
-     CloseFile (me.c);
-end;
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-Function Primero (var me:MeDobleEnlace): tPos;
-var
-   rc:tRegControl_DE;
-begin
-    seek (me.c,0);
-    read (me.c,rc);
-    result:= rc.primero;
-end;
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-Function Ultimo (var me:MeDobleEnlace): tPos;
-var
-   rc:tRegControl_DE;
-begin
-    seek (me.c,0);
-    read (me.c,rc);
-    result:= rc.Ultimo;
-end;
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-Function Borrados (var me:MeDobleEnlace; var pos:tPos):boolean;     {devuelve true y la posicion si hay borrados - si no devuelve -1 en pos y falso}
-var
-   rc: tRegControl_DE;
-begin
-     seek (me.c,0);
-     read (me.c,rc);
-     pos:= rc.borrado;
-     if pos = _posnula then
-      result:= false
-     else
-      result:= true;
-end;
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-Function Cantidad (var me:MeDobleEnlace): tcantidad;      {devuelve cantidad de elementos - si es PosNula, el archivo esta vacio}
-var
-   rc:tRegControl_DE;
-begin
-     seek (me.c,0);
-     read (me.c,rc);
-     result:= rc.cantidad;
-end;
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-Function Anterior (var me:MeDobleEnlace; pos:tPos): tPos;
-var
-   rc:tRegControl_DE;
-   rd: tRegDatos_DE;
-begin
-     seek (me.c,0);
-     read (me.c,rc);
-     if (pos= _posnula) then
-       result:= _posnula
-     else
-       begin
-           seek (me.d,pos);
-           read (me.d,rd);
-           result:=rd.ant;
-       end;
-end;
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-Function Proximo (var me:MeDobleEnlace; pos:tPos): tPos;
-var
-   rc:tRegControl_DE;
-   rd: tRegDatos_DE;
-begin
-     seek (me.c,0);
-     read (me.c,rc);
-     if (pos= _posnula) then
-       result:= _posnula
-     else
-       begin
-           seek (me.d,pos);
-           read (me.d,rd);
-           result:=rd.sig;
-       end;
-end;
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-function CapturarInfo (var me:MeDobleEnlace; pos:tPos): tRegDatos_DE;
-var
-   rd:tRegDatos_DE;
-begin
-     seek(me.d,pos);
-     read(me.d,rd);
-     result:=rd;
-end;
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-Procedure InsertarInfo (Var Me:MeDobleEnlace; Reg:tRegDatos_DE; Pos:tPos);
-Var RegControl:tRegControl_DE;
-	  RegDatos,RegDatosAnt,actualizoant:tRegDatos_DE;
-	  PosNueva:tPos;
 
-Begin
-	Seek(Me.C,0);
-	Read(Me.C,RegControl);
-
-	If (RegControl.borrado = _posnula)
-		Then PosNueva:= FileSize(Me.D)
-		Else Begin
-				    PosNueva:= RegControl.Borrado;
-				    Seek(Me.D,PosNueva);
-				    Read(Me.D,RegDatos);
-				    RegControl.Borrado:= RegDatos.Sig;
-            {actualizo enlace del siguiente borrado a -1}
-            if (regdatos.sig<>_posnula) then
-            begin
-              Seek(me.d,regdatos.sig);
-              read (me.d,actualizoant);
-              actualizoant.ant:=_posnula;
-              seek (me.d,regdatos.sig);
-              write (me.d,actualizoant);
-            end;
-			   End;
-
-	If ((RegControl.Primero = _posnula) And (RegControl.Ultimo = _posnula))
-		Then Begin
-				    {Insertar al Principio. Esta vacio el ME}
-            RegControl.Primero:= PosNueva;
-				    RegControl.Ultimo:= PosNueva;
-				    Reg.Sig:= _posnula;
-            Reg.Ant:= _posnula;
-			   End
-		Else Begin
-				    If (Pos = RegControl.Primero)
-					    Then Begin
-							        {Insertar al Principio}
-							        Reg.Sig:= RegControl.Primero;
-                      Reg.Ant:= _posnula;
-
-                      Seek(Me.D,RegControl.Primero);
-                      Read(Me.D,RegDatos);
-                      RegDatos.Ant:= PosNueva;
-                      Seek(Me.D,RegControl.Primero);
-                      Write(Me.D,RegDatos);
-
-							        RegControl.Primero:= PosNueva;
-						       End
-					    Else
-							        If pos = _POSNULA//{(Pos <> RegControl.Ultimo)and}(pos<>-1)
-								        Then
-								         Begin
-                                {Insertar al Final}
-                                Seek(Me.D,RegControl.Ultimo);
-										            Read(Me.D,RegDatos);
-										            RegDatos.Sig:= PosNueva;
-										            Seek(Me.D,RegControl.Ultimo);
-										            Write(Me.D,RegDatos);
-
-                                Reg.Ant:= RegControl.Ultimo;
-                                Reg.Sig:= _posnula;
-										            RegControl.Ultimo:= PosNueva;
-									           End
-                         else
-                         begin
-
-       {MIRAR}                  {Insertar al Medio}                                       {MIRAR}
-                                {Leo el dato en la posicion donde debe ubicarse}
-                                Seek(Me.D,Pos);
-										            Read(Me.D,RegDatos);
-                                Reg.Ant:=RegDatos.Ant;
-                                RegDatos.Ant:=posNueva;
-                                Seek(Me.D,pos);
-                                Write(Me.D,RegDatos);
-                                {Leo el dato ant donde debe ubicarse para cambiar su sig}
-                                Seek(Me.D,Reg.Ant);
-                                Read(Me.D,RegDatosAnt);
-                                Reg.Sig:=RegDatosAnt.Sig;
-                                RegDatosAnt.Sig:=posNueva;
-                                Seek(Me.D,posnueva);
-                                write(Me.D,Reg);
-                                Seek(Me.D,Reg.Ant);
-                                write(Me.D,RegDatosAnt);
-
-                         end;
-			   End;
-
-	RegControl.Cantidad:= RegControl.Cantidad + 1;
-  RegControl.ultimoIdInterno:= reg.idCarton;
-	Seek(Me.C,0);
-	Write(Me.C,RegControl);
-	Seek(Me.D,PosNueva);
-	Write(Me.D,Reg);
-End;
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-Function Buscar (var me:MeDobleEnlace; idCarton:integer; var pos:tPos):boolean;
+/// ///////////////////////////////////////////////////////////////////////////////////////////////////
+Function MeVacio(me: MeDobleEnlace): boolean;
 var
-   rc: tRegControl_DE;
-   reg: tRegDatos_DE ;
-   posaux:tPos;
-   siguiente: tPos;
-   resultado:boolean;
+  rc: tRegControl_DE;
 begin
-     seek (me.c,0);
-     read (me.c,rc);
-     siguiente:= rc.primero;
-     posaux:=siguiente;
-     resultado:=false;
-     while (siguiente <> _posnula) and ( not resultado) do
-      begin
-           seek (me.d,siguiente);
-           read (me.d,reg);
-           if (idCarton= reg.idCarton) then
-            begin
-              resultado:=true;
-              pos:=posaux;
-            end
-           else
-             begin
-              siguiente:= reg.sig;
-              posaux:= reg.sig;
-             end;
-      end;
-     result:= resultado;
+  seek(me.c, filesize(me.c) - 1);
+  read(me.c, rc);
+  result := (rc.ultimo = _posnula);
 end;
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-Procedure Eliminar (Var Me:MeDobleEnlace; Pos:tPos);
+
+/// ///////////////////////////////////////////////////////////////////////////////////////////////////
+Procedure AbrirMe(var me: MeDobleEnlace);
+begin
+  Reset(me.d);
+  Reset(me.c);
+end;
+
+/// ///////////////////////////////////////////////////////////////////////////////////////////////////
+Procedure Cerrarme(var me: MeDobleEnlace);
+begin
+  CloseFile(me.d);
+  CloseFile(me.c);
+end;
+
+/// ///////////////////////////////////////////////////////////////////////////////////////////////////
+Function primero(var me: MeDobleEnlace): tPos;
+var
+  rc: tRegControl_DE;
+begin
+  seek(me.c, 0);
+  read(me.c, rc);
+  result := rc.primero;
+end;
+
+/// ///////////////////////////////////////////////////////////////////////////////////////////////////
+Function ultimo(var me: MeDobleEnlace): tPos;
+var
+  rc: tRegControl_DE;
+begin
+  seek(me.c, 0);
+  read(me.c, rc);
+  result := rc.ultimo;
+end;
+
+/// ///////////////////////////////////////////////////////////////////////////////////////////////////
+Function Borrados(var me: MeDobleEnlace; var pos: tPos): boolean;
+{ devuelve true y la posicion si hay borrados - si no devuelve -1 en pos y falso }
+var
+  rc: tRegControl_DE;
+begin
+  seek(me.c, 0);
+  read(me.c, rc);
+  pos := rc.borrado;
+  if pos = _posnula then
+    result := false
+  else
+    result := true;
+end;
+
+/// ///////////////////////////////////////////////////////////////////////////////////////////////////
+Function cantidad(var me: MeDobleEnlace): tcantidad;
+{ devuelve cantidad de elementos - si es PosNula, el archivo esta vacio }
+var
+  rc: tRegControl_DE;
+begin
+  seek(me.c, 0);
+  read(me.c, rc);
+  result := rc.cantidad;
+end;
+
+/// ///////////////////////////////////////////////////////////////////////////////////////////////////
+Function Anterior(var me: MeDobleEnlace; pos: tPos): tPos;
+var
+  rc: tRegControl_DE;
+  rd: tRegDatos_DE;
+begin
+  seek(me.c, 0);
+  read(me.c, rc);
+  if (pos = _posnula) then
+    result := _posnula
+  else
+  begin
+    seek(me.d, pos);
+    read(me.d, rd);
+    result := rd.ant;
+  end;
+end;
+
+/// ///////////////////////////////////////////////////////////////////////////////////////////////////
+Function Proximo(var me: MeDobleEnlace; pos: tPos): tPos;
+var
+  rc: tRegControl_DE;
+  rd: tRegDatos_DE;
+begin
+  seek(me.c, 0);
+  read(me.c, rc);
+  if (pos = _posnula) then
+    result := _posnula
+  else
+  begin
+    seek(me.d, pos);
+    read(me.d, rd);
+    result := rd.sig;
+  end;
+end;
+
+/// ///////////////////////////////////////////////////////////////////////////////////////////////////
+function CapturarInfo(var me: MeDobleEnlace; pos: tPos): tRegDatos_DE;
+var
+  rd: tRegDatos_DE;
+begin
+  seek(me.d, pos);
+  read(me.d, rd);
+  result := rd;
+end;
+
+/// ///////////////////////////////////////////////////////////////////////////////////////////////////
+Procedure InsertarInfo(Var me: MeDobleEnlace; Reg: tRegDatos_DE; pos: tPos);
 Var
-    RC: tRegControl_DE;
-    RD, RDsig, RDant , RDborrados: tRegDatos_DE;
-    posdelete: tPos;
-    recuperaborrado: tPos;
+  RegControl: tRegControl_DE;
+  RegDatos, RegDatosAnt, actualizoant: tRegDatos_DE;
+  PosNueva: tPos;
+
 Begin
-	Seek(Me.C,0);
-	Read(Me.C,RC);
+  seek(me.c, 0);
+  Read(me.c, RegControl);
 
-  PosDelete:= RC.Primero;
+  If (RegControl.borrado = _posnula) Then
+    PosNueva := filesize(me.d)
+  Else
+  Begin
+    PosNueva := RegControl.borrado;
+    seek(me.d, PosNueva);
+    Read(me.d, RegDatos);
+    RegControl.borrado := RegDatos.sig;
+    { actualizo enlace del siguiente borrado a -1 }
+    if (RegDatos.sig <> _posnula) then
+    begin
+      seek(me.d, RegDatos.sig);
+      read(me.d, actualizoant);
+      actualizoant.ant := _posnula;
+      seek(me.d, RegDatos.sig);
+      write(me.d, actualizoant);
+    end;
+  End;
 
-	If (RC.Primero = RC.Ultimo)
-		Then Begin
-				    {Elimino la unica celula de la lista}
-				    PosDelete:= Rc.Primero;
-            Seek(Me.D,PosDelete);
-            Read(Me.D,RD);
-            recuperaborrado:= rc.borrado;
-				    Rc.Primero:= _posnula;
-				    Rc.Ultimo:= _posnula;
-            rd.sig:=recuperaborrado;
+  If ((RegControl.primero = _posnula) And (RegControl.ultimo = _posnula)) Then
+  Begin
+    { Insertar al Principio. Esta vacio el ME }
+    RegControl.primero := PosNueva;
+    RegControl.ultimo := PosNueva;
+    Reg.sig := _posnula;
+    Reg.ant := _posnula;
+  End
+  Else
+  Begin
+    If (pos = RegControl.primero) Then
+    Begin
+      { Insertar al Principio }
+      Reg.sig := RegControl.primero;
+      Reg.ant := _posnula;
 
-			   End
-		Else Begin
-				    If (Pos = Rc.Primero) {Elimino la Primera celula}
-					    Then Begin
-                      PosDelete:= Rc.Primero;
-							        Seek(Me.D,PosDelete);
-							        Read(Me.D,RD);
+      seek(me.d, RegControl.primero);
+      Read(me.d, RegDatos);
+      RegDatos.ant := PosNueva;
+      seek(me.d, RegControl.primero);
+      Write(me.d, RegDatos);
 
-                      Seek(Me.D,RD.Sig);
-                      Read(Me.D,RDsig);
-                      Rdsig.Ant:= _posnula;
-                      Seek(Me.D,RD.Sig);
-                      Write(Me.D,RDsig);
+      RegControl.primero := PosNueva;
+    End
+    Else If pos = _posnula // {(Pos <> RegControl.Ultimo)and}(pos<>-1)
+    Then
+    Begin
+      { Insertar al Final }
+      seek(me.d, RegControl.ultimo);
+      Read(me.d, RegDatos);
+      RegDatos.sig := PosNueva;
+      seek(me.d, RegControl.ultimo);
+      Write(me.d, RegDatos);
 
-                      RC.Primero:= RD.Sig;
+      Reg.ant := RegControl.ultimo;
+      Reg.sig := _posnula;
+      RegControl.ultimo := PosNueva;
+    End
+    else
+    begin
 
-                      RD.Sig:= RC.Borrado;
-                      RD.Ant:= _posnula;
-						       End
-                   else
-                   if (pos= RC.Ultimo) then {elimino la ultima celula}
-                      begin
-                          posdelete:= RC.Ultimo;
-                          Seek (ME.D,posdelete);
-                          Read(ME.D,RD);
-                          Seek (ME.D, RD.Ant);
-                          Read (ME.D,RDant);
-                          RDant.sig:= _posnula;
-                          Seek (ME.D,RD.ant);
-                          Write (ME.D,RDant);
-                          RC.ultimo:= RD.Ant;
-                          RD.sig:= RC.Borrado;
-                          RD.ant:= _posnula;
-                      end
-                      else
-                          begin   {elimino del medio}
-                           posdelete:= pos;
-                           seek (ME.D,posdelete);
-                           read (ME.D,Rd);
-                           seek (ME.D,RD.ant);
-                           read (ME.D,RDant);
-                           seek (ME.D, rd.sig);
-                           read (ME.D, rdsig);
-                           rdant.sig:= rd.sig;
-                           rdsig.ant:= rd.ant;
-                           seek (ME.D, rd.ant);
-                           write (ME.D, rdant);
-                           seek (ME.D, rd.sig);
-                           write (ME.D, rdsig);
-                           rd.sig:= rc.borrado;
-                           rd.ant:=  _posnula;
-                          end;
-   			   End;
-    If (Rc.Borrado <> _posnula)
-    Then Begin
-            Seek(ME.D,Rc.Borrado);
-            Read(ME.D,rdborrados);
-            rdborrados.Ant:= PosDelete;
-            Seek(ME.D,Rc.Borrado);
-            Write(ME.D,rdborrados);
-         End;
-  Rc.Borrado:= PosDelete;
-  Rc.Cantidad:= Rc.Cantidad - 1;
-  Seek(ME.d,PosDelete);
-  Write(ME.d,rd);
- 	Seek(Me.c,0);
-	Write(Me.c,rc);
+      { MIRAR }                  { Insertar al Medio }                                       { MIRAR }
+      { Leo el dato en la posicion donde debe ubicarse }
+      seek(me.d, pos);
+      Read(me.d, RegDatos);
+      Reg.ant := RegDatos.ant;
+      RegDatos.ant := PosNueva;
+      seek(me.d, pos);
+      Write(me.d, RegDatos);
+      { Leo el dato ant donde debe ubicarse para cambiar su sig }
+      seek(me.d, Reg.ant);
+      Read(me.d, RegDatosAnt);
+      Reg.sig := RegDatosAnt.sig;
+      RegDatosAnt.sig := PosNueva;
+      seek(me.d, PosNueva);
+      write(me.d, Reg);
+      seek(me.d, Reg.ant);
+      write(me.d, RegDatosAnt);
+
+    end;
+  End;
+
+  RegControl.cantidad := RegControl.cantidad + 1;
+  RegControl.ultimoIdInterno := Reg.idCarton;
+  seek(me.c, 0);
+  Write(me.c, RegControl);
+  seek(me.d, PosNueva);
+  Write(me.d, Reg);
 End;
-///////////////////////////////////////////////////////////////////////////////
-Procedure Modificar (var me:MeDobleEnlace; pos:tPos; reg:tRegDatos_DE);
-begin
-      seek(me.d,pos);
-      write (me.d,reg);
-end;
-///////////////////////////////////////////////////////////////////////
-Function LeerRegControl(var me:MeDobleEnlace;pos:tPos):tRegControl_DE;
+
+/// ///////////////////////////////////////////////////////////////////////////////////////////////////
+Function Buscar(var me: MeDobleEnlace; idCarton: integer;
+  var pos: tPos): boolean;
 var
-   rc:tRegControl_DE;
+  rc: tRegControl_DE;
+  Reg: tRegDatos_DE;
+  posaux: tPos;
+  siguiente: tPos;
+  resultado: boolean;
 begin
-     seek(me.c,pos);
-     read (me.c,rc);
-     LeerRegControl:=rc;
-end;
-/////////////////////////////////////////////////
-Function LeerRegDatos(var me:MeDobleEnlace;pos:tPos):tRegDatos_DE;
-var
-   rd:tRegDatos_DE;
-begin
-     seek(me.d,pos);
-     read (me.d,rd);
-     LeerRegDatos:= rd;
+  seek(me.c, 0);
+  read(me.c, rc);
+  siguiente := rc.primero;
+  posaux := siguiente;
+  resultado := false;
+  while (siguiente <> _posnula) and (not resultado) do
+  begin
+    seek(me.d, siguiente);
+    read(me.d, Reg);
+    if (idCarton = Reg.idCarton) then
+    begin
+      resultado := true;
+      pos := posaux;
+    end
+    else
+    begin
+      siguiente := Reg.sig;
+      posaux := Reg.sig;
+    end;
+  end;
+  result := resultado;
 end;
 
-/////////////////////////////////////////////////
-Procedure ModSig(var reg:tRegDatos_DE; sig:tPos);
+/// ///////////////////////////////////////////////////////////////////////////////////////////////////
+Procedure Eliminar(Var me: MeDobleEnlace; pos: tPos);
+Var
+  rc: tRegControl_DE;
+  rd, RDsig, RDant, RDborrados: tRegDatos_DE;
+  posdelete: tPos;
+  recuperaborrado: tPos;
+Begin
+  seek(me.c, 0);
+  Read(me.c, rc);
+
+  posdelete := rc.primero;
+
+  If (rc.primero = rc.ultimo) Then
+  Begin
+    { Elimino la unica celula de la lista }
+    posdelete := rc.primero;
+    seek(me.d, posdelete);
+    Read(me.d, rd);
+    recuperaborrado := rc.borrado;
+    rc.primero := _posnula;
+    rc.ultimo := _posnula;
+    rd.sig := recuperaborrado;
+
+  End
+  Else
+  Begin
+    If (pos = rc.primero) { Elimino la Primera celula }
+    Then
+    Begin
+      posdelete := rc.primero;
+      seek(me.d, posdelete);
+      Read(me.d, rd);
+
+      seek(me.d, rd.sig);
+      Read(me.d, RDsig);
+      RDsig.ant := _posnula;
+      seek(me.d, rd.sig);
+      Write(me.d, RDsig);
+
+      rc.primero := rd.sig;
+
+      rd.sig := rc.borrado;
+      rd.ant := _posnula;
+    End
+    else if (pos = rc.ultimo) then { elimino la ultima celula }
+    begin
+      posdelete := rc.ultimo;
+      seek(me.d, posdelete);
+      Read(me.d, rd);
+      seek(me.d, rd.ant);
+      Read(me.d, RDant);
+      RDant.sig := _posnula;
+      seek(me.d, rd.ant);
+      Write(me.d, RDant);
+      rc.ultimo := rd.ant;
+      rd.sig := rc.borrado;
+      rd.ant := _posnula;
+    end
+    else
+    begin { elimino del medio }
+      posdelete := pos;
+      seek(me.d, posdelete);
+      read(me.d, rd);
+      seek(me.d, rd.ant);
+      read(me.d, RDant);
+      seek(me.d, rd.sig);
+      read(me.d, RDsig);
+      RDant.sig := rd.sig;
+      RDsig.ant := rd.ant;
+      seek(me.d, rd.ant);
+      write(me.d, RDant);
+      seek(me.d, rd.sig);
+      write(me.d, RDsig);
+      rd.sig := rc.borrado;
+      rd.ant := _posnula;
+    end;
+  End;
+  If (rc.borrado <> _posnula) Then
+  Begin
+    seek(me.d, rc.borrado);
+    Read(me.d, RDborrados);
+    RDborrados.ant := posdelete;
+    seek(me.d, rc.borrado);
+    Write(me.d, RDborrados);
+  End;
+  rc.borrado := posdelete;
+  rc.cantidad := rc.cantidad - 1;
+  seek(me.d, posdelete);
+  Write(me.d, rd);
+  seek(me.c, 0);
+  Write(me.c, rc);
+End;
+
+/// ////////////////////////////////////////////////////////////////////////////
+Procedure Modificar(var me: MeDobleEnlace; pos: tPos; Reg: tRegDatos_DE);
 begin
-     reg.sig:= sig;
-end;
-/////////////////////////////////////////////////
-Procedure ModAnt(var reg:tRegDatos_DE; ant:tPos);
-begin
-     reg.ant:= ant;
-end;
-/////////////////////////////////////////////////
-Procedure ModPrim(var me:MeDobleEnlace;pos:tPos);
-var
-   rc:tRegControl_DE  ;
-begin
-     seek(me.c,0);
-     read (me.c,rc);
-     rc.primero:= pos;
-     seek(me.c,0);
-     write (me.c,rc);
-end;
-/////////////////////////////////////////////////
-Procedure ModUlt (var me:MeDobleEnlace;pos:tPos);
-var
-   rc:tRegControl_DE ;
-begin
-     seek(me.c,0);
-     read (me.c,rc);
-     rc.ultimo:= pos;
-     seek(me.c,0);
-     write (me.c,rc);
+  seek(me.d, pos);
+  write(me.d, Reg);
 end;
 
-/////////////////////////////////////////////////////////
-Function RecuperaridCarton(reg:tRegDatos_DE):integer;
+function BuscarInfo(var me: MeDobleEnlace; Clave: integer;
+  var pos: tPos): boolean;
+var
+  rc: tRegControl_DE;
+  PosAnt, p: tPos;
+  corte, encontre: boolean;
+  rd: tRegDatos_DE;
 begin
-    RecuperaridCarton:= reg.idCarton;
+  seek(me.c, 0);
+  Read(me.c, rc);
+  pos := rc.primero;
+  encontre := false;
+  corte := false;
+  While (Not encontre) and (Not corte) and (pos <> _posnula) do
+  begin
+    seek(me.d, pos);
+    Read(me.d, rd);
+    If rd.idCarton = Clave then
+      encontre := true
+    else if rd.idCarton > Clave then
+      corte := true
+    else
+    begin
+      // PosAnt:= pos;
+      pos := rd.sig;
+    end;
+
+  end;
+  BuscarInfo := encontre;
+  // pos:= posant;
 end;
 
-/////////////////////////////////////////////////////////////
-Function RecuperarAnt (reg:tRegDatos_DE):tPos;
-begin
-     RecuperarAnt:= reg.ant;
-end;
-/////////////////////////////////////////////////////////////
-Function RecuperarSig (reg:tRegDatos_DE):tPos;
-begin
-     RecuperarSig:=reg.sig;
-end;
-/////////////////////////////////////////////////////////////
-Function RecuperarBorrado (var me:MeDobleEnlace): tPos;
+/// ////////////////////////////////////////////////////////////////////
+Function ObtenerProximoIDInterno(var me: MeDobleEnlace): longint;
 var
-   rc:tRegControl_DE;
+  rc: tRegControl_DE;
 begin
-     seek(me.c,0);
-     read (me.c,rc);
-     RecuperarBorrado:= rc.borrado;
-end;
-/////////////////////////////////////////////////////////////////
-function BuscarInfo(var Me:MeDobleEnlace; Clave:integer;var Pos:tPos):Boolean;
-var
-  rc:tRegControl_DE;
-  PosAnt,p:tPos;
-  corte,encontre:Boolean;
-  rd:tRegDatos_DE;
-begin
-     seek(Me.C, 0);
-     Read(Me.C, RC);
-     Pos:=rc.primero;
-     Encontre:=False;
-     Corte:=false;
-     While (Not encontre) and (Not Corte) and (Pos <> _posnula) do
-        begin
-            seek(Me.D, Pos);
-            Read(Me.d, RD);
-            If RD.idCarton = Clave then
-              encontre:=true
-            else
-              if RD.idCarton > clave then
-                corte:=true
-              else
-              begin
-                 // PosAnt:= pos;
-                  pos:=RD.Sig;
-              end;
-
-
-        end;
-     BuscarInfo:=Encontre;
-    // pos:= posant;
-end;
-////////////////////////////////////////////////////////////
-Function ObtenerProximoIDInterno(var Me:MeDobleEnlace):LongInt;
-var
-  rc:tRegControl_DE;
-begin
-   seek(me.C,0);
-   read(me.c,rc);
-   result:= rc.ultimoIDinterno+1;
+  seek(me.c, 0);
+  read(me.c, rc);
+  result := rc.ultimoIdInterno + 1;
 end;
 
 end.

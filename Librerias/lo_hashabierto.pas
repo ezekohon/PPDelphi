@@ -6,15 +6,13 @@ uses SysUtils, Math, Windows, Messages, Variants, Classes, Graphics, Controls, F
   Dialogs, Menus, StdCtrls, Globals;
 
 const
-  _CategMin='A';
   _maxHash = 40;
   _fila = 60;
   _POSNULA = -1;
-  _RUTA= 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\';
+  _RUTA= globals.ruta;//'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\';
 
   _ARCHIVO_DATOS = 'JUEGOS.DAT';
   _ARCHIVO_CONTROL = 'JUEGOS.CON';
-  _PremioLinea = 3;
 
 type
  nombreEventoHash = String[20];  //clave de busqueda y hashing
@@ -416,7 +414,6 @@ begin
       seek(me.d,pos);
       write (me.d,RH);
 end;
-
 
 Function ObtenerUltimoID(var me:tMeHash):tid;
 var

@@ -1,26 +1,31 @@
 unit lo_colasparciales; // TIRADAS
 
-
 interface
 
  uses
-  lo_pila;
+  lo_pila,globals;
 
 const
   _RUTA= 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\';
   _ARCHIVO_DATOS = 'TiradasCola.DAT';
   _ARCHIVO_CONTROL = 'TiradasCola.CON';
+  _ARCHIVO_DATOS_V = 'TiradasVirtual.DAT';
+  _ARCHIVO_CONTROL_V = 'TiradasVirtual.CON';
   __POSNULA = -1;
   __LONGCLAVE = 4;
 
 type
-  //TipoPos = longint;
 
   TipoClave = string[__LONGCLAVE];
 
   TipoDato = Record
     Numero: integer;
     Enlace: TipoPos;
+
+    tipoPremio: tTipoPremio; // mePremios
+    importe: real; // mePremios
+    idCarton: integer; // mePremios
+    idJugador:string[15]; //mePremios
   End;
 
   TipoArchivoDato = file of TipoDato;
@@ -39,28 +44,32 @@ type
     C: TipoArchivoControl;
   end;
 
-procedure crearME(var cola: TipoCola);
+procedure crearME(var cola: TipoCola; archivoDatos: string;
+  archivoControl: string);
 Procedure AbrirMe(Var cola: TipoCola);
 Procedure CerrarMe(Var cola: TipoCola);
-function colaVacia(var cola: TipoCola; cabeceraControl: TipoPos): boolean;
-procedure encolar(var cola: TipoCola; reg: TipoDato; cabeceraControl: TipoPos);
-procedure decolar(var cola: TipoCola; cabeceraControl: TipoPos); // esta igual que desapilar
-procedure tope(var cola: TipoCola; var reg: TipoDato; cabeceraControl: TipoPos);
-procedure insertarCabeceraControl(var cola: TipoCola; cabeceraControl: TipoPos);
-function cantidadElementos(var cola: TipoCola; cabeceraControl: TipoPos):integer;
+function colaVacia(var cola: TipoCola; cabeceraControl: TipoPos= 0): boolean;
+procedure encolar(var cola: TipoCola; reg: TipoDato; cabeceraControl: TipoPos= 0);
+procedure decolar(var cola: TipoCola; cabeceraControl: TipoPos= 0); // esta igual que desapilar
+procedure tope(var cola: TipoCola; var reg: TipoDato; cabeceraControl: TipoPos= 0);
+procedure insertarCabeceraControl(var cola: TipoCola; cabeceraControl: TipoPos= 0);
+function cantidadElementos(var cola: TipoCola; cabeceraControl: TipoPos= 0):integer;
 
 var
   MeTIRADAS: TipoCola;
+  MeTiradasVirtualizacion: TipoCola;
+  MePremios: TipoCola;
 
 implementation
 
-procedure crearME(var cola: TipoCola);
+procedure crearME(var cola: TipoCola; archivoDatos: string;
+  archivoControl: string);
 var
   berrrorcontrol, berrordatos: boolean;
   rc: TipoControl;
 begin
-  assign(cola.D, _RUTA + _ARCHIVO_DATOS);
-  assign(cola.C, _RUTA + _ARCHIVO_CONTROL);
+  assign(cola.D, archivoDatos);//_RUTA + _ARCHIVO_DATOS);
+  assign(cola.C, archivoControl);//_RUTA + _ARCHIVO_CONTROL);
 {$I-}
   reset(cola.C);
   berrrorcontrol := ioresult <> 0;
@@ -98,7 +107,7 @@ Begin
   close(cola.C);
 End;
 
-function colaVacia(var cola: TipoCola; cabeceraControl: TipoPos): boolean;
+function colaVacia(var cola: TipoCola; cabeceraControl: TipoPos= 0): boolean;
 var
   rc: TipoControl;
 begin
@@ -107,7 +116,7 @@ begin
   colaVacia := (rc.Pri = __POSNULA);
 end;
 
-procedure encolar(var cola: TipoCola; reg: TipoDato; cabeceraControl: TipoPos);
+procedure encolar(var cola: TipoCola; reg: TipoDato; cabeceraControl: TipoPos= 0);
 var
   rc: TipoControl;
   rd, raux: TipoDato;
@@ -154,7 +163,7 @@ begin
   write(cola.D, reg);
 end;
 
-procedure decolar(var cola: TipoCola; cabeceraControl: TipoPos);
+procedure decolar(var cola: TipoCola; cabeceraControl: TipoPos= 0);
 var
   rc: TipoControl;
   rd, raux: TipoDato;
@@ -192,7 +201,7 @@ begin
 end;
 
 // tope es igual a frente
-procedure tope(var cola: TipoCola; var reg: TipoDato; cabeceraControl: TipoPos);
+procedure tope(var cola: TipoCola; var reg: TipoDato; cabeceraControl: TipoPos= 0);
 var
   rc: TipoControl;
 begin
@@ -202,7 +211,7 @@ begin
   read(cola.D, reg);
 end;
 
-procedure insertarCabeceraControl(var cola: TipoCola; cabeceraControl: TipoPos);
+procedure insertarCabeceraControl(var cola: TipoCola; cabeceraControl: TipoPos= 0);
 //cabeceraControl va a ser el id del juego. Se llama desde form ABMJuegos
 var
   rc: TipoControl;
@@ -212,12 +221,12 @@ begin
   rc.Ult := __POSNULA;
   rc.bajas := __POSNULA;
    rc.cantidad := 0;
-  seek(cola.C, cabeceraControl); // siempre hacer seek
+  seek(cola.C, cabeceraControl);
   write(cola.C, rc);
   //close(cola.C);
 end;
 
-function cantidadElementos(var cola: TipoCola; cabeceraControl: TipoPos):integer;
+function cantidadElementos(var cola: TipoCola; cabeceraControl: TipoPos= 0):integer;
 var
   rc: TipoControl;
 begin

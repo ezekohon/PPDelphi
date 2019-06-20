@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, StrUtils, lo_arboltrinario, lo_pila, lo_hashabierto,
-  lo_arbolbinario, Dialogs, globals;
+  lo_arbolbinario, Dialogs, globals,rtti,lo_colasparciales;
 
 function generarClaveGanador(idUsuario: tidusuario;
   nombreEvento: string): string;
@@ -15,9 +15,10 @@ function importePorTipoPremio(juego: tRegDatosHash;
   tipoPremio: tTipoPremio): real;
 function esJuegoBuscado(claveBusqueda: string; nombreEvento: string): Boolean;
 function esJugadorBuscado(claveBusqueda: string; idJugador: string): Boolean;
+function getJugadorConGanador(claveBusqueda: string): string;
 function espremioYaEntregadoAGanador(cabeceraPila: integer;
   tipoPremio: tTipoPremio): Boolean;
-// PROBAR
+
 function contarPremiosGanadorEnJuego(meGanadores: tMeIndiceTri;
   nombreEvento: string; idJugador: string): integer;
 function sumarPremiosGanadorEnJuego(meGanadores: tMeIndiceTri;
@@ -30,6 +31,12 @@ procedure InOrderContarPremiosAcumuladosTotales(Arbol: tMeIndiceTri;
   Raiz: tPosTri; idJugador: string; var cuenta: integer);
 procedure InOrderSumarPremiosAcumuladosTotales(Arbol: tMeIndiceTri;
   Raiz: tPosTri; idJugador: string; var suma: real);
+  function getNickJugadorConIdGanador(claveBusqueda: string): string;
+  procedure InOrderIsGanadorObtuvoPremio(Arbol: tMeIndiceTri;
+  Raiz: tPosTri; idJugador:string;premio:string; var premioGanado:boolean);
+ Procedure isJugadorGanoBingo(var premioGanado: boolean; cabecera: integer;out idCarton: integer; out importe:real);
+
+
 
 implementation
 
@@ -41,6 +48,7 @@ Var
   ExisteGANADOR: Boolean;
   N: tNodoIndiceTri;
   cabeceraPila: integer;
+  regColaPremio: lo_colasparciales.TipoDato;
   // claveBusqueda: string[100];
 Begin
 
@@ -52,6 +60,9 @@ Begin
   Reg.tipoPremio := tipoPremio; // id autogenerado.
   Reg.importe := importe;
   Reg.idCarton := idCarton;
+  regColaPremio.tipoPremio := tipoPremio; // id autogenerado.
+  regColaPremio.importe := importe;
+  regColaPremio.idCarton := idCarton;
 
   // CASO 1: Ganador(combinacion jugador+juego) no existe
   If not ExisteGANADOR then
@@ -63,17 +74,19 @@ Begin
     Aumentar_UltimaCabeceraPila(meindiceganadores);
 
     // insertar control cabecera pila
-    insertarCabeceraControl(MePilaGanadores, cabeceraPila);
+    lo_pila.insertarCabeceraControl(MePilaGanadores, cabeceraPila);
 
     // inserto nodo
     N.hm := cabeceraPila;
     N.idGanador := claveBusqueda;
     InsertarNodo_Tri(meindiceganadores, N, PosTri);
 
-
+     //para mensajes de premios
+    regColaPremio.idJugador := getjugadorconganador(claveBusqueda);
     // insertar reg datos pila
 
     lo_pila.apilar(MePilaGanadores, Reg, cabeceraPila);
+    encolar(MePremios,regColaPremio);
 
     result := True;
     ShowMessage('Indice Insertado' + '  -  cabeceraPila' +
@@ -85,6 +98,10 @@ Begin
     // o hacerlo en 2 metodos separados?
     ObtenerNodo(meindiceganadores, PosTri, N);
     apilar(MePilaGanadores, Reg, N.hm); // hm es la pos a la cabecera de la pila
+
+    //para mensajes de premios
+    regColaPremio.idJugador := getjugadorconganador(claveBusqueda);
+    encolar(MePremios,regColaPremio);
 
     ShowMessage('pila Insertado' + '  -  cabeceraPila' + inttostr(N.hm) +
       '  - clave' + N.idGanador);
@@ -127,7 +144,7 @@ begin
     Bingo:
       valor := juego.PozoAcumulado;
   else
-    ShowMessage('unexpected shit');
+    ShowMessage('unexpected ');
   end;
   result := valor;
 end;
@@ -163,6 +180,29 @@ begin
   result := Copy(claveBusqueda, 0, pos('_', claveBusqueda) - 1) = idJugador;
 end;
 
+function getJugadorConGanador(claveBusqueda: string): string;
+// con una clave de ganador, y una clave de jugador, devuelve si el ganador corresponde al evento
+begin
+  result := Copy(claveBusqueda, 0, pos('_', claveBusqueda) - 1);
+end;
+
+function getNickJugadorConIdGanador(claveBusqueda: string): string;
+var
+  idJugador: string;
+  posBi: tPosArbol;
+    Rd: tRegDatos;
+  N:tNodoIndice;
+begin
+
+  idJugador := Copy(claveBusqueda, 0, pos('_', claveBusqueda) - 1);
+  BuscarNodo_Indice(MeID,idJugador, posBi);
+      N:=ObtenerInfo_Indice (MeID,posBi);
+
+    //De N utilizo la posicion en Clientes para leer el registro.
+    ObtenerInfoMe_Archivos(MeJUGADORES,N.PosEnDatos,RD);
+    result:= rd.nick;
+end;
+
 function sumarPremiosGanadorEnJuego(meGanadores: tMeIndiceTri;
   nombreEvento: string; idJugador: string): real;
 var
@@ -181,7 +221,7 @@ var
   begin
     If not PilaVacia(MePilaGanadores, cabecera) then
     begin
-      Tope(MePilaGanadores, RD, cabecera);
+      lo_pila.Tope(MePilaGanadores, RD, cabecera);
       Desapilar(MePilaGanadores, cabecera);
       sumaAux := RD.importe;
       sumarPremios(suma, cabecera);
@@ -228,7 +268,7 @@ var
   begin
     If not PilaVacia(MePilaGanadores, cabecera) then
     begin
-      Tope(MePilaGanadores, RD, cabecera);
+      lo_pila.Tope(MePilaGanadores, RD, cabecera);
       Desapilar(MePilaGanadores, cabecera);
       contarPremios(cuenta, cabecera);
 
@@ -273,7 +313,7 @@ var
   begin
     If not PilaVacia(MePilaGanadores, cabecera) then
     begin
-      Tope(MePilaGanadores, RD, cabecera);
+      lo_pila.Tope(MePilaGanadores, RD, cabecera);
       Desapilar(MePilaGanadores, cabecera);
 
       sumaAux := RD.importe;
@@ -323,7 +363,7 @@ var
   begin
     If not PilaVacia(MePilaGanadores, cabecera) then
     begin
-      Tope(MePilaGanadores, RD, cabecera);
+      lo_pila.Tope(MePilaGanadores, RD, cabecera);
       Desapilar(MePilaGanadores, cabecera);
       contarPremios(cuenta, cabecera, idCarton);
 
@@ -365,7 +405,7 @@ var
   begin
     If not PilaVacia(MePilaGanadores, cabecera) then
     begin
-      Tope(MePilaGanadores, RD, cabecera);
+      lo_pila.Tope(MePilaGanadores, RD, cabecera);
       Desapilar(MePilaGanadores, cabecera);
 
       contarPremios(cuenta, cabecera);
@@ -412,7 +452,7 @@ var
   begin
     If not PilaVacia(MePilaGanadores, cabecera) then
     begin
-      Tope(MePilaGanadores, RD, cabecera);
+      lo_pila.Tope(MePilaGanadores, RD, cabecera);
       Desapilar(MePilaGanadores, cabecera);
 
       sumarPremios(suma, cabecera);
@@ -446,5 +486,99 @@ begin
     idJugador, suma);
 
 end;
+
+procedure InOrderIsGanadorObtuvoPremio(Arbol: tMeIndiceTri;
+  Raiz: tPosTri; idJugador:string;premio:string; var premioGanado:boolean);
+  var
+  N: tNodoIndiceTri;
+
+/// ///////--INTERNO--//////////////////////////////////////////////
+Procedure isPremioGanado(var premioGanado: boolean; cabecera: integer; tipoPremio:string);
+  { Metodo Recursivo }
+  var
+    RD: tDatoPila;
+  begin
+    If not PilaVacia(MePilaGanadores, cabecera) and (not premioGanado) then
+    begin
+      lo_pila.Tope(MePilaGanadores, RD, cabecera);
+      Desapilar(MePilaGanadores, cabecera);
+
+      isPremioGanado(premioGanado, cabecera,tipoPremio);
+
+       if TRttiEnumerationType.GetName(rd.tipoPremio) = tipoPremio then
+        premioGanado := true;
+
+      apilar(MePilaGanadores, RD, cabecera);
+    end
+     else If not PilaVacia(MePilaGanadores, cabecera) then
+    begin
+      lo_pila.Tope(MePilaGanadores, RD, cabecera);
+      Desapilar(MePilaGanadores, cabecera);
+
+      isPremioGanado(premioGanado, cabecera,tipoPremio);
+
+      apilar(MePilaGanadores, RD, cabecera);
+    end
+
+  end;
+
+/// ///////--INTERNO--//////////////////////////////////////////////
+begin
+//indica si el jugador gano un premio pasado como parametro
+      If Raiz = PosNula_tri(Arbol) then
+    exit;
+  // Primero recursivo tendiendo a la Izquierda
+  InOrderIsGanadorObtuvoPremio(Arbol, ProximoIzq_Tri(Arbol, Raiz),
+    idJugador, premio,premioGanado);
+  // Guardo en N el nodo indice.
+  ObtenerNodo(Arbol, Raiz, N);
+
+  if esJugadorBuscado(N.idGanador, idJugador) then
+  begin
+    isPremioGanado(premioGanado, N.hm, premio);
+  end;
+
+  // Recursividad tendiendo a la Derecha.
+
+  InOrderIsGanadorObtuvoPremio(Arbol, ProximoDer_Tri(Arbol, Raiz),
+    idJugador, premio,premioGanado);
+end;
+
+
+
+Procedure isJugadorGanoBingo(var premioGanado: boolean; cabecera: integer;out idCarton: integer; out importe:real);
+  { Metodo Recursivo }
+  var
+    RD: tDatoPila;
+  begin
+    If not PilaVacia(MePilaGanadores, cabecera) and (not premioGanado) then
+    begin
+      lo_pila.Tope(MePilaGanadores, RD, cabecera);
+      Desapilar(MePilaGanadores, cabecera);
+
+      isJugadorGanoBingo(premioGanado, cabecera,idcarton,importe);
+
+       if TRttiEnumerationType.GetName(rd.tipoPremio) = 'Bingo' then
+       begin
+          premioGanado := true;
+          idCarton:= rd.idCarton;
+          importe:= rd.importe;
+       end;
+
+
+      apilar(MePilaGanadores, RD, cabecera);
+    end
+     else If not PilaVacia(MePilaGanadores, cabecera) then
+    begin
+      lo_pila.Tope(MePilaGanadores, RD, cabecera);
+      Desapilar(MePilaGanadores, cabecera);
+
+      isJugadorGanoBingo(premioGanado, cabecera,idcarton,importe);
+
+      apilar(MePilaGanadores, RD, cabecera);
+    end
+
+  end;
+
 
 end.

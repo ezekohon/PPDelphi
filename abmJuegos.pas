@@ -36,7 +36,7 @@ type
     procedure CargarGrilla();
     Procedure SetearHeaders();
     Procedure AgregarReglon(RD: tRegDatosHash; IndexRenglon: Integer);
-    function TieneCartonesVendidos(): boolean;
+    function TieneCartonesVendidosOEmpezado(): boolean;
 
     // procedure FormCreate(Sender: TObject);
     procedure ButtonAltaClick(Sender: TObject);
@@ -88,7 +88,7 @@ begin
   ClaveAux := Grilla.Cells[0, Grilla.Row];
   If (ClaveAux <> '') and (Grilla.Row > 0) then
   begin
-    If TieneCartonesVendidos() then
+    If TieneCartonesVendidosOEmpezado() then
       Application.MessageBox
         ('El juego tiene Cartones vendidos. No puede ser eliminado.',
         'Acción no permitida', MB_ICONSTOP)
@@ -133,7 +133,7 @@ var
 begin
   nEvento := UpperCase(EditNombreEvento.text);
   valor := StrToFloat(EditValor.text);
-  fecha := DateTimePicker1.DateTime;
+  fecha := DateTimePicker1.Date;
   if (AccionActual = 'A') then
     AltaJuego(nEvento, valor, fecha)
   else
@@ -238,6 +238,8 @@ begin
       CambiarCabeceraInsercion(MeJuego, Pos);
       // insertar una cabecera al archivo de control en tiradas para este juego
       insertarCabeceraControl(MeTIRADAS, Reg.id);
+      insertarCabeceraControl(MeTiradasVirtualizacion, reg.id);
+      insertarCabeceraControl(mepremios, reg.id);
     end
     Else
     begin
@@ -289,17 +291,19 @@ begin
   end;
 end;
 
-function TFormAbmJuegos.TieneCartonesVendidos(): boolean;
+function TFormAbmJuegos.TieneCartonesVendidosOEmpezado(): boolean;
 var
   ret: boolean;
   Pos: tposhash;
   Reg: tRegDatosHash;
+  nombreEvento: string;
 begin
 
   ret := false;
-  // -AbrirMe_Hash(MeJuego);
-  CapturarInfoHash(MeJuego, PosModificar, Reg);
-  if Reg.TotalCartonesVendidos > 0 then
+  nombreEvento := grilla.Cells[0, grilla.Row];
+  BuscarHash(MeJuego, nombreEvento, pos);
+  CapturarInfoHash(MeJuego, pos, Reg);
+  if (Reg.TotalCartonesVendidos > 0)  then
     ret := true;
   // -CerrarMe_Hash(MeJuego);
 

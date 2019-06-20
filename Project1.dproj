@@ -181,10 +181,6 @@
         </DCCReference>
         <DCCReference Include="Librerias\la_dobleEnlace.pas"/>
         <DCCReference Include="Helpers\Globals.pas"/>
-        <DCCReference Include="Vistas\Jugadores\DetalleJuego.pas">
-            <Form>FormDetalleJuego</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
         <DCCReference Include="Vistas\Administrador\EjecucionJuegoAdmin.pas">
             <Form>EjecucionJuegoAdminForm</Form>
             <FormType>dfm</FormType>
@@ -209,6 +205,18 @@
         <DCCReference Include="Librerias\la_arboltrinario.pas"/>
         <DCCReference Include="Vistas\Administrador\ListadoJugadores.pas">
             <Form>FormListadoJugadores</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Vistas\Administrador\BalanceoJugadores.pas">
+            <Form>FormBalanceoJugadores</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Vistas\Administrador\BalanceoGanadores.pas">
+            <Form>FormBalanceoGanadores</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Vistas\Administrador\DetalleJuego.pas">
+            <Form>FormDetalleJuego</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">

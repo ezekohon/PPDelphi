@@ -28,8 +28,9 @@ function cantidadCartonesComprados(idJugador: tidUsuario; nombreEvento: string;
   var meCartones: MeDobleEnlace): integer;
 function cantidadJugadoresEnJuego(nombreEvento: string;
   var meCartones: MeDobleEnlace): integer;
+function cantidadCartonesCompradosTotales(idJugador: tidUsuario;
+  var meCartones: MeDobleEnlace): integer;
 
-// PROBAR
 function tacharNumeroSiEstaEnCarton(var carton: tRegDatos_DE; pos: tpos;
   numeroBolilla: integer): boolean;
 
@@ -61,9 +62,10 @@ begin
   // It may seem a little counter-intuitive, but the lower limit is inclusive, and the upper limit is non-inclusive.
   campo.tachado := false;
   OutputDebugString(pchar('LENGHT ' + IntToStr(length(res[0]))));
+  Randomize;
   for i := 0 to length(res[0]) - 1 do
   begin
-    Randomize;
+
     num := RandomRange(1, 16);
     while IsNumberInArray(num, getColumnaArreglo(res, 0)) do
       num := RandomRange(1, 16); // no esta comprobando
@@ -73,7 +75,7 @@ begin
   end;
   for i := 0 to length(res[1]) - 1 do
   begin
-    Randomize;
+    //Randomize;
     num := RandomRange(16, 31);
     while IsNumberInArray(num, getColumnaArreglo(res, 1)) do
       num := RandomRange(16, 31);
@@ -84,7 +86,7 @@ begin
   begin
     // if i<>2 then
     // begin
-    Randomize;
+   // Randomize;
     num := RandomRange(31, 46);
     while IsNumberInArray(num, getColumnaArreglo(res, 2)) do
       num := RandomRange(31, 46);
@@ -102,7 +104,7 @@ begin
   end;
   for i := 0 to length(res[3]) - 1 do
   begin
-    Randomize;
+   // Randomize;
     num := RandomRange(46, 61);
     while IsNumberInArray(num, getColumnaArreglo(res, 3)) do
       num := RandomRange(46, 61);
@@ -111,7 +113,7 @@ begin
   end;
   for i := 0 to length(res[4]) - 1 do
   begin
-    Randomize;
+   // Randomize;
     num := RandomRange(61, 76);
     while IsNumberInArray(num, getColumnaArreglo(res, 4)) do
       num := RandomRange(61, 76);
@@ -309,6 +311,30 @@ begin
   result := count;
 end;
 
+function cantidadCartonesCompradosTotales(idJugador: tidUsuario;
+  var meCartones: MeDobleEnlace): integer;
+// dado id de jugador devolver cantidad cartones comprados por el jugador
+var
+  tiene: boolean;
+  j, count: integer;
+  reg: tRegDatos_DE;
+begin
+  count := 0;
+  if not MeVacio(meCartones) then
+  begin
+    j := LO_DobleEnlace.Primero(meCartones);
+    // while j <> _posnula do
+    repeat
+      reg := LO_DobleEnlace.CapturarInfo(meCartones, j);
+      if (reg.idJugador = idJugador)
+      then
+        count := count + 1;
+      j := LO_DobleEnlace.Proximo(meCartones, j);
+    until (j = _posnula);
+  end;
+  result := count;
+end;
+
 function cantidadJugadoresEnJuego(nombreEvento: string;
   var meCartones: MeDobleEnlace): integer;
 var
@@ -386,8 +412,6 @@ var
   i, j: integer;
   tache: boolean;
 begin
-  // POSIBILIDAD: modificar para que solo traiga el idCarton y buscarlo aca adentro,
-  // pero requeriria una busqueda mas
   tache := false;
   for i := low(carton.grilla) to high(carton.grilla) do
   begin

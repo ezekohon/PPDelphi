@@ -1,0 +1,284 @@
+unit DetalleJuego;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, LO_HashAbierto, LO_ArbolBinario,LA_ArbolBinario, lo_dobleEnlace,
+  la_dobleenlace, Vcl.StdCtrls, Vcl.Grids,rtti,la_pila, lo_pila, Globals,
+  la_arboltrinario, lo_arboltrinario;
+
+type
+  TFormDetalleJuego = class(TForm)
+    grillaJugadores: TStringGrid;
+    LabelJuego: TLabel;
+    grillaGanadores: TStringGrid;
+    grillaCarton: TStringGrid;
+    procedure FormShow(Sender: TObject);
+    Procedure AgregarReglonJugadores(RD: tRegDatos);
+    procedure CargarGrillaJugadores();
+   Procedure InOrdenArbolBi(Arbol: MeArbol;
+  Raiz: tPosArbol);
+    Procedure SetearHeadersJugadores();
+    Procedure InOrdenArbolTri(Arbol: tMeIndiceTri;
+  Raiz: tPosTri);
+  procedure CargarGrillaGanadores();
+  Procedure SetearHeadersGanadores();
+    procedure grillaGanadoresClick(Sender: TObject);
+    Procedure AgregarCeldaCarton(celdaCarton: tRegCampoMatriz;
+  IndexRenglon: Integer; IndexCol: Integer);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    JuegoActual:   tRegDatosHash;
+  end;
+
+var
+  FormDetalleJuego: TFormDetalleJuego;
+
+implementation
+
+{$R *.dfm}
+
+ procedure TFormDetalleJuego.CargarGrillaJugadores();
+var
+  // pos: tPosHash;
+  i, count: Integer;
+  reg: tRegDatos;
+begin
+  SetearHeadersJugadores;
+  { count := 1;
+    for i := 0 to Ultimo_Archivos(MeJugadores) do
+    begin
+
+    ObtenerInfoMe_Archivos(MeJugadores, i, reg);
+    if isTieneCartonesComprados(reg.clave, JuegoActual.id, mecartones) then
+    begin
+    AgregarReglonJugadores(reg, count);
+    count := count + 1;
+    end;
+
+    end; }
+  InOrdenArbolBi(MeNick, Raiz_Indice(MeNick));
+end;
+
+Procedure TFormDetalleJuego.InOrdenArbolBi(Arbol: MeArbol;
+  Raiz: tPosArbol);
+var
+  RD: tRegDatos;
+  N: tNodoIndice;
+begin
+  If Raiz = PosNula_Indice(Arbol) then
+    exit;
+
+  // Primero recursivo tendiendo a la Izquierda
+  InOrdenArbolBi(Arbol, ProximoIzq_Indice(Arbol, Raiz));
+
+  // Guardo en N el nodo indice.
+  N := ObtenerInfo_Indice(Arbol, Raiz);
+
+  // De N utilizo la posicion en Clientes para leer el registro.
+  ObtenerInfoMe_Archivos(MeJugadores, N.PosEnDatos, RD);
+
+  if isTieneCartonesComprados(RD.clave, JuegoActual.nombreEvento, mecartones)
+  then
+    AgregarReglonJugadores(RD);
+
+
+  // Recursividad tendiendo a la Derecha.
+
+  InOrdenArbolBi(Arbol, ProximoDer_Indice(Arbol, Raiz));
+
+end;
+
+Procedure TFormDetalleJuego.SetearHeadersJugadores();
+Begin
+  with grillaJugadores do
+  Begin
+    // Título de las columnas
+    ColWidths[0] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+    ColWidths[1] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxxxx');
+    ColWidths[2] := Canvas.TextWidth('xxxxxxxxxxxxxxxx');
+
+    Cells[0, 0] := 'JUGADOR';
+    Cells[1, 0] := 'ESTADO';
+    Cells[2, 0] := 'CARTONES';
+  End;
+End;
+
+Procedure TFormDetalleJuego.AgregarReglonJugadores(RD: tRegDatos);
+// IndexRenglon: Integer);
+Begin
+
+  with grillaJugadores do
+  Begin
+    RowCount := RowCount + 1;
+    Cells[0, RowCount - 1] := RD.nick;
+    Cells[1, RowCount - 1] := TRttiEnumerationType.GetName(RD.estado);
+    Cells[2, RowCount - 1] := IntToStr(cantidadCartonesComprados(RD.clave,
+      JuegoActual.nombreEvento, mecartones));
+
+    FixedRows := 1;
+  End;
+
+End;
+
+procedure TFormDetalleJuego.CargarGrillaGanadores();
+var
+  // pos: tPosHash;
+  i, count: Integer;
+  reg: tRegDatosHash;
+begin
+  SetearHeadersGanadores;
+  InOrdenArbolTri(MeIndiceGanadores,
+  lo_arboltrinario.raiz_tri(MeIndiceGanadores));
+end;
+
+Procedure TFormDetalleJuego.SetearHeadersGanadores();
+Begin
+  with grillaGanadores do
+  Begin
+    // Título de las columnas
+    ColWidths[0] := Canvas.TextWidth('xxxxxxxxxxxxxxx');
+    ColWidths[1] := Canvas.TextWidth('xxxxxxxxxxxxxxx');
+    ColWidths[2] := Canvas.TextWidth('xxxxxxxxx');
+    ColWidths[3] := Canvas.TextWidth('xxxxxxxxx');
+
+    Cells[0, 0] := 'NICK GANADOR';
+    Cells[1, 0] := 'PREMIO';
+    Cells[2, 0] := 'ID CARTON';
+    Cells[3, 0] := 'IMPORTE';
+
+  End;
+End;
+
+Procedure TFormDetalleJuego.InOrdenArbolTri(Arbol: tMeIndiceTri;
+  Raiz: tPosTri);
+var
+  N: tNodoIndiceTri;
+  /// ///////--INTERNO--//////////////////////////////////////////////
+  Procedure AgregarReglonGanadores(cabecera: Integer; idGanador:string);
+  { Metodo Recursivo }
+  var
+    RD: tdatopila;
+  begin
+    If not PilaVacia(MePilaGanadores, cabecera) then
+    begin
+      lo_pila.Tope(MePilaGanadores, RD, cabecera);
+      Desapilar(MePilaGanadores, cabecera);
+      AgregarReglonGanadores(cabecera,idGanador);
+
+      with grillaGanadores do
+      Begin
+        RowCount := RowCount + 1;
+        Cells[0, RowCount - 1] := getNickJugadorConIdGanador(idGanador);
+        Cells[1, RowCount - 1] := TRttiEnumerationType.GetName(RD.tipoPremio);
+        Cells[2, RowCount - 1] := IntToStr(RD.idCarton);
+        Cells[3, RowCount - 1] := floattostr(RD.importe);
+
+        FixedRows := 1;
+      End;
+
+      apilar(MePilaGanadores, RD, cabecera);
+    end;
+  end;
+
+/// ///////--INTERNO--//////////////////////////////////////////////
+begin
+  If Raiz = PosNula_tri(Arbol) then
+    exit;
+  // Primero recursivo tendiendo a la Izquierda
+  InOrdenArbolTri(Arbol, ProximoIzq_Tri(Arbol, Raiz));
+  // Guardo en N el nodo indice.
+  ObtenerNodo(Arbol, Raiz, N);
+
+  // De N utilizo la posicion en Clientes para leer el registro.
+  // ObtenerInfoMe_Archivos(MeJugadores, N.PosEnDatos, RD);
+
+  if esJuegoBuscado(N.idGanador, JuegoActual.nombreEvento) then
+  begin
+    // recorrer la pila y llamar a agregarRenglon por cada premio en pila
+    AgregarReglonGanadores(N.hm,n.idGanador);
+  end;
+
+
+
+  // Recursividad tendiendo a la Derecha.
+
+  InOrdenArbolTri(Arbol, ProximoDer_Tri(Arbol, Raiz));
+
+end;
+
+procedure TFormDetalleJuego.FormShow(Sender: TObject);
+begin
+  LabelJuego.Caption := JuegoActual.nombreEvento;
+  CargarGrillaJugadores;
+  //if JuegoActual.estado = Finalizado then
+  //begin
+    CargarGrillaGanadores;
+  ///end;
+end;
+
+
+
+procedure TFormDetalleJuego.grillaGanadoresClick(Sender: TObject);
+var
+  idCarton, j, i, k: Integer;
+  reg: tRegDatos_DE;
+  encontre, existeGanador: boolean;
+  claveGanador: string;
+  PosTri: tPosTri;
+  N: tNodoIndiceTri;
+begin
+  idCarton := strtoint(grillaGanadores.Cells[2, grillaGanadores.Row]);
+
+  if not MeVacio(MeCartones) then
+  begin
+    j := lo_dobleenlace.Primero(MeCartones);
+    encontre := false;
+    // while j <> _posnula do
+    repeat
+      reg := lo_dobleenlace.CapturarInfo(MeCartones, j);
+
+      if ((reg.idCarton = idCarton) and (not encontre)) then
+      begin
+        // llenar grilla carton
+        for i := low(reg.grilla) to high(reg.grilla) do
+        begin
+          for k := low(reg.grilla[0]) to high(reg.grilla[0]) do
+          begin
+            if (not((i = 2) and (k = 2))) then
+              AgregarCeldaCarton(reg.grilla[i, k], i, k);
+          end;
+        end;
+        encontre := true;
+      end;
+
+      j := lo_dobleenlace.Proximo(MeCartones, j);
+
+    until (j = _posnula);
+  end;
+end;
+
+Procedure TFormDetalleJuego.AgregarCeldaCarton(celdaCarton: tRegCampoMatriz;
+  IndexRenglon: Integer; IndexCol: Integer);
+Begin
+
+  with grillaCarton do
+  Begin
+
+    if celdaCarton.tachado then
+
+      Cells[IndexCol, IndexRenglon] := inttostr(celdaCarton.numero) + '.'
+    else
+    begin
+      Cells[IndexCol, IndexRenglon] := inttostr(celdaCarton.numero);
+    end;
+
+    FixedRows := 1;
+  End;
+
+End;
+
+end.

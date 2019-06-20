@@ -23,7 +23,8 @@ type
 
     procedure toggleBotonDevolucion();
 
-    procedure FormPaint(Sender: TObject);  private
+    procedure FormPaint(Sender: TObject);
+    procedure FormShow(Sender: TObject);  private
     { Private declarations }
   public
     { Public declarations }
@@ -98,6 +99,12 @@ begin
      toggleBotonDevolucion();
 end;
 
+procedure TFormComprarCartones.FormShow(Sender: TObject);
+begin
+  LabelJuego.Caption:= JuegoActual.nombreEvento;
+  EditCartones.Clear;
+end;
+
 procedure TFormComprarCartones.toggleBotonDevolucion();
 begin
     if la_dobleEnlace.isTieneCartonesComprados(globals.JugadorLogueado.clave, juegoActual.nombreEvento, mecartones) then
@@ -107,5 +114,7 @@ begin
            ButtonDevolucion.Enabled := False;
     end;
 end;
+
+
 
 end.

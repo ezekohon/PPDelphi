@@ -8,117 +8,118 @@
   resources were bound to the produced executable.
 */
 
-#define IdResourceStrings_RSStackECONNREFUSED 65088
-#define IdResourceStrings_RSStackELOOP 65089
-#define IdResourceStrings_RSStackENAMETOOLONG 65090
-#define IdResourceStrings_RSStackEHOSTDOWN 65091
-#define IdResourceStrings_RSStackEHOSTUNREACH 65092
-#define IdResourceStrings_RSStackENOTEMPTY 65093
-#define IdResourceStrings_RSStackHOST_NOT_FOUND 65094
-#define IdResourceStrings_RSStackClassUndefined 65095
-#define IdResourceStrings_RSStackAlreadyCreated 65096
-#define IdResourceStrings_RSInvalidServiceName 65097
-#define IdResourceStrings_RSInvalidIPv6Address 65098
-#define IdResourceStrings_RSIPVersionUnsupported 65099
-#define IdResourceStrings_RSNotAllBytesSent 65100
-#define IdResourceStrings_RSPackageSizeTooBig 65101
-#define IdResourceStrings_RSSetSizeExceeded 65102
-#define IdResourceStrings_RSStackEOPNOTSUPP 65104
-#define IdResourceStrings_RSStackEPFNOSUPPORT 65105
-#define IdResourceStrings_RSStackEAFNOSUPPORT 65106
-#define IdResourceStrings_RSStackEADDRINUSE 65107
-#define IdResourceStrings_RSStackEADDRNOTAVAIL 65108
-#define IdResourceStrings_RSStackENETDOWN 65109
-#define IdResourceStrings_RSStackENETUNREACH 65110
-#define IdResourceStrings_RSStackENETRESET 65111
-#define IdResourceStrings_RSStackECONNABORTED 65112
-#define IdResourceStrings_RSStackECONNRESET 65113
-#define IdResourceStrings_RSStackENOBUFS 65114
-#define IdResourceStrings_RSStackEISCONN 65115
-#define IdResourceStrings_RSStackENOTCONN 65116
-#define IdResourceStrings_RSStackESHUTDOWN 65117
-#define IdResourceStrings_RSStackETOOMANYREFS 65118
-#define IdResourceStrings_RSStackETIMEDOUT 65119
-#define IdResourceStrings_RSStackEINTR 65120
-#define IdResourceStrings_RSStackEBADF 65121
-#define IdResourceStrings_RSStackEACCES 65122
-#define IdResourceStrings_RSStackEFAULT 65123
-#define IdResourceStrings_RSStackEINVAL 65124
-#define IdResourceStrings_RSStackEMFILE 65125
-#define IdResourceStrings_RSStackEWOULDBLOCK 65126
-#define IdResourceStrings_RSStackEINPROGRESS 65127
-#define IdResourceStrings_RSStackEALREADY 65128
-#define IdResourceStrings_RSStackENOTSOCK 65129
-#define IdResourceStrings_RSStackEDESTADDRREQ 65130
-#define IdResourceStrings_RSStackEMSGSIZE 65131
-#define IdResourceStrings_RSStackEPROTOTYPE 65132
-#define IdResourceStrings_RSStackENOPROTOOPT 65133
-#define IdResourceStrings_RSStackEPROTONOSUPPORT 65134
-#define IdResourceStrings_RSStackESOCKTNOSUPPORT 65135
-#define Vcl_ComStrs_sFailSetCalDateTime 65136
-#define Vcl_ComStrs_sFailSetCalMaxSelRange 65137
-#define Vcl_ComStrs_sFailSetCalMinMaxRange 65138
-#define Vcl_ComStrs_sFailsetCalSelRange 65139
-#define Vcl_Imaging_JConsts_sChangeJPGSize 65140
-#define Vcl_Imaging_JConsts_sJPEGError 65141
-#define Vcl_Imaging_JConsts_sJPEGImageFile 65142
-#define IdResourceStrings_RSInvalidSourceArray 65143
-#define IdResourceStrings_RSInvalidDestinationArray 65144
-#define IdResourceStrings_RSCharIndexOutOfBounds 65145
-#define IdResourceStrings_RSInvalidCharCount 65146
-#define IdResourceStrings_RSInvalidDestinationIndex 65147
-#define IdResourceStrings_RSInvalidCodePage 65148
-#define IdResourceStrings_RSWinsockCallError 65149
-#define IdResourceStrings_RSWinsockLoadError 65150
-#define IdResourceStrings_RSStackError 65151
-#define Vcl_Consts_SStyleHookClassRegistered 65152
-#define Vcl_Consts_SStyleHookClassNotRegistered 65153
-#define Vcl_Consts_SStyleInvalidParameter 65154
-#define Vcl_Consts_SStyleFeatureNotSupported 65155
-#define Vcl_Consts_SStyleNotRegistered 65156
-#define Vcl_Consts_SStyleUnregisterError 65157
-#define Vcl_Consts_SStyleNotRegisteredNoName 65158
-#define Vcl_Consts_sBeginInvokeNoHandle 65159
-#define System_Win_ComConst_SOleError 65160
-#define System_Win_ComConst_SNoMethod 65161
-#define System_Win_ComConst_SVarNotObject 65162
-#define System_Win_ComConst_STooManyParams 65163
-#define Vcl_ComStrs_sInvalidComCtl32 65164
-#define Vcl_ComStrs_sDateTimeMax 65165
-#define Vcl_ComStrs_sDateTimeMin 65166
-#define Vcl_ComStrs_sNeedAllowNone 65167
-#define Vcl_Consts_SBigEndianEncoding 65168
-#define Vcl_Consts_SUTF8Encoding 65169
-#define Vcl_Consts_SUTF7Encoding 65170
-#define Vcl_Consts_STrayIconRemoveError 65171
-#define Vcl_Consts_SWindowsVistaRequired 65172
-#define Vcl_Consts_STaskDlgButtonCaption 65173
-#define Vcl_Consts_STaskDlgRadioButtonCaption 65174
-#define Vcl_Consts_SInvalidTaskDlgButtonCaption 65175
-#define Vcl_Consts_SStyleLoadError 65176
-#define Vcl_Consts_SStyleLoadErrors 65177
-#define Vcl_Consts_SStyleRegisterError 65178
-#define Vcl_Consts_SStyleClassRegisterError 65179
-#define Vcl_Consts_SStyleNotFound 65180
-#define Vcl_Consts_SStyleClassNotFound 65181
-#define Vcl_Consts_SStyleInvalidHandle 65182
-#define Vcl_Consts_SStyleFormatError 65183
-#define Vcl_Consts_SPictureDesc 65184
-#define Vcl_Consts_SPreviewLabel 65185
-#define Vcl_Consts_SDockedCtlNeedsName 65186
-#define Vcl_Consts_SDockTreeRemoveError 65187
-#define Vcl_Consts_SDockZoneNotFound 65188
-#define Vcl_Consts_SDockZoneHasNoCtl 65189
-#define Vcl_Consts_SDockZoneVersionConflict 65190
-#define Vcl_Consts_SPromptArrayTooShort 65191
-#define Vcl_Consts_SPromptArrayEmpty 65192
-#define Vcl_Consts_SUsername 65193
-#define Vcl_Consts_SPassword 65194
-#define Vcl_Consts_SDomain 65195
-#define Vcl_Consts_SLogin 65196
-#define Vcl_Consts_SANSIEncoding 65197
-#define Vcl_Consts_SASCIIEncoding 65198
-#define Vcl_Consts_SUnicodeEncoding 65199
+#define IdResourceStrings_RSStackETIMEDOUT 65088
+#define IdResourceStrings_RSStackECONNREFUSED 65089
+#define IdResourceStrings_RSStackELOOP 65090
+#define IdResourceStrings_RSStackENAMETOOLONG 65091
+#define IdResourceStrings_RSStackEHOSTDOWN 65092
+#define IdResourceStrings_RSStackEHOSTUNREACH 65093
+#define IdResourceStrings_RSStackENOTEMPTY 65094
+#define IdResourceStrings_RSStackHOST_NOT_FOUND 65095
+#define IdResourceStrings_RSStackClassUndefined 65096
+#define IdResourceStrings_RSStackAlreadyCreated 65097
+#define IdResourceStrings_RSInvalidServiceName 65098
+#define IdResourceStrings_RSInvalidIPv6Address 65099
+#define IdResourceStrings_RSIPVersionUnsupported 65100
+#define IdResourceStrings_RSNotAllBytesSent 65101
+#define IdResourceStrings_RSPackageSizeTooBig 65102
+#define IdResourceStrings_RSSetSizeExceeded 65103
+#define IdResourceStrings_RSStackESOCKTNOSUPPORT 65104
+#define IdResourceStrings_RSStackEOPNOTSUPP 65105
+#define IdResourceStrings_RSStackEPFNOSUPPORT 65106
+#define IdResourceStrings_RSStackEAFNOSUPPORT 65107
+#define IdResourceStrings_RSStackEADDRINUSE 65108
+#define IdResourceStrings_RSStackEADDRNOTAVAIL 65109
+#define IdResourceStrings_RSStackENETDOWN 65110
+#define IdResourceStrings_RSStackENETUNREACH 65111
+#define IdResourceStrings_RSStackENETRESET 65112
+#define IdResourceStrings_RSStackECONNABORTED 65113
+#define IdResourceStrings_RSStackECONNRESET 65114
+#define IdResourceStrings_RSStackENOBUFS 65115
+#define IdResourceStrings_RSStackEISCONN 65116
+#define IdResourceStrings_RSStackENOTCONN 65117
+#define IdResourceStrings_RSStackESHUTDOWN 65118
+#define IdResourceStrings_RSStackETOOMANYREFS 65119
+#define IdResourceStrings_RSStackError 65120
+#define IdResourceStrings_RSStackEINTR 65121
+#define IdResourceStrings_RSStackEBADF 65122
+#define IdResourceStrings_RSStackEACCES 65123
+#define IdResourceStrings_RSStackEFAULT 65124
+#define IdResourceStrings_RSStackEINVAL 65125
+#define IdResourceStrings_RSStackEMFILE 65126
+#define IdResourceStrings_RSStackEWOULDBLOCK 65127
+#define IdResourceStrings_RSStackEINPROGRESS 65128
+#define IdResourceStrings_RSStackEALREADY 65129
+#define IdResourceStrings_RSStackENOTSOCK 65130
+#define IdResourceStrings_RSStackEDESTADDRREQ 65131
+#define IdResourceStrings_RSStackEMSGSIZE 65132
+#define IdResourceStrings_RSStackEPROTOTYPE 65133
+#define IdResourceStrings_RSStackENOPROTOOPT 65134
+#define IdResourceStrings_RSStackEPROTONOSUPPORT 65135
+#define Vcl_ComStrs_sNeedAllowNone 65136
+#define Vcl_ComStrs_sFailSetCalDateTime 65137
+#define Vcl_ComStrs_sFailSetCalMaxSelRange 65138
+#define Vcl_ComStrs_sFailSetCalMinMaxRange 65139
+#define Vcl_ComStrs_sFailsetCalSelRange 65140
+#define Vcl_Imaging_JConsts_sChangeJPGSize 65141
+#define Vcl_Imaging_JConsts_sJPEGError 65142
+#define Vcl_Imaging_JConsts_sJPEGImageFile 65143
+#define IdResourceStrings_RSInvalidSourceArray 65144
+#define IdResourceStrings_RSInvalidDestinationArray 65145
+#define IdResourceStrings_RSCharIndexOutOfBounds 65146
+#define IdResourceStrings_RSInvalidCharCount 65147
+#define IdResourceStrings_RSInvalidDestinationIndex 65148
+#define IdResourceStrings_RSInvalidCodePage 65149
+#define IdResourceStrings_RSWinsockCallError 65150
+#define IdResourceStrings_RSWinsockLoadError 65151
+#define Vcl_Consts_SStyleFormatError 65152
+#define Vcl_Consts_SStyleHookClassRegistered 65153
+#define Vcl_Consts_SStyleHookClassNotRegistered 65154
+#define Vcl_Consts_SStyleInvalidParameter 65155
+#define Vcl_Consts_SStyleFeatureNotSupported 65156
+#define Vcl_Consts_SStyleNotRegistered 65157
+#define Vcl_Consts_SStyleUnregisterError 65158
+#define Vcl_Consts_SStyleNotRegisteredNoName 65159
+#define Vcl_Consts_sBeginInvokeNoHandle 65160
+#define System_Win_ComConst_SOleError 65161
+#define System_Win_ComConst_SNoMethod 65162
+#define System_Win_ComConst_SVarNotObject 65163
+#define System_Win_ComConst_STooManyParams 65164
+#define Vcl_ComStrs_sInvalidComCtl32 65165
+#define Vcl_ComStrs_sDateTimeMax 65166
+#define Vcl_ComStrs_sDateTimeMin 65167
+#define Vcl_Consts_SUnicodeEncoding 65168
+#define Vcl_Consts_SBigEndianEncoding 65169
+#define Vcl_Consts_SUTF8Encoding 65170
+#define Vcl_Consts_SUTF7Encoding 65171
+#define Vcl_Consts_STrayIconRemoveError 65172
+#define Vcl_Consts_SWindowsVistaRequired 65173
+#define Vcl_Consts_STaskDlgButtonCaption 65174
+#define Vcl_Consts_STaskDlgRadioButtonCaption 65175
+#define Vcl_Consts_SInvalidTaskDlgButtonCaption 65176
+#define Vcl_Consts_SStyleLoadError 65177
+#define Vcl_Consts_SStyleLoadErrors 65178
+#define Vcl_Consts_SStyleRegisterError 65179
+#define Vcl_Consts_SStyleClassRegisterError 65180
+#define Vcl_Consts_SStyleNotFound 65181
+#define Vcl_Consts_SStyleClassNotFound 65182
+#define Vcl_Consts_SStyleInvalidHandle 65183
+#define Vcl_Consts_SPictureLabel 65184
+#define Vcl_Consts_SPictureDesc 65185
+#define Vcl_Consts_SPreviewLabel 65186
+#define Vcl_Consts_SDockedCtlNeedsName 65187
+#define Vcl_Consts_SDockTreeRemoveError 65188
+#define Vcl_Consts_SDockZoneNotFound 65189
+#define Vcl_Consts_SDockZoneHasNoCtl 65190
+#define Vcl_Consts_SDockZoneVersionConflict 65191
+#define Vcl_Consts_SPromptArrayTooShort 65192
+#define Vcl_Consts_SPromptArrayEmpty 65193
+#define Vcl_Consts_SUsername 65194
+#define Vcl_Consts_SPassword 65195
+#define Vcl_Consts_SDomain 65196
+#define Vcl_Consts_SLogin 65197
+#define Vcl_Consts_SANSIEncoding 65198
+#define Vcl_Consts_SASCIIEncoding 65199
 #define Vcl_Consts_SmkcDown 65200
 #define Vcl_Consts_SmkcIns 65201
 #define Vcl_Consts_SmkcDel 65202
@@ -128,13 +129,13 @@
 #define Vcl_Consts_srNone 65206
 #define Vcl_Consts_SOutOfRange 65207
 #define Vcl_Consts_sAllFilter 65208
-#define Vcl_Consts_SInvalidClipFmt 65209
-#define Vcl_Consts_SIconToClipboard 65210
-#define Vcl_Consts_SCannotOpenClipboard 65211
-#define Vcl_Consts_SInvalidPrinterOp 65212
-#define Vcl_Consts_SNoDefaultPrinter 65213
-#define Vcl_Consts_SDuplicateMenus 65214
-#define Vcl_Consts_SPictureLabel 65215
+#define Vcl_Consts_SInsertLineError 65209
+#define Vcl_Consts_SInvalidClipFmt 65210
+#define Vcl_Consts_SIconToClipboard 65211
+#define Vcl_Consts_SCannotOpenClipboard 65212
+#define Vcl_Consts_SInvalidPrinterOp 65213
+#define Vcl_Consts_SNoDefaultPrinter 65214
+#define Vcl_Consts_SDuplicateMenus 65215
 #define Vcl_Consts_SMsgDlgAll 65216
 #define Vcl_Consts_SMsgDlgNoToAll 65217
 #define Vcl_Consts_SMsgDlgYesToAll 65218
@@ -457,6 +458,7 @@
 #define System_SysConst_SDivByZero 65535
 STRINGTABLE
 BEGIN
+	IdResourceStrings_RSStackETIMEDOUT,	L"Connection timed out."
 	IdResourceStrings_RSStackECONNREFUSED,	L"Connection refused."
 	IdResourceStrings_RSStackELOOP,	L"Too many levels of symbolic links."
 	IdResourceStrings_RSStackENAMETOOLONG,	L"File name too long."
@@ -472,6 +474,7 @@ BEGIN
 	IdResourceStrings_RSNotAllBytesSent,	L"Not all bytes sent."
 	IdResourceStrings_RSPackageSizeTooBig,	L"Package Size Too Big."
 	IdResourceStrings_RSSetSizeExceeded,	L"Set Size Exceeded."
+	IdResourceStrings_RSStackESOCKTNOSUPPORT,	L"Socket type not supported."
 	IdResourceStrings_RSStackEOPNOTSUPP,	L"Operation not supported on socket."
 	IdResourceStrings_RSStackEPFNOSUPPORT,	L"Protocol family not supported."
 	IdResourceStrings_RSStackEAFNOSUPPORT,	L"Address family not supported by protocol family."
@@ -487,7 +490,7 @@ BEGIN
 	IdResourceStrings_RSStackENOTCONN,	L"Socket is not connected."
 	IdResourceStrings_RSStackESHUTDOWN,	L"Cannot send or receive after socket is closed."
 	IdResourceStrings_RSStackETOOMANYREFS,	L"Too many references, cannot splice."
-	IdResourceStrings_RSStackETIMEDOUT,	L"Connection timed out."
+	IdResourceStrings_RSStackError,	L"Socket Error # %d\r\n%s"
 	IdResourceStrings_RSStackEINTR,	L"Interrupted system call."
 	IdResourceStrings_RSStackEBADF,	L"Bad file number."
 	IdResourceStrings_RSStackEACCES,	L"Access denied."
@@ -503,7 +506,7 @@ BEGIN
 	IdResourceStrings_RSStackEPROTOTYPE,	L"Protocol wrong type for socket."
 	IdResourceStrings_RSStackENOPROTOOPT,	L"Bad protocol option."
 	IdResourceStrings_RSStackEPROTONOSUPPORT,	L"Protocol not supported."
-	IdResourceStrings_RSStackESOCKTNOSUPPORT,	L"Socket type not supported."
+	Vcl_ComStrs_sNeedAllowNone,	L"You must be in ShowCheckbox mode to set to this date"
 	Vcl_ComStrs_sFailSetCalDateTime,	L"Failed to set calendar date or time"
 	Vcl_ComStrs_sFailSetCalMaxSelRange,	L"Failed to set maximum selection range"
 	Vcl_ComStrs_sFailSetCalMinMaxRange,	L"Failed to set calendar min/max range"
@@ -519,7 +522,7 @@ BEGIN
 	IdResourceStrings_RSInvalidCodePage,	L"Invalid codepage (%d)"
 	IdResourceStrings_RSWinsockCallError,	L"Error on call to Winsock2 library function %s"
 	IdResourceStrings_RSWinsockLoadError,	L"Error on loading Winsock2 library (%s)"
-	IdResourceStrings_RSStackError,	L"Socket Error # %d\r\n%s"
+	Vcl_Consts_SStyleFormatError,	L"Invalid style format"
 	Vcl_Consts_SStyleHookClassRegistered,	L"Class '%s' is already registered for '%s'"
 	Vcl_Consts_SStyleHookClassNotRegistered,	L"Class '%s' is not registered for '%s'"
 	Vcl_Consts_SStyleInvalidParameter,	L"%s parameter cannot be nil"
@@ -535,7 +538,7 @@ BEGIN
 	Vcl_ComStrs_sInvalidComCtl32,	L"This control requires version 4.70 or greater of COMCTL32.DLL"
 	Vcl_ComStrs_sDateTimeMax,	L"Date exceeds maximum of %s"
 	Vcl_ComStrs_sDateTimeMin,	L"Date is less than minimum of %s"
-	Vcl_ComStrs_sNeedAllowNone,	L"You must be in ShowCheckbox mode to set to this date"
+	Vcl_Consts_SUnicodeEncoding,	L"Unicode"
 	Vcl_Consts_SBigEndianEncoding,	L"Big Endian Unicode"
 	Vcl_Consts_SUTF8Encoding,	L"UTF-8"
 	Vcl_Consts_SUTF7Encoding,	L"UTF-7"
@@ -551,7 +554,7 @@ BEGIN
 	Vcl_Consts_SStyleNotFound,	L"Style '%s' not found"
 	Vcl_Consts_SStyleClassNotFound,	L"Style class '%s' not found"
 	Vcl_Consts_SStyleInvalidHandle,	L"Invalid style handle"
-	Vcl_Consts_SStyleFormatError,	L"Invalid style format"
+	Vcl_Consts_SPictureLabel,	L"Picture:"
 	Vcl_Consts_SPictureDesc,	L" (%dx%d)"
 	Vcl_Consts_SPreviewLabel,	L"Preview"
 	Vcl_Consts_SDockedCtlNeedsName,	L"Docked control must have a name"
@@ -567,7 +570,6 @@ BEGIN
 	Vcl_Consts_SLogin,	L"Login"
 	Vcl_Consts_SANSIEncoding,	L"ANSI"
 	Vcl_Consts_SASCIIEncoding,	L"ASCII"
-	Vcl_Consts_SUnicodeEncoding,	L"Unicode"
 	Vcl_Consts_SmkcDown,	L"Down"
 	Vcl_Consts_SmkcIns,	L"Ins"
 	Vcl_Consts_SmkcDel,	L"Del"
@@ -577,13 +579,13 @@ BEGIN
 	Vcl_Consts_srNone,	L"(None)"
 	Vcl_Consts_SOutOfRange,	L"Value must be between %d and %d"
 	Vcl_Consts_sAllFilter,	L"All"
+	Vcl_Consts_SInsertLineError,	L"Unable to insert a line"
 	Vcl_Consts_SInvalidClipFmt,	L"Invalid clipboard format"
 	Vcl_Consts_SIconToClipboard,	L"Clipboard does not support Icons"
 	Vcl_Consts_SCannotOpenClipboard,	L"Cannot open clipboard: %s"
 	Vcl_Consts_SInvalidPrinterOp,	L"Operation not supported on selected printer"
 	Vcl_Consts_SNoDefaultPrinter,	L"There is no default printer currently selected"
 	Vcl_Consts_SDuplicateMenus,	L"Menu '%s' is already being used by another form"
-	Vcl_Consts_SPictureLabel,	L"Picture:"
 	Vcl_Consts_SMsgDlgAll,	L"&All"
 	Vcl_Consts_SMsgDlgNoToAll,	L"N&o to All"
 	Vcl_Consts_SMsgDlgYesToAll,	L"Yes to &All"
@@ -917,7 +919,7 @@ END
 /* C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\PantallaJugador.dfm */
 /* C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Login.dfm */
 /* C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\UnitRegistrarJugador.dfm */
-/* C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Vistas\Jugadores\DetalleJuego.dfm */
+/* C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Vistas\Administrador\DetalleJuego.dfm */
 /* C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\abmJuegos.dfm */
 /* C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\abmJugadores.dfm */
 /* C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Vistas\Administrador\BolillasRestantes.dfm */
@@ -925,6 +927,8 @@ END
 /* C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Vistas\Administrador\FichaJugador.dfm */
 /* C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Vistas\Administrador\ListadoJugadores.dfm */
 /* C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Vistas\Administrador\EjecucionJuegoAdmin.dfm */
+/* C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Vistas\Administrador\BalanceoJugadores.dfm */
+/* C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Vistas\Administrador\BalanceoGanadores.dfm */
 /* C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\PantallaAdministrador.dfm */
 /* C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Project1.res */
 /* C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Project1.drf */

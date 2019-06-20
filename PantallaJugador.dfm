@@ -2,8 +2,8 @@ object FormJugador: TFormJugador
   Left = 0
   Top = 0
   Caption = 'FormJugador'
-  ClientHeight = 264
-  ClientWidth = 506
+  ClientHeight = 389
+  ClientWidth = 732
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,28 +18,64 @@ object FormJugador: TFormJugador
   PixelsPerInch = 96
   TextHeight = 13
   object Image1: TImage
-    Left = 393
-    Top = 8
+    Left = 619
+    Top = 0
     Width = 105
     Height = 105
   end
-  object Label1: TLabel
-    Left = 176
-    Top = 100
-    Width = 96
-    Height = 13
-    Caption = 'PARTIDA EN JUEGO'
+  object LabelPartidaEnJuego: TLabel
+    Left = 16
+    Top = 8
+    Width = 4
+    Height = 16
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
   end
-  object StringGrid1: TStringGrid
-    Left = 152
-    Top = 128
-    Width = 320
-    Height = 120
+  object LabelHora: TLabel
+    Left = 360
+    Top = 8
+    Width = 36
+    Height = 13
+    Caption = 'HORA: '
+  end
+  object LabelPremio: TLabel
+    Left = 113
+    Top = 56
+    Width = 5
+    Height = 19
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clBlue
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object grillaBolillas: TStringGrid
+    Left = 8
+    Top = 111
+    Width = 710
+    Height = 135
+    ColCount = 15
+    DefaultColWidth = 45
+    FixedCols = 0
+    FixedRows = 0
     TabOrder = 0
   end
+  object grillaPremios: TStringGrid
+    Left = 96
+    Top = 252
+    Width = 456
+    Height = 120
+    FixedCols = 0
+    TabOrder = 1
+  end
   object MainMenu1: TMainMenu
-    Left = 144
-    Top = 24
+    Left = 552
+    Top = 64
     object EditarPerfil1: TMenuItem
       Caption = 'Herramientas'
       object EditarPerfil2: TMenuItem
@@ -66,5 +102,12 @@ object FormJugador: TFormJugador
         OnClick = CARTONES1Click
       end
     end
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 10000
+    OnTimer = Timer1Timer
+    Left = 552
+    Top = 16
   end
 end

@@ -11,8 +11,10 @@ const
     'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\BOLILLERO.DAT';
   _RUTA_ARCHIVO_CONTROL =
     'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\BOLILLERO.CON';
-  _ARCHIVO_DATOS = 'BOLILLERO.DAT';
-  _ARCHIVO_CONTROL = 'BOLILLERO.CON';
+  _ARCHIVO_BOLILLERO_DATOS = 'BOLILLERO.DAT';
+  _ARCHIVO_BOLILLERO_CONTROL = 'BOLILLERO.CON';
+    _ARCHIVO_PREMIOS_DATOS = 'PREMIOS.DAT';
+  _ARCHIVO_PREMIOS_CONTROL = 'PREMIOS.CON';
   __POSNULA = -1;
   __CLAVENULA = '';
   __LONGCLAVE = 4;
@@ -22,17 +24,13 @@ type
   TipoPos = longint;
 
   TipoClave = string[__LONGCLAVE];
- { tTipoPremio = (Ninguno = 0, LineaHorizontal = 1, LineaVertical = 2, Diagonal1 = 3,
-    Diagonal2 = 4, Cruz = 5, CuadradoChico = 6, CuadradoGrande = 7, Bingo = 8);
- }
- {tTipoPremio = (Ninguno, LineaHorizontal, LineaVertical, Diagonal1,
-    Diagonal2, Cruz, CuadradoChico, CuadradoGrande, Bingo); }
 
   tDatoPila = Record
     Numero: integer; // bolillero
     tipoPremio: tTipoPremio; // ganadores
     importe: real; // ganadores
     idCarton: integer; // ganadores
+    idJugador:string[15]; //mePremios
     Enlace: TipoPos;
     nivel: integer;
   End;
@@ -56,6 +54,7 @@ type
 var
   MeBOLILLERO: TipoPila;
   MePilaGanadores: TipoPila;
+  //MePremios: TipoPila;
 
 procedure crearME(var pila: TipoPila; archivoDatos: string;
   archivoControl: string);

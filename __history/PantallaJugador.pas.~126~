@@ -1,0 +1,280 @@
+unit PantallaJugador;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, LO_ArbolBinario, Vcl.ExtCtrls,
+  Vcl.Menus, EditarPerfilJugador,
+  JugadoresActivos, CalendarioJuegos, lo_dobleEnlace, lo_hashabierto,
+  PruebaCartones, lo_pila,
+  Vcl.StdCtrls, Vcl.Grids, la_hashabierto,lo_colasparciales, rtti;
+
+type
+  TFormJugador = class(TForm)
+    Image1: TImage;
+    MainMenu1: TMainMenu;
+    SalirMenuItem: TMenuItem;
+    EditarPerfil1: TMenuItem;
+    EditarPerfil2: TMenuItem;
+    Verjugadoresconectados1: TMenuItem;
+    CalendariodeJuegos1: TMenuItem;
+    Pruebas1: TMenuItem;
+    CARTONES1: TMenuItem;
+    LabelPartidaEnJuego: TLabel;
+    grillaBolillas: TStringGrid;
+    Timer1: TTimer;
+    LabelHora: TLabel;
+    LabelPremio: TLabel;
+    StringGrid1: TStringGrid;
+    procedure FormShow(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure SalirMenuItemClick(Sender: TObject);
+    procedure EditarPerfil1Click(Sender: TObject);
+    procedure Verjugadoresconectados1Click(Sender: TObject);
+    procedure CalendariodeJuegos1Click(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure CARTONES1Click(Sender: TObject);
+
+    Procedure AgregarCelda(RD: tipodato;
+  IndexRenglon: Integer; IndexCol: Integer);
+  procedure CargarGrillaBolillas();
+    procedure Timer1Timer(Sender: TObject);
+
+    procedure limpiarForm;
+    procedure LimpiarGrillaBolillas();
+
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    JugadorActual: tRegDatos;
+    JuegoActual:  tRegDatosHash;
+  end;
+
+var
+  FormJugador: TFormJugador;
+
+implementation
+
+{$R *.dfm}
+
+procedure TFormJugador.CalendariodeJuegos1Click(Sender: TObject);
+begin
+  FormCalendarioJuegos.ShowModal;
+end;
+
+procedure TFormJugador.CARTONES1Click(Sender: TObject);
+begin
+  FormPruebaCartones.ShowModal;
+end;
+
+procedure TFormJugador.EditarPerfil1Click(Sender: TObject);
+var
+  PosID: tPosArbol;
+  posEnDatos: tposarchi;
+  regJugador: tRegDatos;
+begin
+  FormEditarPerfilJugador.JugadorActual := self.JugadorActual;
+
+  FormEditarPerfilJugador.ShowModal;
+  BuscarNodo_Indice(MeID, JugadorActual.clave, PosID);
+  posEnDatos := ObtenerInfo_Indice(MeID, PosID).posEnDatos;
+  ObtenerInfoMe_Archivos(MeJUGADORES, posEnDatos, regJugador);
+  if regJugador.estado = Baja then
+    FormJugador.Close;
+end;
+
+procedure TFormJugador.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  CerrarMe_Archivos(MeJUGADORES);
+  Cerrarme_indice(MeID);
+  lo_dobleEnlace.Cerrarme(MeCartones);
+  CerrarMe_Hash(MeJuego);
+  lo_colasparciales.CerrarMe(MeTIRADAS);
+   lo_colasparciales.CerrarMe(MePremios);
+  OutputDebugString(PChar('Cierro MES'));
+  Timer1.Enabled := false;
+  SalirMenuItemClick(Sender);
+end;
+
+procedure TFormJugador.FormCreate(Sender: TObject);
+var
+  mii: TMenuItemInfo;
+  MainMenu: hMenu;
+  Buffer: array [0 .. 79] of Char;
+begin
+  // Alineo a la derecha el menuitem Salir
+  MainMenu := self.Menu.Handle;
+  mii.cbSize := SizeOf(mii);
+  mii.fMask := MIIM_TYPE;
+  mii.dwTypeData := Buffer;
+  mii.cch := SizeOf(Buffer);
+  GetMenuItemInfo(MainMenu, SalirMenuItem.Command, false, mii);
+  mii.fType := mii.fType or MFT_RIGHTJUSTIFY;
+  SetMenuItemInfo(MainMenu, SalirMenuItem.Command, false, mii);
+end;
+
+procedure TFormJugador.FormShow(Sender: TObject);
+var
+  dir, dirfull,nombreEvento: string;
+  hayPartidaJugando,juegoEncontrado: boolean;
+  posHash: tPosHash;
+  regJuego: tRegDatosHash;
+begin
+  dir := ExpandFileName(GetCurrentDir + '\..\..\');
+  dirfull := dir + 'imgs\' + JugadorActual.nick + '.bmp';
+  Image1.Picture.LoadFromFile(dirfull);
+
+  AbrirMe_Archivos(MeJUGADORES);
+  AbrirMe_Indice(MeID);
+  AbrirMe_Indice(MeNICK);
+  lo_dobleenlace.AbrirMe(MeCartones);
+  AbrirMe_Hash(MeJuego);
+  lo_colasparciales.AbrirMe(MeTIRADAS);
+  lo_colasparciales.AbrirMe(MePremios);
+
+  OutputDebugString(PChar('Abro MES'));
+  limpiarForm;
+
+  hayPartidaJugando:= la_hashabierto.hayPartidaJugando(meJuego,nombreEvento);
+  if hayPartidaJugando then
+  begin
+     LabelPartidaEnJuego.Caption := 'PARTIDA EN JUEGO: ' + nombreEvento;
+     juegoEncontrado:= BuscarHash(MeJuego,nombreEvento,posHash);
+     CapturarInfoHash(MeJuego,posHash,regJuego);
+     JuegoActual:= regJuego;
+     CargarGrillaBolillas;
+     Timer1.Enabled := true;
+  end
+  else
+  begin
+    LabelPartidaEnJuego.Caption := 'Ninguna partida en juego';
+  end;
+
+end;
+
+procedure TFormJugador.SalirMenuItemClick(Sender: TObject);
+var
+  clave: tIDusuario;
+  posEnDatos: tposarchi;
+  posIndiceID: tPosArbol;
+  reg: tRegDatos;
+begin
+  if BuscarNodo_Indice(MeID, JugadorActual.clave, posIndiceID) then
+  // simpre true, para buscar la posIndiceID
+  begin
+    posEnDatos := ObtenerInfo_Indice(MeID, posIndiceID).posEnDatos;
+    ObtenerInfoMe_Archivos(MeJUGADORES, posEnDatos, reg);
+
+    if ((reg.estado <> Baja) and (reg.estado <> Bloqueado)) then
+      reg.estado := Desconectado;
+    ModificarInfoMe_Archivos(MeJUGADORES, posEnDatos, reg);
+  end;
+  Timer1.Enabled := false;
+  FormJugador.Close;
+end;
+
+procedure TFormJugador.Timer1Timer(Sender: TObject);
+var
+  reg: TipoDato;
+begin
+  CargarGrillaBolillas;
+  LabelHora.Caption:= 'HORA:' + '  ' + TimeToStr(time);
+  OutputDebugString(PChar('TICK'));
+
+  if not colaVacia(MePremios) then
+  begin
+    lo_colasparciales.tope(mepremios,reg);
+    decolar(MePremios);
+    if reg.idJugador = JugadorActual.clave then
+
+    begin
+       LabelPremio.Caption := 'PREMIO GANADO:  ' + TRttiEnumerationType.GetName(reg.tipoPremio)
+       + ' por $' + floattostr(reg.importe) + ' !!';
+    end
+    else
+    begin
+       encolar(MePremios,reg);
+    end;
+  end;
+end;
+
+procedure TFormJugador.Verjugadoresconectados1Click(Sender: TObject);
+begin
+  FormJugadoresActivos.ShowModal;
+end;
+
+procedure Delay(dwMilliseconds: DWORD); { Similar al Windows.Sleep }
+var
+  ATickCount: DWORD;
+begin
+  ATickCount := GetTickCount64 + dwMilliseconds;
+  while ATickCount > GetTickCount64 do
+    Application.ProcessMessages;
+end;
+
+procedure TFormJugador.CargarGrillaBolillas();
+var
+  i, cantSacadas, Row, col: Integer;
+  reg, raux: tipodato;
+  arr: array of Integer;
+begin
+  cantSacadas := lo_colasparciales.cantidadElementos(MeTIRADAS, JuegoActual.id);
+
+  for i := 0 to cantSacadas - 1 do
+  begin
+    col := i mod 15;
+    Row := i div 15;
+    if not lo_colasparciales.colaVacia(MeTIRADAS, JuegoActual.id) then
+    begin
+      lo_colasparciales.Tope(MeTIRADAS, reg, JuegoActual.id);
+      decolar(MeTIRADAS, JuegoActual.id);
+
+      SetLength(arr, Length(arr) + 1);
+      arr[Length(arr) - 1] := reg.Numero;
+
+      AgregarCelda(reg, Row, col);
+
+    end;
+  end;
+
+  for i := Low(arr) to High(arr) do
+  begin
+    raux.Numero := arr[i];
+    encolar(MeTIRADAS, raux, JuegoActual.id);
+  end;
+end;
+
+Procedure TFormJugador.AgregarCelda(RD: tipodato;
+  IndexRenglon: Integer; IndexCol: Integer);
+Begin
+
+  with grillaBolillas do
+  Begin
+    Cells[IndexCol, IndexRenglon] := IntToStr(RD.Numero);
+
+    FixedRows := 1;
+  End;
+
+End;
+
+procedure TFormJugador.limpiarForm;
+begin
+   LimpiarGrillaBolillas;
+   labelpremio.Caption := '';
+   labelhora.Caption := '';
+   LabelPartidaEnJuego.Caption := '';
+end;
+
+procedure TFormJugador.LimpiarGrillaBolillas();
+var
+  i: Integer;
+begin
+  for i := 0 to grillaBolillas.RowCount - 1 do
+    grillaBolillas.Rows[i].Clear;
+  grillaBolillas.RowCount := 5;
+end;
+
+end.

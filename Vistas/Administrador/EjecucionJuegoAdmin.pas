@@ -13,6 +13,12 @@ uses
   la_arboltrinario, listadoJugadores, lo_arboltrinario;
 
 type
+
+  recGanadorCarton = record
+    idGanador: string;
+    idCarton: Integer;
+  end;
+
   TEjecucionJuegoAdminForm = class(TForm)
     Panel1: TPanel;
     grillaJugadores: TStringGrid;
@@ -40,6 +46,8 @@ type
     grillaBolillas: TStringGrid;
     FichaJugadorButton: TButton;
     listadoJugadoresButton: TButton;
+    Timer1: TTimer;
+    PausaButton: TButton;
     procedure CargarGrillaJugadores();
     Procedure SetearHeadersJugadores();
     Procedure AgregarReglonJugadores(RD: tRegDatos);
@@ -52,8 +60,8 @@ type
     procedure CargarGrillaBolillas();
     Procedure AgregarCelda(RD: tipodato; IndexRenglon: Integer;
       IndexCol: Integer);
-          Procedure SetearHeadersGanadores();
-    //Procedure AgregarReglonGanadores(RD: tRegDatosHash);
+    Procedure SetearHeadersGanadores();
+    // Procedure AgregarReglonGanadores(RD: tRegDatosHash);
     procedure CargarGrillaGanadores();
     procedure FichaJugadorButtonClick(Sender: TObject);
     Procedure InOrdenArbolBi(Arbol: MeArbol; Raiz: tPosArbol);
@@ -62,12 +70,27 @@ type
     procedure LimpiarGrillaBolillas();
     procedure LimpiarGrillaGanadores();
     procedure listadoJugadoresButtonClick(Sender: TObject);
+    procedure modoVirtualizacionManual();
+    procedure SacarBolillaModoNormal();
+    procedure SacarBolillaModoVManual();
+    procedure modoNormal();
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure SacarBolillaModoVAutomatica();
+    procedure modoVirtualizacionAutomatica();
+    procedure PausaButtonClick(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure togglePausarVirtualizacion();
+    procedure pausarVirtualizacion();
+    procedure reanudarVirtualizacion();
 
   private
     { Private declarations }
   public
     { Public declarations }
     JuegoActual: tRegDatosHash;
+    ModoEjecucion: tModoEjecucion;
+    Pausado: boolean;
+
   end;
 
 var
@@ -119,12 +142,8 @@ begin
   InOrdenArbolBi(MeNick, Raiz_Indice(MeNick));
 end;
 
-Procedure TEjecucionJuegoAdminForm.InOrdenArbolBi(Arbol: MeArbol; Raiz: tPosArbol);
-{
-  Arbol contiene qué LO lo invoco.
-  1--->Jugadores
-  2--->Ganadores
-}
+Procedure TEjecucionJuegoAdminForm.InOrdenArbolBi(Arbol: MeArbol;
+  Raiz: tPosArbol);
 var
   RD: tRegDatos;
   N: tNodoIndice;
@@ -133,8 +152,7 @@ begin
     exit;
 
   // Primero recursivo tendiendo a la Izquierda
-    InOrdenArbolBi(Arbol, ProximoIzq_Indice(Arbol, Raiz))   ;
-
+  InOrdenArbolBi(Arbol, ProximoIzq_Indice(Arbol, Raiz));
 
   // Guardo en N el nodo indice.
   N := ObtenerInfo_Indice(Arbol, Raiz);
@@ -142,23 +160,23 @@ begin
   // De N utilizo la posicion en Clientes para leer el registro.
   ObtenerInfoMe_Archivos(MeJugadores, N.PosEnDatos, RD);
 
-
-    if isTieneCartonesComprados(RD.clave, JuegoActual.nombreEvento, mecartones)
-    then
-      AgregarReglonJugadores(RD) ;
+  if isTieneCartonesComprados(RD.clave, JuegoActual.nombreEvento, mecartones)
+  then
+    AgregarReglonJugadores(RD);
 
 
   // Recursividad tendiendo a la Derecha.
 
-    InOrdenArbolBi(Arbol, ProximoDer_Indice(Arbol, Raiz)) ;
+  InOrdenArbolBi(Arbol, ProximoDer_Indice(Arbol, Raiz));
 
 end;
 
-Procedure TEjecucionJuegoAdminForm.InOrdenArbolTri(Arbol: tMeIndiceTri; Raiz: tPosTri);
+Procedure TEjecucionJuegoAdminForm.InOrdenArbolTri(Arbol: tMeIndiceTri;
+  Raiz: tPosTri);
 var
   N: tNodoIndiceTri;
   /// ///////--INTERNO--//////////////////////////////////////////////
-  Procedure AgregarReglonGanadores(cabecera: Integer);
+  Procedure AgregarReglonGanadores(cabecera: Integer; idGanador: string);
   { Metodo Recursivo }
   var
     RD: tdatopila;
@@ -167,16 +185,15 @@ var
     begin
       lo_pila.Tope(MePilaGanadores, RD, cabecera);
       Desapilar(MePilaGanadores, cabecera);
-      AgregarReglonGanadores( cabecera);
-
+      AgregarReglonGanadores(cabecera, idGanador);
 
       with grillaGanadores do
       Begin
         RowCount := RowCount + 1;
-        Cells[0, rowcount-1] := 'NICK'  ;
-        Cells[1, rowcount-1] := TRttiEnumerationType.GetName(RD.tipoPremio);
-        Cells[2, rowcount-1] := IntToStr(rd.idCarton) ;
-        Cells[3, rowcount-1] := floattostr(rd.importe);
+        Cells[0, RowCount - 1] := getNickJugadorConIdGanador(idGanador);
+        Cells[1, RowCount - 1] := TRttiEnumerationType.GetName(RD.tipoPremio);
+        Cells[2, RowCount - 1] := IntToStr(RD.idCarton);
+        Cells[3, RowCount - 1] := floattostr(RD.importe);
 
         FixedRows := 1;
       End;
@@ -190,26 +207,24 @@ begin
   If Raiz = PosNula_tri(Arbol) then
     exit;
   // Primero recursivo tendiendo a la Izquierda
-    InOrdenArbolTri(Arbol, ProximoIzq_Tri(Arbol, Raiz))   ;
+  InOrdenArbolTri(Arbol, ProximoIzq_Tri(Arbol, Raiz));
   // Guardo en N el nodo indice.
-    ObtenerNodo(Arbol, Raiz, N);
+  ObtenerNodo(Arbol, Raiz, N);
 
   // De N utilizo la posicion en Clientes para leer el registro.
-  //ObtenerInfoMe_Archivos(MeJugadores, N.PosEnDatos, RD);
+  // ObtenerInfoMe_Archivos(MeJugadores, N.PosEnDatos, RD);
 
-
-
-    if esJuegoBuscado(n.idGanador,juegoactual.nombreEvento) then
-    begin
-        //recorrer la pila y llamar a agregarRenglon por cada premio en pila
-        AgregarReglonGanadores(n.hm);
-    end;
+  if esJuegoBuscado(N.idGanador, JuegoActual.nombreEvento) then
+  begin
+    // recorrer la pila y llamar a agregarRenglon por cada premio en pila
+    AgregarReglonGanadores(N.hm, N.idGanador);
+  end;
 
 
 
   // Recursividad tendiendo a la Derecha.
 
-    InOrdenArbolTri(Arbol, ProximoDer_Tri(Arbol, Raiz)) ;
+  InOrdenArbolTri(Arbol, ProximoDer_Tri(Arbol, Raiz));
 
 end;
 
@@ -230,24 +245,51 @@ begin
       PosEnDatos := ObtenerInfo_Indice(MeNick, posIndiceNick).PosEnDatos;
       ObtenerInfoMe_Archivos(MeJugadores, PosEnDatos, reg);
     end;
+    if ModoEjecucion = VAutomatica then
+      pausarVirtualizacion;
+
+    FormFichaJugador.JuegoActual := JuegoActual;
+    FormFichaJugador.JugadorActual := reg;
+    FormFichaJugador.ShowModal;
   end
   else
     ShowMessage('Seleccione un jugador de la grilla para visualizar su ficha.');
 
-  FormFichaJugador.JuegoActual := JuegoActual;
-  FormFichaJugador.JugadorActual := reg;
-  FormFichaJugador.ShowModal;
+end;
+
+procedure TEjecucionJuegoAdminForm.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+var
+  regCola: tipodato;
+begin
+  if ((ModoEjecucion = VManual) or (ModoEjecucion = VAutomatica)) then
+  begin
+    while not colaVacia(MeTiradasVirtualizacion, JuegoActual.id) do
+    begin
+      Tope(MeTiradasVirtualizacion, regCola, JuegoActual.id);
+      decolar(MeTiradasVirtualizacion, JuegoActual.id);
+      encolar(MeTiradas, regCola, JuegoActual.id);
+    end;
+  end;
+    Timer1.Enabled := false;
 end;
 
 procedure TEjecucionJuegoAdminForm.FormShow(Sender: TObject);
 var
   cantJug: Integer;
 begin
+  if ModoEjecucion = Normal then
+    modoNormal;
+  if ModoEjecucion = VManual then
+    modoVirtualizacionManual;
+  if ModoEjecucion = VAutomatica then
+    modoVirtualizacionAutomatica;
+
   cantJug := cantidadJugadoresEnJuego(JuegoActual.nombreEvento, mecartones);
 
   NombreEdit.Text := JuegoActual.nombreEvento;
   CantJugadoresEdit.Text := IntToStr(cantJug);
-  PozoEdit.Text := FloatToStr(JuegoActual.PozoAcumulado);
+  PozoEdit.Text := floattostr(JuegoActual.PozoAcumulado);
   FechaEdit.Text := DateTimeToStr(JuegoActual.fechaEvento);
 
   LimpiarGrillaJugadores;
@@ -264,92 +306,14 @@ begin
 end;
 
 procedure TEjecucionJuegoAdminForm.SacarBolillaButtonClick(Sender: TObject);
-var
-  reg: lo_pila.tdatopila;
-  regCola: tipodato;
-  i: Integer;
-  regCarton: tRegDatos_DE;
-  isNumeroTachado, isTienePremio: boolean;
-  tipoPremio: tTipoPremio;
-  claveGanador: string;
-  importePremio: real;
-  regJuego: tRegDatosHash;
-  posHash: tPosHash;
 begin
-
-  if (lo_pila.cantidadElemEnPila(MeBOLILLERO) > 0) then
+  if ModoEjecucion = Normal then
   begin
-    lo_pila.tope(MeBOLILLERO, reg);
-    if lo_pila.cantidadElemEnPila(MeBOLILLERO) = 1 then
-    begin
-      MessageDlg('Última bolilla: ' + IntToStr(reg.Numero) +
-        ' Juego finalizado!', mtInformation, [mbOk], 0, mbOk);
-      // Cambiar estado del juego?
-      finalizarJuego(JuegoActual.nombreEvento);
-    end
-    else
-    begin
-      MessageDlg('Bolilla sacada: ' + IntToStr(reg.Numero) +
-        ' Bolillas restantes: ' +
-        IntToStr(lo_pila.cantidadElemEnPila(MeBOLILLERO) - 1), mtInformation,
-        [mbOk], 0, mbOk);
-
-    end;
-
-    desapilar(MeBOLILLERO);
-    // encolar tiradas
-    regCola.enlace := reg.enlace;
-    regCola.Numero := reg.Numero;
-    encolar(MeTIRADAS, regCola, JuegoActual.id);
-
-    // LOGICA DEL JUEGO
-    i := lo_dobleenlace.Primero(mecartones);
-    while i <> _posnula do
-    // recorro todos los cartones
-    begin
-      regCarton := CapturarInfo(mecartones, i);
-      // si el carton pertenece al juego
-      if regCarton.nombreEvento = JuegoActual.nombreEvento then
-      begin
-        isNumeroTachado := tacharNumeroSiEstaEnCarton(regCarton, i, reg.Numero);
-        if isNumeroTachado then
-        begin
-
-          isTienePremio := verificarYDevolverSiCartonTienePremio(regCarton,
-            tipoPremio);
-          // tipoPremio es parameter out
-          if isTienePremio then
-          begin
-            BuscarHash(MeJuego, regCarton.nombreEvento, posHash);
-            CapturarInfoHash(MeJuego, posHash, regJuego);
-
-            // insertar ganador
-            claveGanador := generarClaveGanador(regCarton.idJugador,
-              regCarton.nombreEvento);
-
-            importePremio := la_arboltrinario.importePorTipoPremio(regJuego,
-              tipoPremio);
-            restarPremioAPozoAcumulado(regJuego, importePremio);
-            modificarPremioEntregado(regJuego, tipoPremio);
-            AltaGanador(claveGanador, tipoPremio, importePremio,
-              regCarton.idCarton);
-
-            // actualizar grilla ganadores
-            // agregar a algun lado para mostrar en jugador?
-          end;
-        end;
-      end;
-
-      i := lo_dobleenlace.Proximo(mecartones, i);
-    end;
-
-    CargarGrillaBolillas;
-    //CargarGrillaGanadores;
-  end
-  else
+    SacarBolillaModoNormal;
+  end;
+  if ModoEjecucion = VManual then
   begin
-    MessageDlg('No quedan bolillas restantes por sacar!', mtInformation,
-      [mbOk], 0, mbOk);
+    SacarBolillaModoVManual;
   end;
 
 end;
@@ -368,6 +332,20 @@ Begin
     Cells[2, 0] := 'CARTONES';
   End;
 End;
+
+procedure TEjecucionJuegoAdminForm.Timer1Timer(Sender: TObject);
+begin
+  SacarBolillaModoVAutomatica;
+end;
+
+procedure Delay(dwMilliseconds: DWORD); { Similar al Windows.Sleep }
+var
+  ATickCount: DWORD;
+begin
+  ATickCount := GetTickCount64 + dwMilliseconds;
+  while ATickCount > GetTickCount64 do
+    Application.ProcessMessages;
+end;
 
 procedure TEjecucionJuegoAdminForm.VerBolillasRestantesButtonClick
   (Sender: TObject);
@@ -399,7 +377,8 @@ var
   reg: tRegDatosHash;
 begin
   SetearHeadersGanadores;
-  InOrdenArbolTri(MeIndiceGanadores, lo_arboltrinario.raiz_tri(MeIndiceGanadores));
+  InOrdenArbolTri(MeIndiceGanadores,
+    lo_arboltrinario.raiz_tri(MeIndiceGanadores));
 end;
 
 Procedure TEjecucionJuegoAdminForm.SetearHeadersGanadores();
@@ -420,40 +399,22 @@ Begin
   End;
 End;
 
-{Procedure TEjecucionJuegoAdminForm.AgregarReglonGanadores(RD: tRegDatosHash;
-  IndexRenglon: Integer);
-Begin
-
-  with grillaGanadores do
-  Begin
-    Cells[0, IndexRenglon] := RD.nombreEvento;
-    Cells[1, IndexRenglon] := DateTimeToStr(RD.fechaEvento);
-    Cells[2, IndexRenglon] := IntToStr(RD.PozoAcumulado);
-    // TRttiEnumerationType.GetName( RD.estado);
-    Cells[3, IndexRenglon] := IntToStr(RD.TotalCartonesVendidos);
-    // IntToStr(RD.TotalCartonesVendidos);
-
-    FixedRows := 1;
-  End;
-
-End;
-}
 procedure TEjecucionJuegoAdminForm.CargarGrillaBolillas();
 var
   i, cantSacadas, Row, col: Integer;
   reg, raux: tipodato;
   arr: array of Integer;
 begin
-  cantSacadas := lo_colasparciales.cantidadElementos(MeTIRADAS, JuegoActual.id);
+  cantSacadas := lo_colasparciales.cantidadElementos(MeTiradas, JuegoActual.id);
 
   for i := 0 to cantSacadas - 1 do
   begin
     col := i mod 15;
     Row := i div 15;
-    if not lo_colasparciales.colaVacia(MeTIRADAS, JuegoActual.id) then
+    if not lo_colasparciales.colaVacia(MeTiradas, JuegoActual.id) then
     begin
-      lo_colasparciales.tope(MeTIRADAS, reg, JuegoActual.id);
-      decolar(MeTIRADAS, JuegoActual.id);
+      lo_colasparciales.Tope(MeTiradas, reg, JuegoActual.id);
+      decolar(MeTiradas, JuegoActual.id);
 
       SetLength(arr, Length(arr) + 1);
       arr[Length(arr) - 1] := reg.Numero;
@@ -466,21 +427,18 @@ begin
   for i := Low(arr) to High(arr) do
   begin
     raux.Numero := arr[i];
-    encolar(MeTIRADAS, raux, JuegoActual.id);
+    encolar(MeTiradas, raux, JuegoActual.id);
   end;
 end;
 
 Procedure TEjecucionJuegoAdminForm.AgregarCelda(RD: tipodato;
   IndexRenglon: Integer; IndexCol: Integer);
 Begin
-
   with grillaBolillas do
   Begin
     Cells[IndexCol, IndexRenglon] := IntToStr(RD.Numero);
-
     FixedRows := 1;
   End;
-
 End;
 
 procedure TEjecucionJuegoAdminForm.LimpiarGrillaJugadores();
@@ -496,14 +454,17 @@ procedure TEjecucionJuegoAdminForm.LimpiarGrillaGanadores();
 var
   i: Integer;
 begin
-  for i := 0 to GrillaGanadores.RowCount - 1 do
-    GrillaGanadores.Rows[i].Clear;
-  GrillaGanadores.RowCount := 1;
+  for i := 0 to grillaGanadores.RowCount - 1 do
+    grillaGanadores.Rows[i].Clear;
+  grillaGanadores.RowCount := 1;
 end;
 
 procedure TEjecucionJuegoAdminForm.listadoJugadoresButtonClick(Sender: TObject);
 begin
+  if ModoEjecucion = VAutomatica then
+    pausarVirtualizacion;
 
+  FormListadoJugadores.JuegoActual := JuegoActual;
   FormListadoJugadores.ShowModal;
 end;
 
@@ -514,6 +475,278 @@ begin
   for i := 0 to grillaBolillas.RowCount - 1 do
     grillaBolillas.Rows[i].Clear;
   grillaBolillas.RowCount := 5;
+end;
+
+procedure TEjecucionJuegoAdminForm.SacarBolillaModoNormal();
+
+var
+  reg: lo_pila.tdatopila;
+  regCola: tipodato;
+  i, cantGanadoresPremio: Integer;
+  regCarton: tRegDatos_DE;
+  isNumeroTachado, isTienePremio: boolean;
+  tipoPremio: tTipoPremio;
+  claveGanador: string;
+  importePremio: real;
+  regJuego: tRegDatosHash;
+  posHash: tPosHash;
+  arrGanadores: array of recGanadorCarton;
+
+begin
+
+  if (lo_pila.cantidadElemEnPila(MeBOLILLERO) > 0) then
+  begin
+    lo_pila.Tope(MeBOLILLERO, reg);
+    if lo_pila.cantidadElemEnPila(MeBOLILLERO) = 1 then
+    begin
+      MessageDlg('Última bolilla: ' + IntToStr(reg.Numero) +
+        ' Juego finalizado!', mtInformation, [mbOk], 0, mbOk);
+      // Cambiar estado del juego?
+      finalizarJuego(JuegoActual.nombreEvento);
+    end
+    else
+    begin
+      MessageDlg('Bolilla sacada: ' + IntToStr(reg.Numero) +
+        ' Bolillas restantes: ' +
+        IntToStr(lo_pila.cantidadElemEnPila(MeBOLILLERO) - 1), mtInformation,
+        [mbOk], 0, mbOk);
+
+    end;
+
+    Desapilar(MeBOLILLERO);
+    // encolar tiradas
+    regCola.enlace := reg.enlace;
+    regCola.Numero := reg.Numero;
+    encolar(MeTiradas, regCola, JuegoActual.id);
+
+    {
+      // LOGICA DEL JUEGO
+      i := lo_dobleenlace.Primero(mecartones);
+      while i <> _posnula do
+      // recorro todos los cartones
+      begin
+      regCarton := CapturarInfo(mecartones, i);
+      // si el carton pertenece al juego
+      if regCarton.nombreEvento = JuegoActual.nombreEvento then
+      begin
+      isNumeroTachado := tacharNumeroSiEstaEnCarton(regCarton, i, reg.Numero);
+      if isNumeroTachado then
+      begin
+
+      isTienePremio := verificarYDevolverSiCartonTienePremio(regCarton,
+      tipoPremio);
+      // tipoPremio es parameter out
+      if isTienePremio then
+      begin
+      BuscarHash(MeJuego, regCarton.nombreEvento, posHash);
+      CapturarInfoHash(MeJuego, posHash, regJuego);
+
+      // insertar ganador
+      claveGanador := generarClaveGanador(regCarton.idJugador,
+      regCarton.nombreEvento);
+
+      importePremio := la_arboltrinario.importePorTipoPremio(regJuego,
+      tipoPremio);
+      restarPremioAPozoAcumulado(regJuego, importePremio);
+      modificarPremioEntregado(regJuego, tipoPremio);
+      AltaGanador(claveGanador, tipoPremio, importePremio,
+      regCarton.idCarton);
+
+      // actualizar grilla ganadores
+      // agregar a algun lado para mostrar en jugador?
+      end;
+      end;
+      end;
+
+      i := lo_dobleenlace.Proximo(mecartones, i);
+
+      end;
+    }
+    cantGanadoresPremio := 0;
+    for tipoPremio := Low(tTipoPremio) to High(tTipoPremio) do
+    begin
+      i := lo_dobleenlace.Primero(mecartones);
+      while i <> _posnula do
+      // recorro todos los cartones
+      begin
+        regCarton := CapturarInfo(mecartones, i);
+        // si el carton pertenece al juego
+        if regCarton.nombreEvento = JuegoActual.nombreEvento then
+        begin
+          isNumeroTachado := tacharNumeroSiEstaEnCarton(regCarton, i,
+            reg.Numero);
+          if isNumeroTachado then
+          begin
+            isTienePremio := verificarYDevolverSiCartonTienePremio(regCarton,
+              tipoPremio);
+            // tipoPremio es parameter out
+            if isTienePremio then
+            begin
+              // si tiene premio, guardo en un array para agregar despues
+              SetLength(arrGanadores, Length(arrGanadores) + 1);
+              arrGanadores[Length(arrGanadores) - 1].idGanador :=
+                generarClaveGanador(regCarton.idJugador,
+                regCarton.nombreEvento);
+              arrGanadores[Length(arrGanadores) - 1].idCarton :=
+                regCarton.idCarton;
+            end;
+          end;
+        end;
+        i := lo_dobleenlace.Proximo(mecartones, i);
+      end;
+
+      // aca insertar ganadores teniendo en cuenta si hay mas de uno
+      if Length(arrGanadores) > 0 then
+      begin
+        cantGanadoresPremio := Length(arrGanadores);
+
+        BuscarHash(MeJuego, regCarton.nombreEvento, posHash);
+        CapturarInfoHash(MeJuego, posHash, regJuego);
+        importePremio := la_arboltrinario.importePorTipoPremio(regJuego,
+          tipoPremio);
+        restarPremioAPozoAcumulado(regJuego, importePremio);
+        for i := Low(arrGanadores) to High(arrGanadores) do
+        begin
+          AltaGanador(arrGanadores[i].idGanador, tipoPremio,
+            importePremio / cantGanadoresPremio, arrGanadores[i].idCarton);
+
+        end;
+        modificarPremioEntregado(regJuego, tipoPremio);
+      end;
+
+      // vaciar el array
+      SetLength(arrGanadores, 0);
+
+    end;
+    CargarGrillaBolillas;
+    LimpiarGrillaGanadores;
+    CargarGrillaGanadores;
+  end
+  else
+  begin
+    MessageDlg('No quedan bolillas restantes por sacar!', mtInformation,
+      [mbOk], 0, mbOk);
+  end;
+
+end;
+
+procedure TEjecucionJuegoAdminForm.SacarBolillaModoVManual();
+var
+  primerNumero: Integer;
+  regCola: tipodato;
+  primeroSacado: boolean;
+begin
+  // tope(MeTIRADASVirtualizacion,regCola,juegoactual.id);
+  // primerNumero := regCola.Numero;
+  // primeroSacado := true;
+
+  if cantidadElementos(MeTiradas, JuegoActual.id) < 75 then
+  // ((regCola.numero <> primerNumero) or (not primeroSacado)) do
+  begin
+    Tope(MeTiradasVirtualizacion, regCola, JuegoActual.id);
+    decolar(MeTiradasVirtualizacion, JuegoActual.id);
+    encolar(MeTiradas, regCola, JuegoActual.id);
+  end;
+  CargarGrillaBolillas;
+end;
+
+procedure TEjecucionJuegoAdminForm.modoVirtualizacionManual();
+var
+  regCola: tipodato;
+begin
+  MezclarBolillasButton.enabled := false;
+  BolillasSacadasButton.enabled := false;
+  VerBolillasRestantesButton.enabled := false;
+  // insertarCabeceraControl(MeTiradasVirtualizacion, JuegoActual.id);
+
+  while not colaVacia(MeTiradas, JuegoActual.id) do
+  begin
+    Tope(MeTiradas, regCola, JuegoActual.id);
+    decolar(MeTiradas, JuegoActual.id);
+    encolar(MeTiradasVirtualizacion, regCola, JuegoActual.id);
+  end;
+
+end;
+
+procedure TEjecucionJuegoAdminForm.togglePausarVirtualizacion();
+begin
+  if Timer1.enabled then
+  begin
+    pausarVirtualizacion
+  end
+  else
+  begin
+    reanudarVirtualizacion;
+  end;
+end;
+
+procedure TEjecucionJuegoAdminForm.pausarVirtualizacion();
+begin
+
+  Timer1.enabled := false;
+  PausaButton.Caption := 'Reanudar';
+
+end;
+
+procedure TEjecucionJuegoAdminForm.reanudarVirtualizacion();
+begin
+
+  Timer1.enabled := true;
+  PausaButton.Caption := 'Pausar';
+
+end;
+
+procedure TEjecucionJuegoAdminForm.PausaButtonClick(Sender: TObject);
+begin
+  togglePausarVirtualizacion;
+end;
+
+procedure TEjecucionJuegoAdminForm.SacarBolillaModoVAutomatica();
+var
+  primerNumero: Integer;
+  regCola: tipodato;
+  primeroSacado: boolean;
+begin
+  // tope(MeTIRADASVirtualizacion,regCola,juegoactual.id);
+  // primerNumero := regCola.Numero;
+  // primeroSacado := true;
+
+  if cantidadElementos(MeTiradas, JuegoActual.id) < 75 then
+  // ((regCola.numero <> primerNumero) or (not primeroSacado)) do
+  begin
+    Tope(MeTiradasVirtualizacion, regCola, JuegoActual.id);
+    decolar(MeTiradasVirtualizacion, JuegoActual.id);
+    encolar(MeTiradas, regCola, JuegoActual.id);
+  end;
+  CargarGrillaBolillas;
+end;
+
+procedure TEjecucionJuegoAdminForm.modoVirtualizacionAutomatica();
+var
+  regCola: tipodato;
+begin
+  MezclarBolillasButton.enabled := false;
+  BolillasSacadasButton.enabled := false;
+  VerBolillasRestantesButton.enabled := false;
+  SacarBolillaButton.enabled := false;
+  SacarBolillaButton.visible := false;
+  PausaButton.visible := true;
+  Timer1.enabled := true;
+
+  while not colaVacia(MeTiradas, JuegoActual.id) do
+  begin
+    Tope(MeTiradas, regCola, JuegoActual.id);
+    decolar(MeTiradas, JuegoActual.id);
+    encolar(MeTiradasVirtualizacion, regCola, JuegoActual.id);
+  end;
+
+end;
+
+procedure TEjecucionJuegoAdminForm.modoNormal();
+begin
+  MezclarBolillasButton.enabled := true;
+  BolillasSacadasButton.enabled := true;
+  VerBolillasRestantesButton.enabled := true;
 end;
 
 end.

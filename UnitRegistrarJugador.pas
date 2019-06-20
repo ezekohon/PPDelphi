@@ -28,6 +28,7 @@ type
     procedure ButtonInsertarClick(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
+    procedure limpiarForm();
 
   private
     { Private declarations }
@@ -60,7 +61,6 @@ var
   bmp, bmpDef: TBitmap;
   nick, nombre, pass, mail, dir, dirfull: string;
   ingresado: boolean;
-
   thumbnail: TBitmap;
   thumbRect: TRect;
 const
@@ -84,8 +84,6 @@ begin
       thumbRect.Top := 0;
       thumbnail := TBitmap.Create;
       thumbnail.Assign(jpg);
-      // bmpDef.SetSize(105,105);
-      // bmpDef.Canvas. StretchDraw(Rect(0, 0, 105, 105), bmp);
       if thumbnail.Width > thumbnail.Height then
       begin
         thumbRect.Right := maxWidth;
@@ -116,6 +114,7 @@ begin
     ingresado := LA_arbolbinario.AltaJugador(nick, nombre, mail, pass, jpg);
     if ingresado then
       ShowMessage('Jugador registrado con exito');
+    limpiarForm;
     FormRegistrarJugador.Hide();
   end
   else
@@ -150,6 +149,15 @@ begin
   CerrarMe_Archivos(MeJugadores);
   CerrarMe_Indice(MeNick);
   CerrarMe_Indice(MeID);
+end;
+
+procedure TFormRegistrarJugador.limpiarForm();
+begin
+   editnick.clear;
+   editcontra.clear;
+   editmail.clear;
+   editimagen.clear;
+   editnombre.clear;
 end;
 
 end.
