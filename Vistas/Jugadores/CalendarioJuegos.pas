@@ -128,7 +128,7 @@ Begin
     with grilla do
     Begin
       Cells[0, IndexRenglon] := RD.nombreEvento;
-      Cells[1, IndexRenglon] := DateTimeToStr(RD.fechaEvento);
+      Cells[1, IndexRenglon] := DateTimeToStr(trunc(RD.fechaEvento));
       Cells[2, IndexRenglon] := FloatToStr(RD.PozoAcumulado);//TRttiEnumerationType.GetName( RD.estado);
       Cells[3, IndexRenglon] := IntToStr(RD.TotalCartonesVendidos);//IntToStr(RD.TotalCartonesVendidos);
 

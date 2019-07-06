@@ -115,7 +115,7 @@ begin
     if ingresado then
       ShowMessage('Jugador registrado con exito');
     limpiarForm;
-    FormRegistrarJugador.Hide();
+    //FormRegistrarJugador.Hide();
   end
   else
   begin

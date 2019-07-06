@@ -2,14 +2,14 @@ unit lo_dobleEnlace; // CARTONES
 
 interface
 
-uses SysUtils, math;
+uses SysUtils, math,globals;
 
 const
   _posnula = -1;
   _ARCHIVO_DATOS = 'CARTONES.DAT';
   _ARCHIVO_CONTROL = 'CARTONES.CON';
   carpeta = 'D:\';
-  _RUTA = 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\';
+  //_RUTA = 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\';
 
 type
   tPos = _posnula .. maxint;
@@ -80,10 +80,10 @@ var
   rc: tRegControl_DE;
 begin
 
-  assign(me.d, _RUTA + _ARCHIVO_DATOS);
-  assign(me.c, _RUTA + _ARCHIVO_CONTROL);
-  if (not FileExists(_RUTA + _ARCHIVO_DATOS)) or
-    (not FileExists(_RUTA + _ARCHIVO_CONTROL)) then
+  assign(me.d, RUTA + _ARCHIVO_DATOS);
+  assign(me.c, RUTA + _ARCHIVO_CONTROL);
+  if (not FileExists(RUTA + _ARCHIVO_DATOS)) or
+    (not FileExists(RUTA + _ARCHIVO_CONTROL)) then
   begin
     Rewrite(me.d);
     Rewrite(me.c);

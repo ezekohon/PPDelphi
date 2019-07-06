@@ -9,7 +9,7 @@ const
   _maxHash = 40;
   _fila = 60;
   _POSNULA = -1;
-  _RUTA= globals.ruta;//'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\';
+  //_RUTA= globals.ruta;//'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\';
 
   _ARCHIVO_DATOS = 'JUEGOS.DAT';
   _ARCHIVO_CONTROL = 'JUEGOS.CON';
@@ -28,7 +28,7 @@ type
  tRegDatosHash = record
     ID: tID;   //ultimo id interno del control
     nombreEvento: nombreEventoHash; //clave de busqueda y hashing
-    posBolillero: integer;
+    //posBolillero: integer;
     fechaEvento: tDateTime;  //ingresada por admin
     estado: tEstadoJuego; //N(no activado), J(jugando), F(finalizado)
     ValorVenta: real;
@@ -146,8 +146,8 @@ var
 
 begin
 
-  assign(MeHash.D,_RUTA + _ARCHIVO_DATOS);
-  assign(MeHash.C,_RUTA + _ARCHIVO_CONTROL);
+  assign(MeHash.D,RUTA + _ARCHIVO_DATOS);
+  assign(MeHash.C,RUTA + _ARCHIVO_CONTROL);
    {$I-}
   reset(MeHash.D); ioD:=IoResult;
   reset(MeHash.C); ioC:=IoResult;

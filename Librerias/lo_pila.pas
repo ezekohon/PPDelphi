@@ -6,11 +6,11 @@ uses
   classes, sysutils, globals;
 
 const
-  _RUTA = 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\';
-  _RUTA_ARCHIVO_DATOS =
-    'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\BOLILLERO.DAT';
-  _RUTA_ARCHIVO_CONTROL =
-    'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\BOLILLERO.CON';
+  //_RUTA = 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\';
+  //_RUTA_ARCHIVO_DATOS =
+  //  'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\BOLILLERO.DAT';
+  //_RUTA_ARCHIVO_CONTROL =
+  //  'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\BOLILLERO.CON';
   _ARCHIVO_BOLILLERO_DATOS = 'BOLILLERO.DAT';
   _ARCHIVO_BOLILLERO_CONTROL = 'BOLILLERO.CON';
     _ARCHIVO_PREMIOS_DATOS = 'PREMIOS.DAT';
@@ -30,7 +30,7 @@ type
     tipoPremio: tTipoPremio; // ganadores
     importe: real; // ganadores
     idCarton: integer; // ganadores
-    idJugador:string[15]; //mePremios
+    //idJugador:string[15]; //mePremios
     Enlace: TipoPos;
     nivel: integer;
   End;
@@ -71,7 +71,7 @@ function cantidadElemEnPila(var pila: TipoPila;
   cabeceraControl: TipoPos = 0): integer;
 procedure insertarCabeceraControl(var pila: TipoPila; cabeceraControl: TipoPos);
 function buscarPremio(var pila: TipoPila; premio: tTipoPremio;
-  cabeceraControl: TipoPos): boolean; // PROBAR
+  cabeceraControl: TipoPos): boolean;
 
 implementation
 

@@ -2,8 +2,8 @@ unit lo_arboltrinario;
 
 interface
 
-//uses
- // lo_pila;
+uses
+ globals;
 
 const
   _posnula_tri = -1;
@@ -13,10 +13,10 @@ const
   _ARCHIVO_INDICE_CONTROL = 'INDICEGANADORES.CON';
 
   _ARCHIVO_GANADORES_DATOS = 'DATOSGANADORES.DAT';
-  _RUTA_ARCHIVO_PILA_DATOS = 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\DATOSGANADORES.DAT';
+  //_RUTA_ARCHIVO_PILA_DATOS = 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\DATOSGANADORES.DAT';
   _ARCHIVO_GANADORES_CONTROL = 'DATOSGANADORES.CON';
-  _RUTA_ARCHIVO_PILA_CONTROL = 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\DATOSGANADORES.CON';
-  _RUTA = 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\';
+  //_RUTA_ARCHIVO_PILA_CONTROL = 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\DATOSGANADORES.CON';
+  //_RUTA = 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\';
 
 type
   tPosTri = integer; // _posnula_tri.._max_tri;
@@ -25,7 +25,7 @@ type
 
   // NODO
   tNodoIndiceTri = record // ESTO es el nodo del arbol
-    idGanador: string[100]; // clave de busqueda. idUsuario_idJuego
+    idGanador: string[100]; // clave de busqueda. idUsuario_nombreEvento
     Padre: tPosTri;
     hi: tPosTri;
     hd: tPosTri;
@@ -105,9 +105,9 @@ var
   RN: tNivelesTri;
   ioD, ioC, ioN: integer;
 begin
-  assign(Arbol.I, _RUTA + _ARCHIVO_INDICE_DATOS);
-  assign(Arbol.N, _RUTA + _ARCHIVO_INDICE_NIVEL);
-  assign(Arbol.C, _RUTA + _ARCHIVO_INDICE_CONTROL);
+  assign(Arbol.I, RUTA + _ARCHIVO_INDICE_DATOS);
+  assign(Arbol.N, RUTA + _ARCHIVO_INDICE_NIVEL);
+  assign(Arbol.C, RUTA + _ARCHIVO_INDICE_CONTROL);
 {$I-}
   reset(Arbol.I);
   ioD := IoResult;

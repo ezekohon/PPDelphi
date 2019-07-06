@@ -11,6 +11,7 @@ procedure empezarJuego(nombreEvento:string);
 procedure finalizarJuego(nombreEvento:string);
 procedure modificarPremioEntregado(juego: tRegDatosHash; tipoPremio: ttipopremio);
 function isPremioEntregado (juego: tRegDatosHash; tipoPremio: ttipopremio):boolean;
+procedure restarPozoAcumulado(monto:real; nombreEvento:nombreEventoHash);
 
 
 
@@ -41,6 +42,19 @@ begin
     reg.TotalCartonesVendidos := reg.TotalCartonesVendidos-cantidad;
     ModificarHash(MeJuego,pos,reg);
 end;
+
+procedure restarPozoAcumulado(monto:real; nombreEvento:nombreEventoHash);
+var
+  pos: tposhash;
+  reg: tRegDatosHash;
+begin
+    BuscarHash(MeJuego,nombreEvento,pos);
+    CapturarInfoHash(MeJuego,pos,reg);
+    reg.PozoAcumulado := reg.PozoAcumulado-monto;
+    ModificarHash(MeJuego,pos,reg);
+end;
+
+
 
 function hayPartidaJugando(me:tmehash; out nombreEvento:string):boolean; //PROBAR
 //chequea en el me si hay una partida jugandose y si hay, devulve el nombre

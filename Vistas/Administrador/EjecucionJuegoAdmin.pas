@@ -40,8 +40,6 @@ type
     MezclarBolillasButton: TButton;
     BolillasSacadasButton: TButton;
     VerBolillasRestantesButton: TButton;
-    Panel3: TPanel;
-    Button1: TButton;
     SacarBolillaButton: TButton;
     grillaBolillas: TStringGrid;
     FichaJugadorButton: TButton;
@@ -291,6 +289,7 @@ begin
   CantJugadoresEdit.Text := IntToStr(cantJug);
   PozoEdit.Text := floattostr(JuegoActual.PozoAcumulado);
   FechaEdit.Text := DateTimeToStr(JuegoActual.fechaEvento);
+  HoraEdit.Text := TimeToStr(Time);
 
   LimpiarGrillaJugadores;
   CargarGrillaJugadores;

@@ -11,7 +11,7 @@ uses
   EjecucionJuegoAdmin,
   Rtti, la_hashabierto, lo_pila, lo_colasparciales, lo_arboltrinario,
   Pruebacartones,
-  balanceojugadores, BalanceoGanadores, globals;
+  balanceojugadores, BalanceoGanadores, globals, DispersionHash;
 
 type
   TFormAdministrador = class(TForm)
@@ -30,6 +30,7 @@ type
     MEJugadores1: TMenuItem;
     MEGanadores1: TMenuItem;
     VirtualizarAutomaticoButton: TButton;
+    MEJuegos1: TMenuItem;
     procedure RegistrarJugador1Click(Sender: TObject);
     procedure ABMJuegos1Click(Sender: TObject);
     procedure ABMJuegadoresClick(Sender: TObject);
@@ -46,6 +47,7 @@ type
     procedure MEGanadores1Click(Sender: TObject);
     procedure VirtualizarButtonClick(Sender: TObject);
     procedure VirtualizarAutomaticoButtonClick(Sender: TObject);
+    procedure MEJuegos1Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -241,15 +243,15 @@ Begin
   with grilla do
   Begin
     // Título de las columnas
-    ColWidths[0] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
+    ColWidths[0] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxxxxx');
     ColWidths[1] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
     ColWidths[2] := Canvas.TextWidth('xxxxxxxxxxxxxxxx');
     ColWidths[3] := Canvas.TextWidth('xxxxxxxxxxxxxxxx');
-    ColWidths[4] := Canvas.TextWidth('xxxxxxxxxxxxxxxx');
+    ColWidths[4] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
     Cells[0, 0] := 'NOMBRE EVENTO';
     Cells[1, 0] := 'FECHA';
-    Cells[2, 0] := 'POZO ACUMULADO';
-    Cells[3, 0] := 'CARTONES VENDIDOS';
+    Cells[2, 0] := 'POZO';
+    Cells[3, 0] := 'CARTONES';
     Cells[4, 0] := 'ESTADO';
   End;
 End;
@@ -283,7 +285,7 @@ Begin
   with grilla do
   Begin
     Cells[0, IndexRenglon] := RD.nombreEvento;
-    Cells[1, IndexRenglon] := DateTimeToStr(RD.fechaEvento);
+    Cells[1, IndexRenglon] := DateTimeToStr(trunc(RD.fechaEvento));
     Cells[2, IndexRenglon] := FloatToStr(RD.PozoAcumulado);
     // TRttiEnumerationType.GetName( RD.estado);
     Cells[3, IndexRenglon] := IntToStr(RD.TotalCartonesVendidos);
@@ -329,6 +331,11 @@ end;
 procedure TFormAdministrador.MEGanadores1Click(Sender: TObject);
 begin
   FormBalanceoGanadores.ShowModal;
+end;
+
+procedure TFormAdministrador.MEJuegos1Click(Sender: TObject);
+begin
+  FormDispersionHash.showmodal;
 end;
 
 procedure TFormAdministrador.MEJugadores1Click(Sender: TObject);

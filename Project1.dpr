@@ -39,7 +39,8 @@ uses
   ListadoJugadores in 'Vistas\Administrador\ListadoJugadores.pas' {FormListadoJugadores},
   BalanceoJugadores in 'Vistas\Administrador\BalanceoJugadores.pas' {FormBalanceoJugadores},
   BalanceoGanadores in 'Vistas\Administrador\BalanceoGanadores.pas' {FormBalanceoGanadores},
-  DetalleJuego in 'Vistas\Administrador\DetalleJuego.pas' {FormDetalleJuego};
+  DetalleJuego in 'Vistas\Administrador\DetalleJuego.pas' {FormDetalleJuego},
+  DispersionHash in 'Vistas\Administrador\DispersionHash.pas' {FormDispersionHash};
 
 {$R *.res}
 
@@ -65,5 +66,6 @@ begin
   Application.CreateForm(TFormBalanceoJugadores, FormBalanceoJugadores);
   Application.CreateForm(TFormBalanceoGanadores, FormBalanceoGanadores);
   Application.CreateForm(TFormDetalleJuego, FormDetalleJuego);
+  Application.CreateForm(TFormDispersionHash, FormDispersionHash);
   Application.Run;
 end.

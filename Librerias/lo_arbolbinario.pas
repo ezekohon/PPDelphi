@@ -11,7 +11,7 @@ const
   _posnula_archivo = -1;
   _clave_nula_archivo = '00000000';
   _nombre_carpeta = 'Archivos\';
-  _RUTA = 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\';
+  //_RUTA = 'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\';
   _ARCHIVO_DATOS = 'ArbolBinario.DATOS';
   _ARCHIVO_CONTROL = 'ArbolBinario.Control';
 
@@ -153,14 +153,16 @@ Function ObtenerProximoID_Archivos(var me: MeArchivos): tIDusuario;
 
 implementation
 
+uses globals;
+
 Procedure CrearMe_Indice(var Arbol: MeArbol;
   Nombre_Archivo_Control, Nombre_Archivo_Datos: string);
 var
   RC: tControlArbol;
   ioD, ioC: integer;
 begin
-  assign(Arbol.D, _RUTA + Nombre_Archivo_Datos);
-  assign(Arbol.C, _RUTA + Nombre_Archivo_Control);
+  assign(Arbol.D, RUTA + Nombre_Archivo_Datos);
+  assign(Arbol.C, RUTA + Nombre_Archivo_Control);
 {$I-}
   reset(Arbol.D);
   ioD := IoResult;
@@ -928,10 +930,10 @@ Var
   RC: tRegControl;
 Begin
   assign(me.D,
-    'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\'
+    RUTA
     + Nombre_Archivo_Datos);
   assign(me.C,
-    'C:\Users\ezeko\Google Drive\Juan 23\PROG 2\MIO\TRABAJOFINALDELPHI\Archivos\'
+    RUTA
     + Nombre_Archivo_Control);
 {$I-}
   reset(me.D);

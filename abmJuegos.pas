@@ -27,7 +27,7 @@ type
     Label3: TLabel;
     DateTimePicker1: TDateTimePicker;
 
-    // propios
+
     procedure AltaJuego(nombreEvento: string; valor: real; fecha: tdatetime);
     procedure ModificarJuego(nombreEvento: string; valor: real;
       fecha: tdatetime);
@@ -319,13 +319,10 @@ Begin
       ('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
     ColWidths[1] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
     ColWidths[2] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxx');
-    // ColWidths[3] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-    // ColWidths[4] := Canvas.TextWidth('xxxxxxxxxxxxxxxxxx');
     Cells[0, 0] := 'NOMBRE EVENTO';
     Cells[1, 0] := 'ESTADO';
     Cells[2, 0] := 'CARTONES VENDIDOS';
-    // Cells[3, 0] := 'APELLIDO';
-    // Cells[4, 0] := 'TEL';
+
   End;
 End;
 
@@ -339,8 +336,6 @@ Begin
       Cells[0, IndexRenglon] := RD.nombreEvento;
       Cells[1, IndexRenglon] := TRttiEnumerationType.GetName(RD.estado);
       Cells[2, IndexRenglon] := IntToStr(RD.TotalCartonesVendidos);
-      // Cells[3, IndexRenglon] := Rh.apellidos;
-      // Cells[4, IndexRenglon] := Rh.telefono;
       FixedRows := 1;
     End;
   End;

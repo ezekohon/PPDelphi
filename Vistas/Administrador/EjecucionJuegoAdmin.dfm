@@ -3,7 +3,7 @@ object EjecucionJuegoAdminForm: TEjecucionJuegoAdminForm
   Top = 0
   Caption = 'EjecucionJuegoAdminForm'
   ClientHeight = 581
-  ClientWidth = 868
+  ClientWidth = 774
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -197,23 +197,6 @@ object EjecucionJuegoAdminForm: TEjecucionJuegoAdminForm
       OnClick = PausaButtonClick
     end
   end
-  object Panel3: TPanel
-    Left = 771
-    Top = 444
-    Width = 89
-    Height = 41
-    Caption = 'botones pruebas'
-    TabOrder = 4
-    object Button1: TButton
-      Left = 248
-      Top = 8
-      Width = 97
-      Height = 25
-      Caption = 'partida no activada'
-      TabOrder = 0
-      OnClick = Button1Click
-    end
-  end
   object grillaBolillas: TStringGrid
     Left = 8
     Top = 439
@@ -223,14 +206,14 @@ object EjecucionJuegoAdminForm: TEjecucionJuegoAdminForm
     DefaultColWidth = 45
     FixedCols = 0
     FixedRows = 0
-    TabOrder = 5
+    TabOrder = 4
   end
   object TPanel
     Left = 8
     Top = 287
     Width = 753
     Height = 41
-    TabOrder = 6
+    TabOrder = 5
     object FichaJugadorButton: TButton
       Left = 186
       Top = 8
